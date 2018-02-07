@@ -1,0 +1,36 @@
+2012-05-28    <ensmjc@enpc-adm34.bath.ac.uk>
+
+	* src/lsqr.c (gqr_lsqr_min_norm): rewrote to remove dependence on
+	f2c.h, using direct calls to LAPACK; this also clears up an
+	intermittent segmentation violation problem.
+
+2008-09-29    <ensmjc@enpc-adm34.bath.ac.uk>
+
+	* src/fpart.c (gqr_legendre_dPdx): Check for m>n in
+	differentiation. 
+
+2008-09-26    <ensmjc@enpc-adm34.bath.ac.uk>
+
+	* src/msingular.c (legendre_func): Added support for derivatives
+	of Legendre functions at arbitrary points, for multi-singular
+	quadrature rules.
+
+2008-06-12    <ensmjc@enpc-adm34.bath.ac.uk>
+
+	* src/gqr-logging.c: Added handling for logging messages.
+
+2008-06-03    <ensmjc@enpc-adm34.bath.ac.uk>
+
+	* src/grule.c (gqr_rule_alloc): Added an extra element in g->x and
+	g->w to avoid memory leaks in roots.c.
+
+2007-08-17  Michael Carley  <ensmjc@enpc-adm34.bath.ac.uk>
+
+	* src/glegendre.c: modified to use Glaser et al.'s rootfinding
+	method.
+
+2007-01-10  Michael Carley  <ensmjc@enpc-adm34.bath.ac.uk>
+
+	* tests/gqr-rule.c: added command line option to compute rules for
+	multiple specified singularities.
+

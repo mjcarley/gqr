@@ -1,0 +1,21 @@
+\section{Root-\/finding for abscissa of quadrature rules}
+\label{group__roots}\index{Root-\/finding for abscissa of quadrature rules@{Root-\/finding for abscissa of quadrature rules}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+gint {\bf gqr\_\-function\_\-roots} (gdouble $\ast$P, gdouble $\ast$Q, gdouble $\ast$R, gdouble x0, gdouble du0, gint N, gdouble $\ast$x, gdouble $\ast$du)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{roots@{roots}!gqr\_\-function\_\-roots@{gqr\_\-function\_\-roots}}
+\index{gqr\_\-function\_\-roots@{gqr\_\-function\_\-roots}!roots@{roots}}
+\subsubsection[{gqr\_\-function\_\-roots}]{\setlength{\rightskip}{0pt plus 5cm}gint gqr\_\-function\_\-roots (gdouble $\ast$ {\em P}, \/  gdouble $\ast$ {\em Q}, \/  gdouble $\ast$ {\em R}, \/  gdouble {\em x0}, \/  gdouble {\em du0}, \/  gint {\em N}, \/  gdouble $\ast$ {\em x}, \/  gdouble $\ast$ {\em du})}\label{group__roots_ga44f1b9e71af71ab418796a10e5cd86f3}
+Find the roots of the special function which solves the differential equation $p(x)u''(x) + q(x)u'(x) + r(x)u(x) = 0$, using the algorithm of Glaser, A., Liu, X. and Rokhlin, V., `A fast algorithm for the calculation of the roots of special functions', SIAM Journal on Scientific Computing, 29(4):1420-\/-\/1438, {\tt http://dx.doi.org/10.1137/06067016X.}
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em P}]three element array containing the coefficients of $p(x)$, lowest order first; \item[{\em Q}]three element array containing the coefficients of $q(x)$, lowest order first; \item[{\em R}]three element array containing the coefficients of $r(x)$, lowest order first; \item[{\em x0}]initial root; \item[{\em du0}]derivative of function at {\itshape x0\/}, $u'(x_{0})$; \item[{\em N}]number of roots and derivatives to be returned; \item[{\em x}]on return, the roots of $u(x)$; \item[{\em du}]on return, $u'(x)$ at roots of $u(x)$.\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success. 
+\end{DoxyReturn}

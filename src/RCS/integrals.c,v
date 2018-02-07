@@ -1,0 +1,202 @@
+head	1.1;
+access;
+symbols;
+locks
+	michael:1.1; strict;
+comment	@ * @;
+
+
+1.1
+date	2006.09.19.16.40.24;	author michael;	state Exp;
+branches;
+next	;
+
+
+desc
+@Integrals of weighted polynomials
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/**
+ * @@file   integrals.c
+ * @@author Michael Carley
+ * @@date   Tue Sep 16 16:30:27 2006
+ * 
+ * @@brief  Integrals of Legendre polynomials with arbitrary weight functions. 
+ * 
+ * 
+ */
+
+#include <stdio.h>
+#include <math.h>
+
+#include <glib.h>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /*HAVE_CONFIG_H*/
+
+#if HAVE_LIBMPFR
+#include <mpfr.h>  
+#endif
+
+#include "gqr.h"
+
+gint _gqr_quad_log(gint N, gdouble x, gdouble y, gdouble *I) ;
+gint _gqr_quad_1_r(gint N, gdouble x, gdouble y, gdouble *I) ;
+gint _gqr_quad_2_r(gint N, gdouble x, gdouble y, gdouble *I) ;
+
+gint _gqr_quad_2_r(gint N, gdouble x, gdouble y, gdouble *I)
+
+{
+  gdouble Rp1, Rm1, R2 ;
+  gint i, sgn ;
+
+  g_assert(y != 0.0) ;
+  Rm1 = (x+1.0)*(x+1.0) + y*y ;
+  Rp1 = (x-1.0)*(x-1.0) + y*y ;
+  R2 = x*x + y*y ;
+  I[0] = (atan2(1.0-x,y) - atan2(-1.0-x,y))/y ;
+  I[1] = 0.5*(log(Rp1)-log(Rm1)) + x*I[0] ;
+  
+  for ( (i = 2), (sgn = 1) ; i <= N ; (i ++), (sgn = -sgn) ) {
+    I[i] = 2.0*x*I[i-1] - R2*I[i-2] ;
+    I[i] += (1 + sgn)/(gdouble)(i-1) ;
+  }
+  
+  return 0 ;
+}
+
+gint _gqr_quad_1_r(gint N, gdouble x, gdouble y, gdouble *I)
+
+{
+  gdouble Rm1, Rp1, R2 ;
+  gint i, sgn ;
+
+  g_assert(y != 0.0) ;
+  Rp1 = sqrt((x-1.0)*(x-1.0) + y*y) ;
+  Rm1 = sqrt((x+1.0)*(x+1.0) + y*y) ;
+  R2 = x*x + y*y ;
+  I[0] = log(2*Rp1 - 2*(x-1)) - log(2*Rm1 - 2*(x+1)) ;
+  I[1] = Rp1-Rm1 + x*I[0] ;
+  
+  for ( (i = 2), (sgn = 1) ; i <= N ; (i ++), (sgn = -sgn) ) {
+    I[i] = (x*(gdouble)(2*i-1)*I[i-1] - 
+      R2*(gdouble)(i-1)*I[i-2])/(gdouble)i ;
+    I[i] += (Rp1 + sgn*Rm1)/(gdouble)i ;
+  }
+  
+  return 0 ;
+}
+
+gint _gqr_quad_log(gint N, gdouble x, gdouble y, gdouble *I)
+
+{
+  gdouble R ;
+  gdouble Lm1, Lp1 ;
+  gdouble th, C ;
+  gdouble *I2 ;
+  gint n, sgn ;
+
+  g_assert(y != 0.0) ;
+
+  I2 = (gdouble *)g_malloc((N+3)*sizeof(gdouble)) ;
+  _gqr_quad_2_r(N+2, x, y, I2) ;
+  R = sqrt(x*x+y*y) ;
+  th = atan2(y,x) ;
+  C = R*cos(th) ;
+  Lm1 = log((x+1)*(x+1)+y*y) ;
+  Lp1 = log((x-1)*(x-1)+y*y) ;
+
+  for ( (n = 0), (sgn = 1) ; n <= N ; (n ++), (sgn = -sgn) ) {
+    I[n] = 0.5*(Lp1 + sgn*Lm1) - I2[n+2] + C*I2[n+1] ;
+    I[n] /= (n+1) ;
+  }
+
+  g_free(I2) ;
+
+  return 0 ;
+}
+
+#if 0
+gint _gqr_quad_log(gint N, gdouble x, gdouble y, gdouble *I)
+
+{
+  gdouble R, Rm1, Rp1, Rm, Rk ;
+  gdouble Lm1, Lp1 ;
+  gdouble T, Tm1, Tp1 ;
+  gdouble th, S, C ;
+  gint n, k ;
+
+  g_assert(y != 0.0) ;
+
+  R = sqrt(x*x+y*y) ;
+  Rm1 = sqrt((x-1.0)*(x-1.0)+y*y) ;
+  Rp1 = sqrt((x+1.0)*(x+1.0)+y*y) ;
+  if ( Rm1 != 0.0 ) Lm1 = log(Rm1*Rm1) ; 
+  else Lm1 = 0.0 ;
+  if ( Rp1 != 0.0 ) Lp1 = log(Rp1*Rp1) ; 
+  else Lp1 = 0.0 ;
+/*   Lp1 = log(Rp1*Rp1) ; */
+  th = atan2(y,x) ;
+  C = cos(th) ; S = sin(th) ;
+  T = atan2(-2*R*S,R*R-1) ;
+  Tm1 = atan2(-R*S,-R*C-1) ;
+  Tp1 = atan2(-R*S,-R*C+1) ;
+
+  Rm = R ;
+/*   Rm = 1.0 ; */
+  for ( n = 0 ; n <= N/2 ; n ++ ) {
+    I[2*n] = Lm1 + Lp1 ;
+    I[2*n] -= Rm*(cos((2*n+1)*th)*(Lm1-Lp1) + 2*sin((2*n+1)*th)*T) ;
+    Rm *= R ;
+    I[2*n+1] = Lm1 - Lp1 ;
+    I[2*n+1] -= Rm*(cos((2*n+2)*th)*(Lm1-Lp1) + 2*sin((2*n+2)*th)*T) ;
+    Rk = 1.0 ;
+    for ( k = 0 ; k <= n ; k ++ ) {
+      I[2*n] -= 4*Rk/(2*n-2*k+1)*cos(2*k*th) ;
+      I[2*n+1] -= 4*R*Rk/(2*n-2*k+1)*cos((2*k+1)*th) ;
+      Rk *= R*R ;
+    }
+    Rm *= R ;
+    I[2*n] *= 0.5/(gdouble)(2*n+1) ; 
+    I[2*n+1] *= 0.5/(gdouble)(2*n+2) ; 
+  }
+
+  return 0 ;
+}
+#endif
+
+gint gqr_legendre_integrals(gint N, gdouble *I, gdouble *P)
+
+{
+  gint i, j ;
+  gdouble Cn, Dn ;
+
+  if ( N > 32 ) 
+    g_log(G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+	  "%s: algorithm suffers from overflow for N>32", __FUNCTION__) ;
+
+  P[0] = I[0] ; P[1] = I[1] ;
+  for ( i = 2 ; i < N ; i += 2 ) {
+    Cn = 1.0/(gdouble)(i+1) ; Dn = 1.0/(gdouble)(i+3) ;
+    P[i] = I[i]-Cn*P[0] ; P[i+1] = I[i+1]-3.0*Dn*P[1] ;
+    Cn *= (gdouble)(i)/(gdouble)(i+3) ;
+    Dn *= (gdouble)(i)/(gdouble)(i+5) ;
+    for ( j = 1 ; j < i/2 ; j ++ ) {
+      P[i] -= Cn*(4*j+1)*P[2*j] ;
+      Cn *= (gdouble)(i-2*j)/(gdouble)(i+2*j+3) ;
+      P[i+1] -= Dn*(4*j+3)*P[2*j+1] ;
+      Dn *= (gdouble)(i-2*j)/(gdouble)(i+2*j+5) ;
+    }
+    P[i] /= Cn*(i*2+1) ; P[i+1] /= Dn*(i*2+3) ;
+  }
+
+  return 0 ;
+}
+@

@@ -1,0 +1,59 @@
+\section{doxy/example.c}
+
+
+\begin{DocInclude}\begin{verbatim}1 #include <stdio.h>
+2 #include <math.h>
+3 #include <unistd.h>
+4 
+5 #include <glib.h>
+6 #include <gsl/gsl_sf.h>
+7 #include <gsl/gsl_math.h>
+8 
+9 #include <gqr.h>
+10 
+11 gdouble func(gdouble t, gdouble x, gdouble y)
+12 
+13 {
+14   return (1.0/((x-t)*(x-t) + y*y)) ;
+15 }
+16 
+17 gint main()
+18 
+19 {
+20   gqr_rule_t *g ;
+21   gqr_parameter_t p ;
+22   gdouble x, y ;
+23   gdouble a, b ;
+24   gdouble dx, xbar ;
+25   gdouble I, t ;
+26   gint i, N, M ;
+27   gqr_t rule ;
+28 
+29   M = 4 ; N = 16 ; 
+30   x = 0.3 ; y = 0.2 ;
+31   a = -1 ; b = 1 ;
+32   rule = GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR ;
+33   g = gqr_rule_alloc(N) ;
+34 
+35   gqr_parameter_clear(&p) ;
+36   gqr_parameter_set_int(&p, M) ;
+37   gqr_parameter_set_double(&p, x) ;
+38   gqr_parameter_set_double(&p, y) ;
+39 
+40   gqr_rule_select(g, rule, N, &p) ;
+41 
+42   gqr_rule_scale(g, a, b, &xbar, &dx) ;
+43 
+44   I = 0.0 ;
+45   for ( i = 0 ; i < gqr_rule_length(g) ; i ++ ) {
+46     t = gqr_rule_abscissa(g,i)*dx + xbar ;
+47     I += gqr_rule_weight(g,i)*dx*func(t, x, y) ;
+48   }
+49 
+50   fprintf(stdout, "I: %lg\n", I) ;
+51 
+52   return 0 ;
+53 }
+\end{verbatim}
+\end{DocInclude}
+ 

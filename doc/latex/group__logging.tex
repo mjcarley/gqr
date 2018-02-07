@@ -1,0 +1,21 @@
+\section{Logging functions}
+\label{group__logging}\index{Logging functions@{Logging functions}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+gint {\bf gqr\_\-logging\_\-init} (FILE $\ast$f, gchar $\ast$p, GLogLevelFlags log\_\-level, gpointer exit\_\-func)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{logging@{logging}!gqr\_\-logging\_\-init@{gqr\_\-logging\_\-init}}
+\index{gqr\_\-logging\_\-init@{gqr\_\-logging\_\-init}!logging@{logging}}
+\subsubsection[{gqr\_\-logging\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}gint gqr\_\-logging\_\-init (FILE $\ast$ {\em f}, \/  gchar $\ast$ {\em p}, \/  GLogLevelFlags {\em log\_\-level}, \/  gpointer {\em exit\_\-func})}\label{group__logging_ga0a970a3529b0ffec2b50de2c4a7c9f68}
+Initialize GQR logging
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em f}]file stream for messages \item[{\em p}]string to prepend to messages \item[{\em log\_\-level}]maximum logging level to handle (see g\_\-log) \item[{\em exit\_\-func}]function to call if exiting on an error\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+GQR\_\-SUCCESS on success 
+\end{DoxyReturn}

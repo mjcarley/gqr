@@ -1,0 +1,35 @@
+\form#0:$I\approx\Delta x \sum_{j=0}^{n}w_{j}f(x_{j})$
+\form#1:$x=\bar{x}+\Delta x t_{j}$
+\form#2:$\bar{x}$
+\form#3:$\Delta x$
+\form#4:$\mathrm{FP}\int_{a}^{b}1/(y-x)^{\gamma}\,\mathrm{d}x$
+\form#5:$\gamma$
+\form#6:$\int_{a}^{b}1/(y-x)^{\gamma}\,\mathrm{d}x$
+\form#7:$FP\int_{a}^{b}f(x)/(y-x)^{\gamma}\,\mathrm{d}x$
+\form#8:$j$
+\form#9:$\int_{a}^{b}f(x)/(y-x)^{\gamma}\,\mathrm{d}x$
+\form#10:$\int_{-1}^{1}(1-t)^n/(1+t)^m\,\mathrm{d}t$
+\form#11:$(1-t)$
+\form#12:$(1+t)$
+\form#13:$m$
+\form#14:$n$
+\form#15:$P_{n}(x)$
+\form#16:$x$
+\form#17:$P_{n}^{(m)}(x)$
+\form#18:$\int_{-1}^{1}P_{n}(x)/(1+t)^{m}\,\mathrm{d}x$
+\form#19:$\int_{-1}^{1}t^{n}\log|x-t|\,\mathrm{d}t$
+\form#20:$t$
+\form#21:$\int w(t)t^{n}\,\mathrm{d}t$
+\form#22:$n=0,\ldots,N-1$
+\form#23:$\int w(t)P_{n}(t)\,\mathrm{d}t$
+\form#24:$1/((x-t)^{2}+y^{2})$
+\form#25:$y\neq0$
+\form#26:$i$
+\form#27:$p(x)u''(x) + q(x)u'(x) + r(x)u(x) = 0$
+\form#28:$p(x)$
+\form#29:$q(x)\$, lowest order first; @param R three element array containing the coefficients of $
+\form#30:$u'(x_{0})$
+\form#31:$u(x)$
+\form#32:$u'(x)$
+\form#33:$q(x)$
+\form#34:$r(x)$

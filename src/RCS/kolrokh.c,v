@@ -1,0 +1,450 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2006.08.16.17.14.05;	author ensmjc;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2006.08.16.12.57.49;	author ensmjc;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2006.08.10.08.42.42;	author ensmjc;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.08.09.14.30.18;	author ensmjc;	state Exp;
+branches;
+next	;
+
+
+desc
+@Kolm and Rokhlin's method for quadratures for hypersingular integrals
+@
+
+
+1.4
+log
+@Direct computation of principal value integrals
+@
+text
+@#include <stdio.h>
+#include <math.h>
+
+#include <glib.h>
+#include <gsl/gsl_sf.h>
+#include <gsl/gsl_math.h>
+
+#include "gqr.h"
+
+gint _gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb) ;
+
+gdouble _Pn_func(gdouble t, gint m, gint *n)
+
+{
+  gdouble dPn ;
+  gdouble Pnp1, Pn, Pnm1 ;
+  gint i ;
+
+  if ( (t == -1.0) && ( m == 1 ) ) {
+    dPn = -gsl_pow_int(-1,(*n))*0.5*(gdouble)((*n)*((*n)+1)) ;
+    return dPn ;
+  }
+
+  if ( (t == 1.0) && ( m == 1 ) ) {
+    dPn = 0.5*(gdouble)((*n)*((*n)+1)) ;
+    return dPn ;
+  }
+
+  if ( (*n) == 0 ) {
+    switch ( m ) {
+    default: g_assert_not_reached() ; break ;
+    case 0: dPn = 1.0 ; break ;
+    case 1: dPn = 0.0 ; break ;
+    }
+    return dPn ;
+  }
+
+  if ( (*n) == 1 ) {
+    switch ( m ) {
+    default: g_assert_not_reached() ; break ;
+    case 0: dPn = t ; break ;
+    case 1: dPn = 1.0 ; break ;
+    }
+    return dPn ;
+  }
+
+  Pn = t ; Pnm1 = 1.0 ;
+  for ( i = 1 ; i < (*n) ; i ++ ) {
+    Pnp1 = ((2*i+1)*t*Pn - i*Pnm1)/(gdouble)(i+1) ;
+    Pnm1 = Pn ; Pn = Pnp1 ;
+  }
+
+  switch ( m ) {
+  default: g_assert_not_reached() ; break ;
+  case 0: dPn = Pnp1 ; break ;
+  case 1: 
+    dPn = (*n)*(t*Pn - Pnm1)/(t*t-1.0) ; 
+    break ;
+  }
+
+  return dPn ;
+}
+
+/** 
+ * Compute a quadrature rule for the integration of functions with
+ * singularities up to second order using the algorithm of Kolm,
+ * P. and Rokhlin, V., `Numerical quadratures for singular and
+ * hypersingular integrals', Computers and Mathematics with
+ * Applications, 41:327--352, 2001, modified by Carley and submitted
+ * to SIAM Journal of Scientific Computing, 2006. 
+ * 
+ * @@param n number of points in quadrature rule
+ * @@param m maximum order of polynomial to integrate
+ * @@param y position of singularity
+ * @@param x abscissae of quadrature rule
+ * @@param w weights of quadrature rule
+ * 
+ * @@return 0 on success
+ */
+
+gint _grule_kolm_rokhlin_new(gint n, gint m, gdouble y,
+			     gdouble *x, gdouble *w)
+			 
+{
+  gdouble *fp2 ;
+  gdouble *P, *Q ;
+  gdouble Pn, Pnm1, Pnp1 ;
+  gdouble P0n, P0nm1, P0np1 ;
+  gdouble t ;
+  gqr_rule_t *g, *h ;
+  gint i, j, k ;
+  gdouble *psi, *M ;
+
+  g = gqr_rule_alloc(n) ;
+  gqr_rule_select(g, GQR_GAUSS_LEGENDRE, n, NULL) ;
+  h = gqr_rule_alloc(m) ;
+  gqr_rule_select(h, GQR_GAUSS_LEGENDRE, m, NULL) ;
+  k = gqr_rule_length(g) ;
+  P = (gdouble *)g_malloc((n+1)*k*sizeof(gdouble)) ;
+  Q = (gdouble *)g_malloc((n+2)*sizeof(gdouble)) ;
+  M = (gdouble *)g_malloc(MAX(4*m,n)*sizeof(gdouble)) ;
+  psi = (gdouble *)g_malloc(4*m*n*sizeof(gdouble)) ;
+  fp2 = (gdouble *)g_malloc(4*n*sizeof(gdouble)) ;
+
+  for ( i = 0 ; i < 4*m*n ; i ++ ) psi[i] = 0.0 ;
+  i = 0 ; 
+  for ( j = 0 ; j < k ; j ++ ) {
+    P[i*k + j] = 1.0 ;
+    P[(i+1)*k + j] = gqr_rule_abscissa(g,j) ;
+  }
+  if ( ( y != -1 ) && ( y != 1.0 ) ) {
+    Q[0] = 0.5*log(fabs((y+1)/(y-1))) ;
+    Q[1] = y*Q[0] - 1.0 ;
+  } else {
+    Q[0] = M_LN2 ; Q[1] = M_LN2 - 0.5 ;
+  }
+
+  for ( i = 1 ; i < n ; i ++ ) {
+    for ( j = 0 ; j < k ; j ++ ) {
+      P[(i+1)*k + j] = (gdouble)(2*i+1)/(gdouble)(i+1)*
+	gqr_rule_abscissa(g,j)*P[i*k+j] - 
+	(gdouble)i/(gdouble)(i+1)*P[(i-1)*k+j] ;
+    }
+    Q[i+1] = (gdouble)(2*i+1)/(gdouble)(i+1)*y*Q[i] - 
+      (gdouble)i/(gdouble)(i+1)*Q[i-1] ;
+  }
+  i = n ;
+  Q[i+1] = (gdouble)(2*i+1)/(gdouble)(i+1)*y*Q[i] - 
+    (gdouble)i/(gdouble)(i+1)*Q[i-1] ;
+
+  if ( (y == 1.0) || (y == -1.0) ) 
+    fp2[0] = 2.0*M_LN2 - 2.0 ;
+  else 
+    fp2[0] = 2*Q[1] + log(fabs(y*y-1.0)) ;
+
+  if ( (y == 1.0) || (y == -1.0) ) 
+    for ( i = 1 ; i < n ; i ++ ) fp2[i] = gqr_finite_part_Pn_log(y,i) ;
+  else
+    for ( i = 1 ; i < n ; i ++ ) fp2[i] = 2.0/(2.0*i+1)*(Q[i+1]-Q[i-1]) ;
+
+  for ( i = 0 ; i < 4*m ; i ++ ) M[i] = 0.0 ;
+
+  for ( i = 0 ; i < m ; i ++ ) {
+/*     M[0*m+i] = 0.0 ; */
+    M[1*m+i] = fp2[i] ;
+    M[3*m+i] = gqr_finite_part_integral((gqr_func)_Pn_func, &i, y, 2.0,
+					-1, 1, h) ;
+    Pnm1 = 1.0 ; Pn = gqr_rule_abscissa(h, i) ;
+    P0nm1 = 1.0 ; P0n = y ;
+    M[2*m+0] +=
+      gqr_rule_weight(h,i)*(Pnm1-P0nm1)/(y-gqr_rule_abscissa(h, i)) ;
+    for ( j = 1 ; j < m ; j ++ ) {
+      M[2*m+j] +=
+	gqr_rule_weight(h,i)*(Pn-P0n)/(y-gqr_rule_abscissa(h, i)) ;
+      Pnp1 = ((gdouble)(2*j+1)*gqr_rule_abscissa(h, i)*Pn -
+	      (gdouble)j*Pnm1)/(gdouble)(j+1) ;
+      Pnm1 = Pn ; Pn = Pnp1 ;
+      P0np1 = ((gdouble)(2*j+1)*y*P0n -(gdouble)j*P0nm1)/(gdouble)(j+1) ;
+      P0nm1 = P0n ; P0n = P0np1 ;
+    }
+/*     M[2*m+i] = gqr_finite_part_integral((gqr_func)_Pn_func, &i, y, 1.0, */
+/* 					-1, 1, h) ; */
+  }
+  M[0*m+0] = 2.0 ;
+
+  P0nm1 = 1.0 ; P0n = y ;
+  Pn = gqr_finite_part(-1, 1, y, 1.0) ;
+  M[2*m+0] += P0nm1*Pn ;
+  for ( j = 1 ; j < m ; j ++ ) {
+    M[2*m+j] += P0n*Pn ;
+    P0np1 = ((gdouble)(2*j+1)*y*P0n -(gdouble)j*P0nm1)/(gdouble)(j+1) ;
+    P0nm1 = P0n ; P0n = P0np1 ;
+  }
+
+/*   for ( i = 0 ; i < m ; i ++ ) */
+/*     fprintf(stderr, "%1.16e %1.16e %1.16e\n", M[2*m+i], */
+/* 	    gqr_finite_part_integral((gqr_func)_Pn_func, &i, y, 1.0, */
+/* 				     -1, 1, h), */
+/* 	    gqr_finite_part_integral((gqr_func)_Pn_func, &i, y, 1.0, */
+/* 				     -1, 1, h)-M[2*m+i]) ; */
+/*   exit(0) ; */
+
+  for ( i = 0 ; i < n ; i ++ ) {
+    t = gqr_rule_abscissa(g,i) ;
+    for ( j = 0 ; j < m ; j ++ ) {
+      psi[i*4*m+j+0*m] = P[j*k+i] ;
+      psi[i*4*m+j+1*m] = psi[i*4*m+j+0*m]*log(fabs(y-t)) ;
+      psi[i*4*m+j+2*m] = psi[i*4*m+j+0*m]/(y-t) ;
+      psi[i*4*m+j+3*m] = psi[i*4*m+j+2*m]/(y-t) ;
+    }
+  }
+
+  _gqr_lsqr_min_norm(psi, 4*m, n, M, MAX(4*m,n)) ;
+
+  for ( i = 0 ; i < n ; i ++ ) {
+    x[i] = gqr_rule_abscissa(g,i) ; w[i] = M[i] ;
+  }
+
+  gqr_rule_free(g) ; gqr_rule_free(h) ;
+  g_free(P) ; g_free(Q) ;
+  g_free(M) ; g_free(fp2) ;
+
+  return 0 ;
+}
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d87 2
+d131 3
+a133 1
+  if ( fabs(y) != 1.0 ) 
+d135 3
+d139 3
+a141 8
+    fp2[0] = 2.0*M_LN2 - 2.0 ;
+  for ( i = 1 ; i < n ; i ++ ) {
+    if ( fabs(y) != 1.0 ) 
+      fp2[i] = 2.0/(2.0*i+1)*(Q[i+1]-Q[i-1]) ;
+    else {
+      fp2[i] = gqr_finite_part_Pn_log(y,i) ;
+    }
+  }
+d144 1
+a144 1
+    M[0*m+i] = 0.0 ;
+d148 15
+a162 2
+    M[2*m+i] = gqr_finite_part_integral((gqr_func)_Pn_func, &i, y, 1.0,
+					-1, 1, h) ;
+d166 17
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d144 1
+a144 1
+    M[3*m+i] = gqr_finite_part_integral((gqr_func)_Pn_func, &i, y, 2.0, 
+d146 1
+a146 1
+    M[2*m+i] = gqr_finite_part_integral((gqr_func)_Pn_func, &i, y, 1.0, 
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 1
+a10 1
+gint _lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb) ;
+d69 2
+a70 1
+ * Applications, 41:327--352, 2001.
+d93 1
+a93 1
+  gqr_rule_select(g, GQR_LEGENDRE, n, NULL) ;
+d95 1
+a95 1
+  gqr_rule_select(h, GQR_LEGENDRE, m, NULL) ;
+a109 1
+/*     if ( fabs(y) < 1.0 ) Q[0] = atanh(y) ; */
+d113 1
+a113 3
+/*     Q[0] = 2.0*M_LN2 - 2.0 ; */
+/*     Q[1] = y ; */
+    Q[0] = M_LN2 ; Q[1] = M_LN2 - 0.5 ; /*unchecked for y == -1*/
+a132 1
+/*     fp2[0] = gqr_finite_part_Pn_log(y,0) ; */
+d144 4
+a147 2
+    M[3*m+i] = gqr_finite_part_integral(_Pn_func, &i, y, 2.0, -1, 1, h) ;
+    M[2*m+i] = gqr_finite_part_integral(_Pn_func, &i, y, 1.0, -1, 1, h) ;
+d161 1
+a161 1
+  _lsqr_min_norm(psi, 4*m, n, M, MAX(4*m,n)) ;
+a172 125
+
+
+gint _grule_kolm_rokhlin(gint n, gint m, gdouble y,
+			 gdouble *x, gdouble *w)
+			 
+{
+  gdouble *w1, *w2, *w3 ;
+  gdouble *P, *Q, *R ;
+  gdouble t ;
+  gqr_rule_t *g ;
+  gint i, j, k, ii ;
+  gdouble *psi, *M ;
+
+  if ( (y == 1.0) || (y == -1.0) ) {
+    for ( i = 0 ; i < n ; i ++ )
+      w[i] = x[i] = 0.0 ;
+    return 0 ;
+  }
+    
+
+  g = gqr_rule_alloc(n) ;
+  gqr_rule_select(g, GQR_LEGENDRE, n, NULL) ;
+  k = gqr_rule_length(g) ;
+  P = (gdouble *)g_malloc(n*k*sizeof(gdouble)) ;
+  Q = (gdouble *)g_malloc((n+1)*sizeof(gdouble)) ;
+  R = (gdouble *)g_malloc((n+1)*sizeof(gdouble)) ;
+  w1 = (gdouble *)g_malloc(n*sizeof(gdouble)) ;
+  w2 = (gdouble *)g_malloc(n*sizeof(gdouble)) ;
+  w3 = (gdouble *)g_malloc(n*sizeof(gdouble)) ;
+  M = (gdouble *)g_malloc(MAX(4*m,n)*sizeof(gdouble)) ;
+  psi = (gdouble *)g_malloc(4*m*n*sizeof(gdouble)) ;
+
+  for ( i = 0 ; i < 4*m*n ; i ++ ) psi[i] = 0.0 ;
+  i = 0 ; 
+  for ( j = 0 ; j < k ; j ++ ) {
+    P[i*k + j] = 1.0 ;
+    P[(i+1)*k + j] = gqr_rule_abscissa(g,j) ;
+  }
+  Q[0] = atanh(y) ; Q[1] = y*Q[0] - 1.0 ;
+  t = 0.25*log((y-1.0)*(y-1.0)) ;
+  R[0] = Q[0] + t ; R[1] = Q[1] + t ;
+
+  for ( i = 1 ; i < n-1 ; i ++ ) {
+    for ( j = 0 ; j < k ; j ++ ) {
+      P[(i+1)*k + j] = (gdouble)(2*i+1)/(gdouble)(i+1)*
+	gqr_rule_abscissa(g,j)*P[i*k+j] - 
+	(gdouble)i/(gdouble)(i+1)*P[(i-1)*k+j] ;
+    }
+
+    Q[i+1] = (gdouble)(2*i+1)/(gdouble)(i+1)*y*Q[i] - 
+      (gdouble)i/(gdouble)(i+1)*Q[i-1] ;
+    R[i+1] = Q[i+1] + t ;
+  }
+  i = n-1 ;
+  Q[i+1] = (gdouble)(2*i+1)/(gdouble)(i+1)*y*Q[i] - 
+    (gdouble)i/(gdouble)(i+1)*Q[i-1] ;
+  R[n] = Q[n] + t ;
+
+  for ( i = 0 ; i < n ; i ++ ) {    
+    for ( (j = 0), (w1[i] = 0.0) ; j < n ; j ++ ) {
+      w1[i] += P[j*k+i]*Q[j]*(2*j+1) ;
+    }
+
+    w2[i] = R[0]*(P[i]-P[k+i]) + P[(n-2)*k+i]*R[n-1] + 
+      P[(n-1)*k+i]*R[n] ;
+    for ( j = 1 ; j < n-1 ; j ++ ) {
+      w2[i] += R[j]*(P[(j-1)*k+i]-P[(j+1)*k+i]) ;
+    }
+
+    for ( ( j = 0 ), (w3[i] = 0.0) ; j < n-1 ; j ++ ) {
+      for ( ii = j ; ii <= (n+j-3)/2 ; ii ++ ) {
+	w3[i] -= (2*j+1)*(4*ii+3-2*j)*Q[j]*P[(2*ii+1-j)*k+i] ;
+      }
+    }
+
+    for ( ( j = 0 ), (ii = 1) ; j < n ; (j ++), (ii = -ii) ) {
+      w3[i] += 0.5*(gdouble)(2*j+1)*P[j*k+i]*(1.0/(y-1.0) - 
+					      (gdouble)ii/(y+1.0)) ;
+    }
+
+    w1[i] *= gqr_rule_weight(g,i) ;
+    w2[i] *= gqr_rule_weight(g,i) ;
+    w3[i] *= gqr_rule_weight(g,i) ;
+  }
+
+/*   for ( i = 0 ; i < n ; i ++ ) { */
+/*     fprintf(stdout, "%1.16e %1.16e %1.16e %1.16e\n",  */
+/* 	    gqr_rule_abscissa(g,i), */
+/* 	    w1[i], w2[i], w3[i]) ; */
+/*   } */
+
+/*   return 0 ; */
+
+  for ( i = 0 ; i < 4*m ; i ++ ) M[i] = 0.0 ;
+  for ( i = 0 ; i < m ; i ++ ) {
+    for ( j = 0 ; j < k ; j ++ ) {
+      M[0*m+i] += P[i*k+j]*gqr_rule_weight(g,j) ;
+      M[1*m+i] += P[i*k+j]*w2[j] ;
+      M[2*m+i] += P[i*k+j]*w1[j] ;
+      M[3*m+i] += P[i*k+j]*w3[j] ;
+    }
+  }
+
+  for ( i = 0 ; i < n ; i ++ ) {
+    t = gqr_rule_abscissa(g,i) ;
+    for ( j = 0 ; j < m ; j ++ ) {
+      psi[i*4*m+j+0*m] = P[j*k+i] ;
+      psi[i*4*m+j+1*m] = psi[i*4*m+j+0*m]*log(fabs(t-y)) ;
+      psi[i*4*m+j+2*m] = psi[i*4*m+j+0*m]/(y-t) ;
+      psi[i*4*m+j+3*m] = psi[i*4*m+j+2*m]/(y-t) ;
+    }
+  }
+
+  _lsqr_min_norm(psi, 4*m, n, M, MAX(4*m,n)) ;
+
+  for ( i = 0 ; i < n ; i ++ ) {
+    x[i] = gqr_rule_abscissa(g,i) ; w[i] = M[i] ;
+  }
+
+  gqr_rule_free(g) ;
+  g_free(P) ; g_free(Q) ; g_free(R) ; g_free(M) ;
+  g_free(w1) ; g_free(w2) ; g_free(w3) ;
+
+  return 0 ;
+}
+@

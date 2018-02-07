@@ -1,0 +1,292 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2006.08.16.12.57.49;	author ensmjc;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.08.09.14.30.18;	author ensmjc;	state Exp;
+branches;
+next	;
+
+
+desc
+@Gauss-Legendre quadrture rules
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@#include <stdio.h>
+#include <math.h>
+
+#include <glib.h>
+
+#include "gqr.h"
+
+/** 
+ * Compute a quadrature rule of Gauss-Legendre type using the routine
+ * of Philip J. Davis and Philip Rabinowitz, `Methods of numerical 
+ * integration', Academic, 1975, page 369.
+ * 
+ * @@param n number of points in quadrature rule
+ * @@param x abscissae of quadrature rule
+ * @@param w weights of quadrature rule
+ * 
+ * @@return 0 on success
+ */
+
+#ifdef _GQR_USE_MPFR_
+#if 0
+gint _grule_legendre(gint n, gdouble *x, gdouble *w)
+
+{
+  mpfr_t 
+    pkm1, pk, t1, pkp1, den, 
+    d1, dpn, d2pn, d3pn, d4pn, 
+    u, v, h, p, 
+    dp, fx, x0, t, pi, one, xx, ww ;
+  gint i, k, m, e1 ;
+
+  mpfr_init2(pkm1, GQR_MPFR_BITS) ; mpfr_init2(pk, GQR_MPFR_BITS) ; 
+  mpfr_init2(t1, GQR_MPFR_BITS) ; mpfr_init2( pkp1, GQR_MPFR_BITS) ; 
+  mpfr_init2(den, GQR_MPFR_BITS) ; mpfr_init2(d1, GQR_MPFR_BITS) ; 
+  mpfr_init2(dpn, GQR_MPFR_BITS) ; mpfr_init2(d2pn, GQR_MPFR_BITS) ; 
+  mpfr_init2(d3pn, GQR_MPFR_BITS) ; mpfr_init2(d4pn, GQR_MPFR_BITS) ; 
+  mpfr_init2(u, GQR_MPFR_BITS) ; mpfr_init2(v, GQR_MPFR_BITS) ; 
+  mpfr_init2(h, GQR_MPFR_BITS) ; mpfr_init2(p, GQR_MPFR_BITS) ; 
+  mpfr_init2(dp, GQR_MPFR_BITS) ; mpfr_init2(fx, GQR_MPFR_BITS) ; 
+  mpfr_init2(x0, GQR_MPFR_BITS) ; mpfr_init2(t, GQR_MPFR_BITS) ;
+  mpfr_init2(xx, GQR_MPFR_BITS) ;  mpfr_init2(ww, GQR_MPFR_BITS) ;
+  mpfr_init2(pi, GQR_MPFR_BITS) ;  mpfr_init2(one, GQR_MPFR_BITS) ;
+  
+  mpfr_const_pi(pi, GQR_MPFR_ROUND_MODE) ; 
+  mpfr_set_ui(one, 1, GQR_MPFR_ROUND_MODE) ;
+
+  m = (n+1)/2 ; e1 = n*(n+1) ;
+
+  for ( i = 0 ; i < n ; i ++ ) x[i] = 0.0 ;
+
+  for ( i = 0 ; i < m ; i ++ ) {
+/*     t = (4.0*(i+1)-1)*M_PI/(gdouble)(4*n+2) ; */
+    mpfr_mul_si(t, pi, (4*(i+1)-1), GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_si(t, t, (4*n+2), GQR_MPFR_ROUND_MODE) ;
+/*     x0 = (1.0-(1.0-1.0/(gdouble)n)/8.0/(gdouble)n/(gdouble)n)*cos(t) ; */
+    mpfr_div_si(x0, one, (-n), GQR_MPFR_ROUND_MODE) ;
+    mpfr_add_si(x0, x0, 1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_si(x0, x0, (-8*n*n), GQR_MPFR_ROUND_MODE) ;
+    mpfr_add_si(x0, x0, 1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_cos(pkm1, t, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(x0, x0, pkm1, GQR_MPFR_ROUND_MODE) ;
+/*     fprintf(stdout, "%1.16e\n", mpfr_get_d(x0, GQR_MPFR_ROUND_MODE)) ; */
+/*     pkm1 = 1.0 ; */
+    mpfr_set(pkm1, one, GQR_MPFR_ROUND_MODE) ;
+/*     pk = x0 ; */
+    mpfr_set(pk, x0, GQR_MPFR_ROUND_MODE) ;
+    for ( k = 2 ; k <= n ; k ++ ) {
+/*       t1 = x0*pk ; */
+      mpfr_mul(t1, x0, pk, GQR_MPFR_ROUND_MODE) ;
+/*       pkp1 = t1 - pkm1 - (t1-pkm1)/(gdouble)k + t1 ; */
+      mpfr_sub(pkp1, t1, pkm1, GQR_MPFR_ROUND_MODE) ;
+      mpfr_div_si(pkp1, pkp1, k, GQR_MPFR_ROUND_MODE) ;
+      mpfr_add(pkp1, pkp1, pkm1, GQR_MPFR_ROUND_MODE) ;
+      mpfr_mul_ui(t1, t1, 2, GQR_MPFR_ROUND_MODE) ;
+      mpfr_sub(pkp1, t1, pkp1, GQR_MPFR_ROUND_MODE) ;
+/*       pkm1 = pk ; */
+      mpfr_set(pkm1, pk, GQR_MPFR_ROUND_MODE) ;
+/*       pk = pkp1 ; */
+      mpfr_set(pk, pkp1, GQR_MPFR_ROUND_MODE) ;
+    }
+    fprintf(stdout, "%1.16e\n", mpfr_get_d(pkp1, GQR_MPFR_ROUND_MODE)) ;
+/*     den = 1.0 - x0*x0 ; */
+    mpfr_mul(den, x0, x0, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub(den, one, den, GQR_MPFR_ROUND_MODE) ;
+/*     d1 = n*(pkm1-x0*pk) ; */
+    mpfr_mul(d1, x0, pk, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub(d1, pkm1, d1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_si(d1, d1, n, GQR_MPFR_ROUND_MODE) ;
+/*     dpn = d1/den ; */
+    mpfr_div(dpn, d1, den, GQR_MPFR_ROUND_MODE) ;
+/*     d2pn = (2.0*x0*dpn - e1*pk)/den ; */
+    mpfr_mul_si(d3pn, pk, e1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(d2pn, x0, dpn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_ui(d2pn, d2pn, 2, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub(d2pn, d2pn, d3pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div(d2pn, d2pn, den, GQR_MPFR_ROUND_MODE) ;
+/*     d3pn = (4.0*x0*d2pn + (2.0-e1)*dpn)/den ; */
+/*     mpfr_sub_ui(u, e1, 2, GQR_MPFR_ROUND_MODE) ; */
+    mpfr_mul_si(u, dpn, 2-e1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(v, x0, d2pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_ui(v, v, 4, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(d3pn, v, u, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div(d3pn, d3pn, den, GQR_MPFR_ROUND_MODE) ;
+/*     d4pn = (6.0*x0*d3pn+(6.0-e1)*d2pn)/den ; */
+/*     mpfr_sub_ui(u, e1, 6, GQR_MPFR_ROUND_MODE) ; */
+    mpfr_mul_si(u, d2pn, 6-e1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(v, x0, d3pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_ui(v, v, 6, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub(d4pn, v, u, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div(d4pn, d4pn, den, GQR_MPFR_ROUND_MODE) ;
+/*     u = pk/dpn ; */
+    mpfr_div(u, pk, dpn, GQR_MPFR_ROUND_MODE) ;
+/*     v = d2pn/dpn ; */
+    mpfr_div(v, d2pn, dpn, GQR_MPFR_ROUND_MODE) ;
+/*     h = -u*(1.0+0.5*u*(v+u*(v*v-u*d3pn/(3.0*dpn)))) ; */
+    mpfr_mul(p, d3pn, u, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div(p, p, dpn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(p, p, 3, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(h, v, v, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub(h, h, p, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(h, h, u, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(h, h, v, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(h, h, u, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(h, h, 2, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(h, h, one, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(h, h, u, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_si(h, h, -1, GQR_MPFR_ROUND_MODE) ;
+/*     p = pk+h*(dpn+0.5*h*(d2pn+h/3.0*(d3pn+0.25*h*d4pn))) ; */
+    mpfr_mul(p, h, d4pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(p, p, 4, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(p, p, d3pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(p, p, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(p, p, 3, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(p, p, d2pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(p, p, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(p, p, 2, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(p, p, dpn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(p, p, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(p, p, pk, GQR_MPFR_ROUND_MODE) ;
+/*     dp = dpn+h*(d2pn+0.5*h*(d3pn+h*d4pn/3.0)) ; */
+    mpfr_mul(dp, h, d4pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(dp, dp, 3, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(dp, dp, d3pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(dp, dp, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(dp, dp, 2, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(dp, dp, d2pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(dp, dp, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(dp, dp, dpn, GQR_MPFR_ROUND_MODE) ;
+/*     h = h - p/dp ; */
+    mpfr_div(p, p, dp, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub(h, h, p, GQR_MPFR_ROUND_MODE) ;
+/*     x[i] = x0 + h ; */
+    mpfr_add(xx, x0, h, GQR_MPFR_ROUND_MODE) ;
+    x[i] = mpfr_get_d(xx, GQR_MPFR_ROUND_MODE) ;
+/*     fx = d1 - h*e1*(pk+0.5*h*(dpn+h/3.0*(d2pn+0.25*h*(d3pn+0.2*h*d4pn)))) ; */
+    mpfr_mul(fx, h, d4pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(fx, fx, 5, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(fx, fx, d3pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(fx, fx, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(fx, fx, 4, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(fx, fx, d2pn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(fx, fx, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(fx, fx, 3, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(fx, fx, dpn, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(fx, fx, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(fx, fx, 2, GQR_MPFR_ROUND_MODE) ;
+    mpfr_add(fx, fx, pk, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(fx, fx, h, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_si(fx, fx, e1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub(fx, d1, fx, GQR_MPFR_ROUND_MODE) ;
+/*     w[i] = 2.0*(1.0-x[i]*x[i])/(fx*fx) ; */
+    mpfr_mul(fx, fx, fx, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(ww, xx, xx, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub_ui(ww, ww, 1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div(ww, ww, fx, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_ui(ww, ww, 2, GQR_MPFR_ROUND_MODE) ;
+    w[i] = -mpfr_get_d(ww, GQR_MPFR_ROUND_MODE) ;
+  }
+
+  for ( i = 0 ; i < m ; i ++ ) {
+    x[n-i-1] = x[i] ; w[n-i-1] = w[i] ; x[i] = -x[i] ;
+  }
+
+  mpfr_clear(pkm1) ; mpfr_clear(pk) ; mpfr_clear(t1) ; 
+  mpfr_clear( pkp1) ; mpfr_clear(den) ; mpfr_clear(d1) ; 
+  mpfr_clear(dpn) ; mpfr_clear(d2pn) ; mpfr_clear(d3pn) ; 
+  mpfr_clear(d4pn) ; mpfr_clear(u) ; mpfr_clear(v) ; 
+  mpfr_clear(h) ; mpfr_clear(p) ; mpfr_clear(dp) ; 
+  mpfr_clear(fx) ; mpfr_clear(x0) ; mpfr_clear(t) ;
+  mpfr_clear(one) ; mpfr_clear(pi) ; mpfr_clear(xx) ;
+  mpfr_clear(ww) ;
+
+  return 0 ;
+}
+
+#endif
+
+gint _grule_legendre(gint n, gdouble *x, gdouble *w)
+
+{
+  gdouble pkm1, pk, t1, pkp1, den, d1, dpn, d2pn, d3pn, d4pn, u, v, h, p, 
+    dp, fx, x0, t ;
+  gint i, k, m, e1 ;
+
+  m = (n+1)/2 ; e1 = n*(n+1) ;
+
+  for ( i = 0 ; i < n ; i ++ ) x[i] = 0.0 ;
+
+  for ( i = 0 ; i < m ; i ++ ) {
+    t = (4.0*(i+1)-1)*M_PI/(gdouble)(4*n+2) ;
+    x0 = (1.0-(1.0-1.0/(gdouble)n)/8.0/(gdouble)n/(gdouble)n) ;
+/*     fprintf(stdout, "%1.16e\n",  */
+/* 	    (1.0-(1.0-1.0/(gdouble)n)/8.0/(gdouble)n/(gdouble)n)) ; */
+
+    x0 *= cos(t) ;
+    pkm1 = 1.0 ;
+    pk = x0 ;
+    for ( k = 2 ; k <= n ; k ++ ) {
+      t1 = x0*pk ;
+      pkp1 = t1 - pkm1 - (t1-pkm1)/(gdouble)k + t1 ;
+      pkm1 = pk ;
+      pk = pkp1 ;
+    }
+/*     fprintf(stdout, "%1.16e\n", pkp1) ; */
+    den = 1.0 - x0*x0 ;
+    d1 = n*(pkm1-x0*pk) ;
+    dpn = d1/den ;
+    d2pn = (2.0*x0*dpn - e1*pk)/den ;
+    d3pn = (4.0*x0*d2pn + (2.0-e1)*dpn)/den ;
+    d4pn = (6.0*x0*d3pn+(6.0-e1)*d2pn)/den ;
+    u = pk/dpn ;
+    v = d2pn/dpn ;
+    h = -u*(1.0+0.5*u*(v+u*(v*v-u*d3pn/(3.0*dpn)))) ;
+    p = pk+h*(dpn+0.5*h*(d2pn+h/3.0*(d3pn+0.25*h*d4pn))) ;
+    dp = dpn+h*(d2pn+0.5*h*(d3pn+h*d4pn/3.0)) ;
+    h = h - p/dp ;
+    x[i] = x0 + h ;
+    fx = d1 - h*e1*(pk+0.5*h*(dpn+h/3.0*(d2pn+0.25*h*(d3pn+0.2*h*d4pn)))) ;
+    w[i] = 2.0*(1.0-x[i]*x[i])/(fx*fx) ;
+  }
+
+  for ( i = 0 ; i < m ; i ++ ) {
+    x[n-i-1] = x[i] ; w[n-i-1] = w[i] ; x[i] = -x[i] ;
+  }
+
+  return 0 ;
+}
+#else
+#endif /*_GQR_USE_MPFR_*/
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d20 178
+d211 5
+a215 1
+    x0 = (1.0-(1.0-1.0/(gdouble)n)/8.0/(gdouble)n/(gdouble)n)*cos(t) ;
+d224 1
+d248 2
+@

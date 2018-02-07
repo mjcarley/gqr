@@ -1,0 +1,26 @@
+\contentsline {chapter}{\numberline {1}GQR Module Index}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}GQR Modules}{1}{section.1.1}
+\contentsline {chapter}{\numberline {2}GQR File Index}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}GQR File List}{3}{section.2.1}
+\contentsline {chapter}{\numberline {3}GQR Module Documentation}{5}{chapter.3}
+\contentsline {section}{\numberline {3.1}gqr}{5}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Function Documentation}{5}{subsection.3.1.1}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}{\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t}$\ast $ gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}alloc (gint {\em n})}{5}{section*.3}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}gint gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}free ({\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t} $\ast $ {\em g})}{5}{section*.4}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}gchar$\ast $ gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}name ({\bf gqr\_\discretionary {-}{}{}t} {\em type})}{6}{section*.5}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}{\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t}$\ast $ gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}realloc ({\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t} $\ast $ {\em g}, gint {\em n})}{6}{section*.6}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}gint gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}scale ({\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t} $\ast $ {\em g}, gdouble {\em a}, gdouble {\em b}, gdouble $\ast $ {\em xbar}, gdouble $\ast $ {\em dx})}{6}{section*.7}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}gint gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}select ({\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t} $\ast $ {\em g}, {\bf gqr\_\discretionary {-}{}{}t} {\em type}, gint {\em n}, {\bf gqr\_\discretionary {-}{}{}parameter\_\discretionary {-}{}{}t} $\ast $ {\em p})}{6}{section*.8}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}gint gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}write ({\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t} $\ast $ {\em g}, FILE $\ast $ {\em f})}{7}{section*.9}
+\contentsline {chapter}{\numberline {4}GQR File Documentation}{9}{chapter.4}
+\contentsline {section}{\numberline {4.1}gqr.h File Reference}{9}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Detailed Description}{9}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Typedef Documentation}{10}{subsection.4.1.2}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}{\bf gqr\_\discretionary {-}{}{}parameter\_\discretionary {-}{}{}t}}{10}{section*.13}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}{\bf gqr\_\discretionary {-}{}{}rule\_\discretionary {-}{}{}t}}{10}{section*.14}
+\contentsline {subsection}{\numberline {4.1.3}Enumeration Type Documentation}{10}{subsection.4.1.3}
+\contentsline {subsubsection}{\setlength {\rightskip }{0pt plus 5cm}enum {\bf gqr\_\discretionary {-}{}{}t}}{10}{section*.15}
+\contentsline {section}{\numberline {4.2}grule.c File Reference}{11}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Detailed Description}{11}{subsection.4.2.1}
+\contentsline {chapter}{\numberline {5}GQR Example Documentation}{13}{chapter.5}
+\contentsline {section}{\numberline {5.1}example.c}{13}{section.5.1}

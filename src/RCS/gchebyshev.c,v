@@ -1,0 +1,198 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2006.08.16.12.57.49;	author ensmjc;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2006.08.14.14.02.59;	author ensmjc;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.08.10.08.42.42;	author ensmjc;	state Exp;
+branches;
+next	;
+
+
+desc
+@Chebyshev quadrature weights
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@#include <stdio.h>
+#include <math.h>
+
+#include <glib.h>
+
+#include "gqr.h"
+
+/** 
+ * Compute a quadrature rule of Gauss-Chebyshev type.
+ * 
+ * @@param n number of points in quadrature rule
+ * @@param x abscissae of quadrature rule
+ * @@param w weights of quadrature rule
+ * 
+ * @@return 0 on success
+ */
+
+#ifdef _GQR_USE_MPFR_
+gint _grule_chebyshev_1(gint n, gdouble *x, gdouble *w)
+
+{
+  gint i ;
+  mpfr_t xx, ww, th, pi ;
+
+  mpfr_init2(xx, GQR_MPFR_BITS) ; mpfr_init2(ww, GQR_MPFR_BITS) ;
+  mpfr_init2(th, GQR_MPFR_BITS) ; mpfr_init2(pi, GQR_MPFR_BITS) ;
+
+  mpfr_const_pi(pi, GQR_MPFR_ROUND_MODE) ;
+  mpfr_div_si(ww, pi, n, GQR_MPFR_ROUND_MODE) ;
+
+  for ( i = 1 ; i <= n ; i ++ ) {
+    mpfr_set(th, pi, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_si(th, th, 2*i-1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_si(th, th, 2*n, GQR_MPFR_ROUND_MODE) ;
+    mpfr_cos(xx, th, GQR_MPFR_ROUND_MODE) ;
+    x[i-1] = mpfr_get_d(xx, GQR_MPFR_ROUND_MODE) ;
+    w[i-1] = mpfr_get_d(ww, GQR_MPFR_ROUND_MODE) ;    
+  }
+
+  mpfr_clear(xx) ; mpfr_clear(ww) ;
+  mpfr_clear(th) ; mpfr_clear(pi) ;
+
+  return 0 ;
+}
+
+gint _grule_chebyshev_2(gint n, gdouble *x, gdouble *w)
+
+{
+  gint i ;
+  mpfr_t xx, ww, th, pi ;
+
+  mpfr_init2(xx, GQR_MPFR_BITS) ; mpfr_init2(ww, GQR_MPFR_BITS) ;
+  mpfr_init2(th, GQR_MPFR_BITS) ; mpfr_init2(pi, GQR_MPFR_BITS) ;
+  
+  mpfr_const_pi(pi, GQR_MPFR_ROUND_MODE) ;
+  for ( i = 1 ; i <= n ; i ++ ) {
+    mpfr_set(th, pi, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul_si(th, th, i, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_si(th, th, n+1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_cos(xx, th, GQR_MPFR_ROUND_MODE) ;
+    x[i-1] = mpfr_get_d(xx, GQR_MPFR_ROUND_MODE) ;
+    mpfr_set(ww, xx, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(ww, ww, ww, GQR_MPFR_ROUND_MODE) ;
+    mpfr_sub_ui(ww, ww, 1, GQR_MPFR_ROUND_MODE) ;
+    mpfr_mul(ww, ww, pi, GQR_MPFR_ROUND_MODE) ;
+    mpfr_div_ui(ww, ww, n+1, GQR_MPFR_ROUND_MODE) ;    
+    w[i-1] = -mpfr_get_d(ww, GQR_MPFR_ROUND_MODE) ;    
+  }
+
+  mpfr_clear(xx) ; mpfr_clear(ww) ;
+  mpfr_clear(th) ; mpfr_clear(pi) ;
+
+  return 0 ;
+}
+
+#else
+gint _grule_chebyshev_1(gint n, gdouble *x, gdouble *w)
+
+{
+  gint i ;
+  gdouble ww ;
+  
+  ww = M_PI/(gdouble)n ;
+  for ( i = 1 ; i <= n ; i ++ ) {
+    x[i-1] = cos((gdouble)(2*i-1)*M_PI/(gdouble)(2*n)) ;
+    w[i-1] = ww ;
+  }
+
+  return 0 ;
+}
+
+gint _grule_chebyshev_2(gint n, gdouble *x, gdouble *w)
+
+{
+  gint i ;
+  
+  for ( i = 1 ; i <= n ; i ++ ) {
+    x[i-1] = cos((gdouble)i*M_PI/(gdouble)(n+1)) ;
+    w[i-1] = (1-x[i-1]*x[i-1])/(gdouble)(n+1)*M_PI;
+  }
+
+  return 0 ;
+}
+#endif /*_GQR_USE_MPFR_*/
+@
+
+
+1.2
+log
+@Added MPFR support
+@
+text
+@d5 1
+a5 3
+#ifdef _GQR_USE_MPFR_
+#include <mpfr.h>
+#endif /*_GQR_USE_MPFR_*/
+d18 1
+d23 8
+a30 1
+  
+d32 6
+a37 2
+    x[i-1] = cos((gdouble)(2*i-1)*M_PI/(gdouble)(2*n)) ;
+    w[i-1] = M_PI/(gdouble)n ;
+d40 3
+a45 1
+#ifdef _GQR_USE_MPFR_
+d52 2
+a53 2
+  mpfr_init2(xx, 128) ; mpfr_init2(ww, 128) ;
+  mpfr_init2(th, 128) ; mpfr_init2(pi, 128) ;
+d55 1
+a55 1
+  mpfr_const_pi(pi, GMP_RNDD) ;
+d57 11
+a67 11
+    mpfr_set(th, pi, GMP_RNDD) ;
+    mpfr_mul_si(th, th, i, GMP_RNDD) ;
+    mpfr_div_si(th, th, n+1, GMP_RNDD) ;
+    mpfr_cos(xx, th, GMP_RNDD) ;
+    x[i-1] = mpfr_get_d(xx, GMP_RNDD) ;
+    mpfr_set(ww, xx, GMP_RNDD) ;
+    mpfr_mul(ww, ww, ww, GMP_RNDD) ;
+    mpfr_sub_ui(ww, ww, 1, GMP_RNDD) ;
+    mpfr_mul(ww, ww, pi, GMP_RNDD) ;
+    mpfr_div_ui(ww, ww, n+1, GMP_RNDD) ;    
+    w[i-1] = -mpfr_get_d(ww, GMP_RNDD) ;    
+d75 1
+d77 15
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 3
+a7 1
+
+d33 24
+d58 6
+d76 1
+@

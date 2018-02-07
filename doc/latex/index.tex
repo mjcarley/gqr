@@ -1,0 +1,9 @@
+GQR is a library for the generation of Gaussian type quadrature rules including those which handle singular and hypersingular integrands.
+
+The intention is that it be used to dynamically generate quadrature rules in other codes, although there is a stand-\/alone program which can be used to generate quadratures and output them to a file.
+
+The standard Gaussian quadrature rules for non-\/singular integrands can be computed, including Legendre, Chebyshev and Hermite and there is also provision for computing rules of Gaussian type (not strictly `Gaussian quadratures') for integrands containing logarithmic, Cauchy and higher order singularities. In this case, the quadrature rule returns an estimate of the Cauchy principal value, or Hadamard finite part, of the integral, respectively.\section{References}\label{index_references}
+
+\begin{DoxyItemize}
+\item Carley, M., 2007, Numerical quadratures for singular and hypersingular integrals in boundary element methods, SIAM Journal on Scientific Computing, 29(3):1207-\/1216, {\tt http://dx.doi.org/10.1137/060666093} 
+\end{DoxyItemize}

@@ -1,0 +1,24 @@
+\section{Integrals of Legendre polynomials}
+\label{group__legendre}\index{Integrals of Legendre polynomials@{Integrals of Legendre polynomials}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+gint {\bf gqr\_\-legendre\_\-integrals} (gint N, gdouble $\ast$I, gdouble $\ast$P)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The functions in this section are not necessary for most users but might be helpful under certain circumstances. They allow the evaluation of integrals of Legendre polynomials with arbitrary weight functions. 
+
+\subsection{Function Documentation}
+\index{legendre@{legendre}!gqr\_\-legendre\_\-integrals@{gqr\_\-legendre\_\-integrals}}
+\index{gqr\_\-legendre\_\-integrals@{gqr\_\-legendre\_\-integrals}!legendre@{legendre}}
+\subsubsection[{gqr\_\-legendre\_\-integrals}]{\setlength{\rightskip}{0pt plus 5cm}gint gqr\_\-legendre\_\-integrals (gint {\em N}, \/  gdouble $\ast$ {\em I}, \/  gdouble $\ast$ {\em P})}\label{group__legendre_ga0c8365c9ce4dd95a8779af80c77ff4d6}
+Process a list of integrals of powers on a weight function to generate the integrals of the corresponding Legendre polynomials.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em N}]number of integrals in list \item[{\em I}]integrals $\int w(t)t^{n}\,\mathrm{d}t$ for $n=0,\ldots,N-1$ \item[{\em P}]on output integrals $\int w(t)P_{n}(t)\,\mathrm{d}t$, for $n=0,\ldots,N-1$\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success. 
+\end{DoxyReturn}

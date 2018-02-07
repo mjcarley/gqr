@@ -1,0 +1,116 @@
+head	1.1;
+access;
+symbols;
+locks
+	michael:1.1; strict;
+comment	@ * @;
+
+
+1.1
+date	2006.09.19.16.40.24;	author michael;	state Exp;
+branches;
+next	;
+
+
+desc
+@Quadratures for nearly (hypersingular) integrals
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#include <stdio.h>
+#include <math.h>
+
+#include <glib.h>
+#include <gsl/gsl_sf.h>
+#include <gsl/gsl_math.h>
+
+#include "gqr.h"
+
+gint _gqr_quad_log(gint N, gdouble x, gdouble y, gdouble *I) ;
+gint _gqr_quad_1_r(gint N, gdouble x, gdouble y, gdouble *I) ;
+gint _gqr_quad_2_r(gint N, gdouble x, gdouble y, gdouble *I) ;
+gint _grule_legendre(gint n, gdouble *x, gdouble *w) ;
+gint _grule_near_singular(gint n, gint m, gdouble x, gdouble y,
+			  gdouble *xk, gdouble *wt) ;
+gint _gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, 
+			gint nb) ;
+
+/** 
+ * Compute a quadrature rule for the integration of functions with
+ * singularities and near-singularities up to second order, where the
+ * singularities are, for example, of the form
+ * \f$1/((x-t)^{2}+y^{2})$\f$, \f$y\neq0\f$.
+ * 
+ * @@param n number of points in quadrature rule
+ * @@param m maximum order of polynomial to integrate
+ * @@param x position of singularity
+ * @@param y position of singularity
+ * @@param xk abscissae of quadrature rule
+ * @@param wt weights of quadrature rule
+ * 
+ * @@return 0 on success
+ */
+
+gint _grule_near_singular(gint n, gint m, gdouble x, gdouble y,
+			  gdouble *xk, gdouble *wt)
+			 
+{
+  gdouble *P, *I ;
+  gdouble R ;
+  gint i, j ;
+  gdouble *psi, *M ;
+
+  _grule_legendre(n, xk, wt) ;
+  P = (gdouble *)g_malloc(n*n*sizeof(gdouble)) ;
+  M = (gdouble *)g_malloc(MAX(4*m,n)*sizeof(gdouble)) ;
+  psi = (gdouble *)g_malloc(4*m*n*sizeof(gdouble)) ;
+  I = (gdouble *)g_malloc(2*m*sizeof(gdouble)) ;
+
+  for ( i = 0 ; i < 4*m*n ; i ++ ) psi[i] = 0.0 ;
+  i = 0 ; 
+  for ( j = 0 ; j < n ; j ++ ) {
+    P[i*n + j] = 1.0 ; P[(i+1)*n + j] = xk[j] ;
+  }
+
+  for ( i = 1 ; i < m-1 ; i ++ ) {
+    for ( j = 0 ; j < n ; j ++ ) {
+      P[(i+1)*n + j] = 
+	((gdouble)(2*i+1)*xk[j]*P[i*n+j] - 
+	 (gdouble)i*P[(i-1)*n+j])/(gdouble)(i+1) ;
+    }
+  }
+
+  M[0*m+0] = 2.0 ;
+  for ( i = 1 ; i < m ; i ++ ) M[0*m+i] = 0.0 ;
+/*   this should be implemented properly in-place */
+  _gqr_quad_log(m, x, y, I) ;
+  gqr_legendre_integrals(m, I, &(M[1*m])) ;
+  _gqr_quad_1_r(m, x, y, I) ;
+  gqr_legendre_integrals(m, I, &(M[2*m])) ;
+  _gqr_quad_2_r(m, x, y, I) ;
+  gqr_legendre_integrals(m, I, &(M[3*m])) ;
+
+  for ( i = 0 ; i < n ; i ++ ) {
+    R = sqrt((x-xk[i])*(x-xk[i])+y*y) ;
+    for ( j = 0 ; j < m ; j ++ ) {
+      psi[i*4*m+j+0*m] = P[j*n+i] ;
+      psi[i*4*m+j+1*m] = psi[i*4*m+j+0*m]*log(R) ;
+      psi[i*4*m+j+2*m] = psi[i*4*m+j+0*m]/R ;
+      psi[i*4*m+j+3*m] = psi[i*4*m+j+2*m]/R ;
+    }
+  }
+
+  _gqr_lsqr_min_norm(psi, 4*m, n, M, MAX(4*m,n)) ;
+
+  for ( i = 0 ; i < n ; i ++ ) wt[i] = M[i] ;
+
+  g_free(P) ; g_free(M) ; g_free(I) ; 
+
+  return 0 ;
+}
+@

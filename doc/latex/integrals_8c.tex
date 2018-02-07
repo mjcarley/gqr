@@ -1,0 +1,35 @@
+\section{integrals.c File Reference}
+\label{integrals_8c}\index{integrals.c@{integrals.c}}
+Integrals of Legendre polynomials with arbitrary weight functions. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+gint {\bf gqr\_\-legendre\_\-integrals} (gint N, gdouble $\ast$I, gdouble $\ast$P)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Integrals of Legendre polynomials with arbitrary weight functions. 
+
+\begin{Desc}
+\item[Author:]Michael Carley \end{Desc}
+\begin{Desc}
+\item[Date:]Tue Sep 16 16:30:27 2006 \end{Desc}
+
+
+\subsection{Function Documentation}
+\index{integrals.c@{integrals.c}!gqr\_\-legendre\_\-integrals@{gqr\_\-legendre\_\-integrals}}
+\index{gqr\_\-legendre\_\-integrals@{gqr\_\-legendre\_\-integrals}!integrals.c@{integrals.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}gint gqr\_\-legendre\_\-integrals (gint {\em N}, \/  gdouble $\ast$ {\em I}, \/  gdouble $\ast$ {\em P})}\label{integrals_8c_0c8365c9ce4dd95a8779af80c77ff4d6}
+
+
+Process a list of integrals of powers on a weight function to generate the integrals of the corresponding Legendre polynomials.
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em N}]number of integrals in list \item[{\em I}]integrals $\int w(t)t^{n}\,\mathrm{d}t$ for $n=0,\ldots,N-1$ \item[{\em P}]on output integrals $\int w(t)P_{n}(t)\,\mathrm{d}t$, for $n=0,\ldots,N-1$\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]0 on success. \end{Desc}

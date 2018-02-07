@@ -1,0 +1,97 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	2006.08.10.08.42.42;	author ensmjc;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2006.08.09.14.30.18;	author ensmjc;	state Exp;
+branches;
+next	;
+
+
+desc
+@Least squares wrapper for LAPACK
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@#include <stdio.h>
+#include <math.h>
+
+#include <glib.h>
+
+#include <f2c.h>
+#include <clapack.h>
+
+gdouble log2(x) 
+
+{
+  return (log(x)/M_LN2) ;
+}
+
+gint _gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb)
+
+{
+  gdouble *s, rcond, *w ;
+  gint rank, nw, *iw, i ;
+  gint nlvl, smlsiz = 64 ;
+  gint nrhs = 1 ;
+  gint minmn ;
+  gint lda ;
+  gint c_1 = 1 ;
+
+  s = (gdouble *)g_malloc(MAX(m,n)*sizeof(gdouble)) ;
+  lda = m ;
+  nlvl = MAX(0, (gint)ceil(log2((gdouble)MIN(m,n)/(gdouble)(smlsiz+1)))) ;
+
+  minmn = MIN(n,m) ;
+  if ( m >= n ) {
+    nw = 12*n + 2*n*smlsiz + 8*n*nlvl + n*nrhs + (smlsiz+1)*(smlsiz+1) ;
+  } else {
+    nw = 12*m + 2*m*smlsiz + 8*m*nlvl + m*nrhs + (smlsiz+1)*(smlsiz+1) ;
+  }
+
+  w = (gdouble *)g_malloc(nw*sizeof(gdouble)) ;
+
+  i = 3*minmn*nlvl + 11*minmn ;
+  iw = (gint *)g_malloc(i*sizeof(gint)) ; 
+
+  dgelsd_((integer *)&m, (integer *)&n, (integer *)&c_1, 
+	  A, (integer *)&lda, b, (integer *)&nb, s, 
+	  &rcond, (integer *)&rank, w, (integer *)&nw, (integer *)iw, 
+	  (integer *)&i) ;
+
+  g_free(s) ; g_free(w) ; g_free(iw) ;
+
+  return 0 ;
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a8 2
+gint c_1 = 1 ;
+
+d12 1
+a12 1
+  return log(x)/log(2) ;
+d15 1
+a15 1
+gint _lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb)
+d24 1
+@
