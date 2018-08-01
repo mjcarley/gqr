@@ -1,8 +1,18 @@
 *~
+*.o
 *.lo
 *.la
+src/gqr-config
+tests/gqr-rule
+config.h
+
+# libtool
+*.deps
+*.libs
+/libtool
 
 # http://www.gnu.org/software/automake
+Makefile
 Makefile.in
 /ar-lib
 /mdate-sh

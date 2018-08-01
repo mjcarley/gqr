@@ -39,7 +39,7 @@ AC_SUBST(LT_AGE)
 VERSION=$GQR_VERSION
 PACKAGE=gqr
 
-AM_INIT_AUTOMAKE(no-define)
+AM_INIT_AUTOMAKE([foreign])
 
 # Specify a configuration file
 AC_CONFIG_HEADERS([config.h])
@@ -82,9 +82,9 @@ if test x$GSL = xyes ; then
    gsl_libs=`gsl-config --libs`
 else
   echo \#################################################################
-  echo 
+  echo
   echo \# GNU Scientific Library not available or not properly installed.
-  echo \# You can get the most recent version from 
+  echo \# You can get the most recent version from
   echo \#      http://www.gnu.org/software/gsl/
   echo
   echo \#################################################################
