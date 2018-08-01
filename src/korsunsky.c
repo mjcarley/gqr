@@ -32,21 +32,22 @@
   Quarterly of Applied Mathematics, LVI(3):461--472, 1998.
 */
 
-gint grule_korsunsky(gint n, gint k, gdouble *xk, gdouble *w)
-
+gint grule_korsunsky(gint n, gint k, gdouble * xk, gdouble * w)
 {
-  gint i ;
-  gdouble ti, sgn ;
+  gint i;
+  gdouble ti, sgn;
 
-  g_assert(k <= n+1) ; g_assert(k >= 1) ;
+  g_assert(k <= n + 1);
+  g_assert(k >= 1);
 
-  *xk = cos(0.5*(gdouble)(2*k-1)*M_PI/(gdouble)(n+1)) ;
-  sgn = -1.0 ;
-  for ( (sgn = -1.0), (i = 1) ; i <= k ; (i ++), (sgn = -sgn)) ;
-  for ( i = 1 ; i <= n ; (i ++), (sgn = -sgn)) {
-    ti = cos((gdouble)i*M_PI/(gdouble)(n+1)) ;
-    w[i-1] = sgn*(1-ti*ti)/(ti-(*xk))/sqrt(1-(*xk)*(*xk))*M_PI ;
-  }  
+  *xk = cos(0.5 * (gdouble) (2 * k - 1) * M_PI / (gdouble) (n + 1));
+  sgn = -1.0;
+  for ((sgn = -1.0), (i = 1); i <= k; (i++), (sgn = -sgn));
+  for (i = 1; i <= n; (i++), (sgn = -sgn)) {
+    ti = cos((gdouble) i * M_PI / (gdouble) (n + 1));
+    w[i - 1] =
+      sgn * (1 - ti * ti) / (ti - (*xk)) / sqrt(1 - (*xk) * (*xk)) * M_PI;
+  }
 
-  return 0 ;
+  return 0;
 }

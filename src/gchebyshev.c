@@ -19,8 +19,6 @@
  *
  **********************************************************************/
 
-
-
 #include <stdio.h>
 #include <math.h>
 
@@ -40,30 +38,28 @@
  * 
  * @return 0 on success
  */
-gint grule_chebyshev_1(gint n, gdouble *x, gdouble *w)
-
+gint grule_chebyshev_1(gint n, gdouble * x, gdouble * w)
 {
-  gint i ;
-  gdouble ww ;
-  
-  ww = M_PI/(gdouble)n ;
-  for ( i = 1 ; i <= n ; i ++ ) {
-    x[i-1] = cos((gdouble)(2*i-1)*M_PI/(gdouble)(2*n)) ;
-    w[i-1] = ww ;
+  gint i;
+  gdouble ww;
+
+  ww = M_PI / (gdouble) n;
+  for (i = 1; i <= n; i++) {
+    x[i - 1] = cos((gdouble) (2 * i - 1) * M_PI / (gdouble) (2 * n));
+    w[i - 1] = ww;
   }
 
-  return 0 ;
+  return 0;
 }
 
-gint grule_chebyshev_2(gint n, gdouble *x, gdouble *w)
-
+gint grule_chebyshev_2(gint n, gdouble * x, gdouble * w)
 {
-  gint i ;
-  
-  for ( i = 1 ; i <= n ; i ++ ) {
-    x[i-1] = cos((gdouble)i*M_PI/(gdouble)(n+1)) ;
-    w[i-1] = (1-x[i-1]*x[i-1])/(gdouble)(n+1)*M_PI;
+  gint i;
+
+  for (i = 1; i <= n; i++) {
+    x[i - 1] = cos((gdouble) i * M_PI / (gdouble) (n + 1));
+    w[i - 1] = (1 - x[i - 1] * x[i - 1]) / (gdouble) (n + 1) * M_PI;
   }
 
-  return 0 ;
+  return 0;
 }

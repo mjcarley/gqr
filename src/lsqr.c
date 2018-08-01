@@ -19,8 +19,6 @@
  *
  **********************************************************************/
 
-
-
 #include <stdio.h>
 #include <math.h>
 
@@ -28,15 +26,14 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif /*HAVE_CONFIG_H*/
+#endif /*HAVE_CONFIG_H */
 
 #include "gqr.h"
 #include "gqr-private.h"
 
 extern void dgelsd_(int *, int *, int *,
-		    double *, int *, double *, int *, double *,
-		    double *, int *, double *, int *, int *,
-		    int *) ;
+                    double *, int *, double *, int *, double *,
+                    double *, int *, double *, int *, int *, int *);
 
 #define log2(_x) (log((_x))/M_LN2)
 
@@ -47,47 +44,47 @@ extern void dgelsd_(int *, int *, int *,
 /* } */
 
 #ifdef HAVE_LAPACK
-gint gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb)
-
+gint gqr_lsqr_min_norm(gdouble * A, gint m, gint n, gdouble * b, gint nb)
 {
-  gdouble *s, rcond, *w, tmp ;
-  gint rank, nw, *iw, i, tti ;
-  gint nlvl, smlsiz = 64 ;
-  gint minmn ;
-  gint lda ;
-  gint c_1 = 1 ;
+  gdouble *s, rcond, *w, tmp;
+  gint rank, nw, *iw, i, tti;
+  gint nlvl, smlsiz = 64;
+  gint minmn;
+  gint lda;
+  gint c_1 = 1;
 
-  s = (gdouble *)g_malloc(2*MAX(m,n)*sizeof(gdouble)) ;
-  lda = m ;
-  nlvl = MAX(0, (gint)ceil(log2((gdouble)MIN(m,n)/(gdouble)(smlsiz+1)))) ;
+  s = (gdouble *) g_malloc(2 * MAX(m, n) * sizeof(gdouble));
+  lda = m;
+  nlvl =
+    MAX(0, (gint) ceil(log2((gdouble) MIN(m, n) / (gdouble) (smlsiz + 1))));
 
-  nw = -1 ; tti = 0 ;
-  dgelsd_((int *)&m, (int *)&n, (int *)&c_1,
-  	  A, (int *)&lda, b, (int *)&nb, s,
-  	  &rcond, (int *)&rank, &tmp, (int *)&nw, (int *)&tti,
-  	  (int *)&i) ;
-  nw = tmp ;
-  minmn = MIN(n,m) ;
-  w = (gdouble *)g_malloc(nw*sizeof(gdouble)) ;
+  nw = -1;
+  tti = 0;
+  dgelsd_((int *) &m, (int *) &n, (int *) &c_1,
+          A, (int *) &lda, b, (int *) &nb, s,
+          &rcond, (int *) &rank, &tmp, (int *) &nw, (int *) &tti, (int *) &i);
+  nw = tmp;
+  minmn = MIN(n, m);
+  w = (gdouble *) g_malloc(nw * sizeof(gdouble));
 
-  i = 3*minmn*nlvl + 11*minmn ;
-  iw = (gint *)g_malloc(2*i*sizeof(glong)) ; 
-  rcond = GQR_LAPACK_COND_TOL ;
-  dgelsd_((int *)&m, (int *)&n, (int *)&c_1,
-  	  A, (int *)&lda, b, (int *)&nb, s,
-  	  &rcond, (int *)&rank, w, (int *)&nw, (int *)iw,
-  	  (int *)&i) ;
+  i = 3 * minmn * nlvl + 11 * minmn;
+  iw = (gint *) g_malloc(2 * i * sizeof(glong));
+  rcond = GQR_LAPACK_COND_TOL;
+  dgelsd_((int *) &m, (int *) &n, (int *) &c_1,
+          A, (int *) &lda, b, (int *) &nb, s,
+          &rcond, (int *) &rank, w, (int *) &nw, (int *) iw, (int *) &i);
 
-  g_free(s) ; g_free(w) ; g_free(iw) ;
+  g_free(s);
+  g_free(w);
+  g_free(iw);
 
-  return 0 ;
+  return 0;
 }
-#else /*HAVE_LAPACK*/
-gint gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb)
-
+#else /*HAVE_LAPACK */
+gint gqr_lsqr_min_norm(gdouble * A, gint m, gint n, gdouble * b, gint nb)
 {
-  g_assert_not_reached() ;
+  g_assert_not_reached();
 
-  return 0 ;
+  return 0;
 }
-#endif /*HAVE_LAPACK*/
+#endif /*HAVE_LAPACK */

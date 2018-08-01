@@ -19,7 +19,6 @@
  *
  **********************************************************************/
 
-
 #include <stdio.h>
 #include <math.h>
 
@@ -45,58 +44,63 @@
  */
 
 gint grule_near_singular(gint n, gint m, gdouble x, gdouble y,
-			  gdouble *xk, gdouble *wt)
-			 
+                         gdouble * xk, gdouble * wt)
 {
-  gdouble *P, *I ;
-  gdouble R ;
-  gint i, j ;
-  gdouble *psi, *M ;
+  gdouble *P, *I;
+  gdouble R;
+  gint i, j;
+  gdouble *psi, *M;
 
-  grule_legendre(n, xk, wt) ;
-  P = (gdouble *)g_malloc(n*n*sizeof(gdouble)) ;
-  M = (gdouble *)g_malloc(MAX(4*m,n)*sizeof(gdouble)) ;
-  psi = (gdouble *)g_malloc(4*m*n*sizeof(gdouble)) ;
-  I = (gdouble *)g_malloc(2*m*sizeof(gdouble)) ;
+  grule_legendre(n, xk, wt);
+  P = (gdouble *) g_malloc(n * n * sizeof(gdouble));
+  M = (gdouble *) g_malloc(MAX(4 * m, n) * sizeof(gdouble));
+  psi = (gdouble *) g_malloc(4 * m * n * sizeof(gdouble));
+  I = (gdouble *) g_malloc(2 * m * sizeof(gdouble));
 
-  for ( i = 0 ; i < 4*m*n ; i ++ ) psi[i] = 0.0 ;
-  i = 0 ; 
-  for ( j = 0 ; j < n ; j ++ ) {
-    P[i*n + j] = 1.0 ; P[(i+1)*n + j] = xk[j] ;
+  for (i = 0; i < 4 * m * n; i++)
+    psi[i] = 0.0;
+  i = 0;
+  for (j = 0; j < n; j++) {
+    P[i * n + j] = 1.0;
+    P[(i + 1) * n + j] = xk[j];
   }
 
-  for ( i = 1 ; i < m-1 ; i ++ ) {
-    for ( j = 0 ; j < n ; j ++ ) {
-      P[(i+1)*n + j] = 
-	((gdouble)(2*i+1)*xk[j]*P[i*n+j] - 
-	 (gdouble)i*P[(i-1)*n+j])/(gdouble)(i+1) ;
+  for (i = 1; i < m - 1; i++) {
+    for (j = 0; j < n; j++) {
+      P[(i + 1) * n + j] =
+        ((gdouble) (2 * i + 1) * xk[j] * P[i * n + j] -
+         (gdouble) i * P[(i - 1) * n + j]) / (gdouble) (i + 1);
     }
   }
 
-  M[0*m+0] = 2.0 ;
-  for ( i = 1 ; i < m ; i ++ ) M[0*m+i] = 0.0 ;
-  gqr_quad_log(m, x, fabs(y), I) ;
-  gqr_legendre_integrals(m, I, &(M[1*m])) ;
-  gqr_quad_1_r(m, x, fabs(y), I) ;
-  gqr_legendre_integrals(m, I, &(M[2*m])) ;
-  gqr_quad_2_r(m, x, fabs(y), I) ;
-  gqr_legendre_integrals(m, I, &(M[3*m])) ;
+  M[0 * m + 0] = 2.0;
+  for (i = 1; i < m; i++)
+    M[0 * m + i] = 0.0;
+  gqr_quad_log(m, x, fabs(y), I);
+  gqr_legendre_integrals(m, I, &(M[1 * m]));
+  gqr_quad_1_r(m, x, fabs(y), I);
+  gqr_legendre_integrals(m, I, &(M[2 * m]));
+  gqr_quad_2_r(m, x, fabs(y), I);
+  gqr_legendre_integrals(m, I, &(M[3 * m]));
 
-  for ( i = 0 ; i < n ; i ++ ) {
-    R = sqrt((x-xk[i])*(x-xk[i])+y*y) ;
-    for ( j = 0 ; j < m ; j ++ ) {
-      psi[i*4*m+j+0*m] = P[j*n+i] ;
-      psi[i*4*m+j+1*m] = psi[i*4*m+j+0*m]*log(R) ;
-      psi[i*4*m+j+2*m] = psi[i*4*m+j+0*m]/R ;
-      psi[i*4*m+j+3*m] = psi[i*4*m+j+2*m]/R ;
+  for (i = 0; i < n; i++) {
+    R = sqrt((x - xk[i]) * (x - xk[i]) + y * y);
+    for (j = 0; j < m; j++) {
+      psi[i * 4 * m + j + 0 * m] = P[j * n + i];
+      psi[i * 4 * m + j + 1 * m] = psi[i * 4 * m + j + 0 * m] * log(R);
+      psi[i * 4 * m + j + 2 * m] = psi[i * 4 * m + j + 0 * m] / R;
+      psi[i * 4 * m + j + 3 * m] = psi[i * 4 * m + j + 2 * m] / R;
     }
   }
 
-  gqr_lsqr_min_norm(psi, 4*m, n, M, MAX(4*m,n)) ;
+  gqr_lsqr_min_norm(psi, 4 * m, n, M, MAX(4 * m, n));
 
-  for ( i = 0 ; i < n ; i ++ ) wt[i] = M[i] ;
+  for (i = 0; i < n; i++)
+    wt[i] = M[i];
 
-  g_free(P) ; g_free(M) ; g_free(I) ; 
+  g_free(P);
+  g_free(M);
+  g_free(I);
 
-  return 0 ;
+  return 0;
 }
