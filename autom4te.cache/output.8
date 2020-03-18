@@ -633,14 +633,13 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIB@&t@OBJS
-gsl_libs
-gsl_cflags
 GLIB_LIBS
 GLIB_CFLAGS
+GSL_LIBS
+GSL_CFLAGS
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
 PKG_CONFIG
-GSL
 LAPACK_LIBS
 BLAS_LIBS
 FLIBS
@@ -803,6 +802,8 @@ FFLAGS
 PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
+GSL_CFLAGS
+GSL_LIBS
 GLIB_CFLAGS
 GLIB_LIBS'
 
@@ -1470,6 +1471,8 @@ Some influential environment variables:
               directories to add to pkg-config's search path
   PKG_CONFIG_LIBDIR 
               path overriding pkg-config's built-in search path
+  GSL_CFLAGS  C compiler flags for GSL, overriding pkg-config
+  GSL_LIBS    linker flags for GSL, overriding pkg-config
   GLIB_CFLAGS C compiler flags for GLIB, overriding pkg-config
   GLIB_LIBS   linker flags for GLIB, overriding pkg-config
 
@@ -18015,57 +18018,24 @@ fi
 
 
 
-# Extract the first word of "gsl-config", so it can be a program name with args.
-set dummy gsl-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_GSL+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$GSL"; then
-  ac_cv_prog_GSL="$GSL" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_GSL="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
 
-  test -z "$ac_cv_prog_GSL" && ac_cv_prog_GSL="no"
-fi
-fi
-GSL=$ac_cv_prog_GSL
-if test -n "$GSL"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GSL" >&5
-$as_echo "$GSL" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-if test x$GSL = xyes ; then
-   gsl_cflags=`gsl-config --cflags`
-   gsl_libs=`gsl-config --libs`
-else
-  echo \#################################################################
-  echo 
-  echo \# GNU Scientific Library not available or not properly installed.
-  echo \# You can get the most recent version from 
-  echo \#      http://www.gnu.org/software/gsl/
-  echo
-  echo \#################################################################
-  exit
-fi
+#PKG_CHECK_MODULES(gsl, gsl, [gsl_cflags=`pkg-config --cflags-only-I gsl`
+#		        gsl_libs=`pkg-config --libs gsl`],			
+#			[AC_CHECK_PROG(GSL, gsl-config, yes, no)
+#			if test x$GSL = xyes ; then
+#   gsl_cflags=`gsl-config --cflags`
+#   gsl_libs=`gsl-config --libs`
+#else
+#  echo \#################################################################
+#  echo \#
+#  echo \# GNU Scientific Library not available or not properly installed.
+#  echo \# You can get the most recent version from 
+#  echo \#      http://www.gnu.org/software/gsl/
+#  echo \#
+#  echo \#################################################################
+#  exit
+#fi
+#])
 
 
 
@@ -18189,6 +18159,97 @@ $as_echo "no" >&6; }
 fi
 
 pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gsl" >&5
+$as_echo_n "checking for gsl... " >&6; }
+
+if test -n "$GSL_CFLAGS"; then
+    pkg_cv_GSL_CFLAGS="$GSL_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gsl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gsl") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GSL_CFLAGS=`$PKG_CONFIG --cflags "gsl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GSL_LIBS"; then
+    pkg_cv_GSL_LIBS="$GSL_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gsl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gsl") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GSL_LIBS=`$PKG_CONFIG --libs "gsl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GSL_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gsl" 2>&1`
+        else
+	        GSL_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gsl" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GSL_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (gsl) were not met:
+
+$GSL_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables GSL_CFLAGS
+and GSL_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5        
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables GSL_CFLAGS
+and GSL_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }        
+else
+	GSL_CFLAGS=$pkg_cv_GSL_CFLAGS
+	GSL_LIBS=$pkg_cv_GSL_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	
+fi 
+
+pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for glib-2.0" >&5
 $as_echo_n "checking for glib-2.0... " >&6; }
 
@@ -18284,8 +18345,8 @@ fi
 
 
 
-CFLAGS="$CFLAGS $GLIB_CFLAGS $gsl_cflags"
-LDFLAGS="$LDFLAGS $GLIB_LIBS $gsl_libs"
+CFLAGS="$CFLAGS $GLIB_CFLAGS $GSL_CFLAGS"
+LDFLAGS="$LDFLAGS $GLIB_LIBS $GSL_LIBS"
 
 
 
@@ -18299,7 +18360,7 @@ LDFLAGS="$LDFLAGS $GLIB_LIBS $gsl_libs"
 #AC_CHECK_LIB(lapack, dgelsd_,,[AC_MSG_NOTICE(
 #             [** LAPACK not found, some features will not be available])])
 
-LIBS="$glib_libs $gsl_libs $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
+LIBS="$GLIB_LIBS $GSL_LIBS $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
 
 ac_config_files="$ac_config_files Makefile src/Makefile src/gqr-config tests/Makefile doc/Makefile doc/html/Makefile"
 

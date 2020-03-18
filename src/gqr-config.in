@@ -3,8 +3,8 @@
 
 glib_libs="@GLIB_LIBS@"
 glib_cflags="@GLIB_CFLAGS@"
-gsl_libs="@gsl_libs@"
-gsl_cflags="@gsl_cflags@"
+gsl_libs="@GSL_LIBS@"
+gsl_cflags="@GSL_CFLAGS@"
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@

@@ -76,30 +76,35 @@ ACX_BLAS
 ACX_LAPACK
 
 
-AC_CHECK_PROG(GSL, gsl-config, yes, no)
-if test x$GSL = xyes ; then
-   gsl_cflags=`gsl-config --cflags`
-   gsl_libs=`gsl-config --libs`
-else
-  echo \#################################################################
-  echo 
-  echo \# GNU Scientific Library not available or not properly installed.
-  echo \# You can get the most recent version from 
-  echo \#      http://www.gnu.org/software/gsl/
-  echo
-  echo \#################################################################
-  exit
-fi
 
+#PKG_CHECK_MODULES(gsl, gsl, [gsl_cflags=`pkg-config --cflags-only-I gsl`
+#		        gsl_libs=`pkg-config --libs gsl`],			
+#			[AC_CHECK_PROG(GSL, gsl-config, yes, no)
+#			if test x$GSL = xyes ; then
+#   gsl_cflags=`gsl-config --cflags`
+#   gsl_libs=`gsl-config --libs`
+#else
+#  echo \#################################################################
+#  echo \#
+#  echo \# GNU Scientific Library not available or not properly installed.
+#  echo \# You can get the most recent version from 
+#  echo \#      http://www.gnu.org/software/gsl/
+#  echo \#
+#  echo \#################################################################
+#  exit
+#fi
+#])
+
+PKG_CHECK_MODULES([GSL], [gsl]) 
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
 
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
-AC_SUBST(gsl_cflags)
-AC_SUBST(gsl_libs)
+AC_SUBST(GSL_CFLAGS)
+AC_SUBST(GSL_LIBS)
 
-CFLAGS="$CFLAGS $GLIB_CFLAGS $gsl_cflags"
-LDFLAGS="$LDFLAGS $GLIB_LIBS $gsl_libs"
+CFLAGS="$CFLAGS $GLIB_CFLAGS $GSL_CFLAGS"
+LDFLAGS="$LDFLAGS $GLIB_LIBS $GSL_LIBS"
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
@@ -114,7 +119,7 @@ dnl header file checks
 #AC_CHECK_LIB(lapack, dgelsd_,,[AC_MSG_NOTICE(
 #             [** LAPACK not found, some features will not be available])])
 
-LIBS="$glib_libs $gsl_libs $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
+LIBS="$GLIB_LIBS $GSL_LIBS $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
 
 AC_CONFIG_FILES([
 Makefile

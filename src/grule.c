@@ -69,11 +69,11 @@ gqr_rule_t *gqr_rule_alloc(gint n)
 
   g_return_val_if_fail(n > 0, NULL) ;
 
-  g = (gqr_rule_t *)g_malloc(sizeof(gqr_rule_t)) ;
+  g = (gqr_rule_t *)g_malloc0(sizeof(gqr_rule_t)) ;
   g->nmax = n ; g->n = 0 ;
 
-  g->x = (gdouble *)g_malloc(sizeof(gdouble)*(n+1)) ;
-  g->w = (gdouble *)g_malloc(sizeof(gdouble)*(n+1)) ;
+  g->x = (gdouble *)g_malloc0(sizeof(gdouble)*(n+1)) ;
+  g->w = (gdouble *)g_malloc0(sizeof(gdouble)*(n+1)) ;
 
   return g ;
 }
@@ -91,12 +91,21 @@ gqr_rule_t *gqr_rule_alloc(gint n)
 gqr_rule_t *gqr_rule_realloc(gqr_rule_t *g, gint n)
 
 {
+  g_return_val_if_fail(n > 0, NULL) ;
+
   if ( g == NULL ) return gqr_rule_alloc(n) ;
   if ( g->nmax >= n ) return g ;
 
-  g_free(g->x) ; g_free(g->w) ; g_free(g) ;
+  g_free(g->x) ; g_free(g->w) ;
+  g->nmax = n ; g->n = 0 ;
 
-  return (gqr_rule_alloc(n)) ;
+  g->x = (gdouble *)g_malloc0(sizeof(gdouble)*(n+1)) ;
+  g->w = (gdouble *)g_malloc0(sizeof(gdouble)*(n+1)) ;
+  
+  /* g_free(g) ; */
+
+  return g ;
+  /* (gqr_rule_alloc(n)) ; */
 }
 
 /** 

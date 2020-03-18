@@ -3,8 +3,8 @@
 
 glib_libs="-lglib-2.0"
 glib_cflags="-I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include"
-gsl_libs="-L/usr/lib64 -lgsl -lgslcblas -lm"
-gsl_cflags="-I/usr/include"
+gsl_libs="-lgsl -lgslcblas -lm"
+gsl_cflags=""
 
 prefix=/home/ensmjc/Codes
 exec_prefix=${prefix}
@@ -121,7 +121,7 @@ if test "$echo_libs" = "yes"; then
 	if test "$lib_gthread" = "yes"; then
 	    glib_libs="$glib_libs $glib_thread_libs"
 	fi
-	glib_libs="-L${exec_prefix}/lib -lgqr  -lglib-2.0 -L/usr/lib64 -lgsl -lgslcblas -lm  $glib_libs -lm"
+	glib_libs="-L${exec_prefix}/lib -lgqr  -lglib-2.0 -lgsl -lgslcblas -lm  $glib_libs -lm"
 	glib_libs=`uniquify "$glib_libs"`
-	echo -L${exec_prefix}/lib -lgqr  -L/usr/lib64 -lgsl -lgslcblas -lm -llapack -lcblas -lf77blas -latlas -lm   -L/usr/lib64/gcc/x86_64-slackware-linux/5.4.0 -L/usr/lib64/gcc/x86_64-slackware-linux/5.4.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/5.4.0/../../../../x86_64-slackware-linux/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.4.0/../../.. -lgfortran -lm -lquadmath
+	echo -L${exec_prefix}/lib -lgqr -lglib-2.0 -lgsl -lgslcblas -lm -llapack -lcblas -lf77blas -latlas -lm   -L/usr/lib64/gcc/x86_64-slackware-linux/8.2.0 -L/usr/lib64/gcc/x86_64-slackware-linux/8.2.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/8.2.0/../../.. -lgfortran -lm -lquadmath
 fi
