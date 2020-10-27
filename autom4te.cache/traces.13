@@ -2577,211 +2577,6 @@ m4trace:m4/lt~obsolete.m4:94: -1- AC_DEFUN([_LT_AC_PROG_CXXCPP])
 m4trace:m4/lt~obsolete.m4:97: -1- AC_DEFUN([_LT_PROG_F77])
 m4trace:m4/lt~obsolete.m4:98: -1- AC_DEFUN([_LT_PROG_FC])
 m4trace:m4/lt~obsolete.m4:99: -1- AC_DEFUN([_LT_PROG_CXX])
-m4trace:acx_blas.m4:37: -1- AC_DEFUN([ACX_BLAS], [
-AC_PREREQ(2.50)
-AC_REQUIRE([AC_F77_LIBRARY_LDFLAGS])
-acx_blas_ok=no
-acx_blas_atlas=no
-
-AC_ARG_WITH(blas,
-	[AS_HELP_STRING([--with-blas=<lib>], [use BLAS library <lib>])])
-case $with_blas in
-	yes | "") ;;
-	no) acx_blas_ok=disable ;;
-	-* | */* | *.a | *.so | *.so.* | *.o) BLAS_LIBS="$with_blas" ;;
-	*) BLAS_LIBS="-l$with_blas" ;;
-esac
-
-# Get fortran linker names of BLAS functions to check for.
-if $have_fortran_compiler; then 
-  AC_F77_FUNC(sgemm)
-  AC_F77_FUNC(dgemm)
-elif $have_f2c; then
-  sgemm=sgemm_
-  dgemm=dgemm_
-fi
-
-acx_blas_save_LIBS="$LIBS"
-LIBS="$LIBS $FLIBS"
-
-# First, check BLAS_LIBS environment variable
-if test $acx_blas_ok = no; then
-if test "x$BLAS_LIBS" != x; then
-	save_LIBS="$LIBS"; LIBS="$BLAS_LIBS $LIBS"
-	AC_MSG_CHECKING([for $sgemm in $BLAS_LIBS])
-	AC_LINK_IFELSE([AC_LANG_CALL([], [$sgemm])],
-		       [acx_blas_ok=yes], [BLAS_LIBS=""])
-	AC_MSG_RESULT($acx_blas_ok)
-	LIBS="$save_LIBS"
-fi
-fi
-
-# BLAS linked to by default?  (happens on some supercomputers)
-if test $acx_blas_ok = no; then
-	save_LIBS="$LIBS"; LIBS="$LIBS"
-	AC_CHECK_FUNC($sgemm, [acx_blas_ok=yes])
-	LIBS="$save_LIBS"
-fi
-
-# BLAS in ATLAS library? (http://math-atlas.sourceforge.net/)
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(atlas, ATL_xerbla,
-		[AC_CHECK_LIB(f77blas, $sgemm,
-		[AC_CHECK_LIB(cblas, cblas_dgemm,
-			[acx_blas_ok=yes;
-			 acx_blas_atlas=yes;
-			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
-			[], [-lf77blas -latlas])],
-			[], [-latlas])])
-fi
-
-# BLAS in Apple vecLib framework? (Mac OS X)
-if test $acx_blas_ok = no; then
-	vlib_flags="-Wl,-framework -Wl,vecLib"
-	save_LIBS="$LIBS"; LIBS="$vlib_flags $LIBS"
-	AC_MSG_CHECKING([for $sgemm in $vlib_flags])
-	AC_LINK_IFELSE([AC_LANG_CALL([], [$sgemm])],
-                       [acx_blas_ok=yes; BLAS_LIBS="$vlib_flags"],
-		       [BLAS_LIBS=""])
-	AC_MSG_RESULT($acx_blas_ok)
-	LIBS="$save_LIBS"
-fi
-
-# BLAS in PhiPACK libraries? (requires generic BLAS lib, too)
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(blas, $sgemm,
-		[AC_CHECK_LIB(dgemm, $dgemm,
-		[AC_CHECK_LIB(sgemm, $sgemm,
-			[acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"],
-			[], [-lblas])],
-			[], [-lblas])])
-fi
-
-# BLAS in Alpha CXML library?
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(cxml, $sgemm, [acx_blas_ok=yes;BLAS_LIBS="-lcxml"])
-fi
-
-# BLAS in Alpha DXML library? (now called CXML, see above)
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(dxml, $sgemm, [acx_blas_ok=yes;BLAS_LIBS="-ldxml"])
-fi
-
-# BLAS in Sun Performance library?
-if test $acx_blas_ok = no; then
-	if test "x$GCC" != xyes; then # only works with Sun CC
-		AC_CHECK_LIB(sunmath, acosp,
-			[AC_CHECK_LIB(sunperf, $sgemm,
-        			[BLAS_LIBS="-lsunperf -lsunmath"
-                                 acx_blas_ok=yes],[],[-lsunmath])])
-	fi
-fi
-
-# BLAS in SCSL library?  (SGI/Cray Scientific Library)
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(scs, $sgemm, [acx_blas_ok=yes; BLAS_LIBS="-lscs"])
-fi
-
-# BLAS in SGIMATH library?
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(complib.sgimath, $sgemm,
-		     [acx_blas_ok=yes; BLAS_LIBS="-lcomplib.sgimath"])
-fi
-
-# BLAS in IBM ESSL library? (requires generic BLAS lib, too)
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(blas, $sgemm,
-		[AC_CHECK_LIB(essl, $sgemm,
-			[acx_blas_ok=yes; BLAS_LIBS="-lessl -lblas"],
-			[], [-lblas $FLIBS])])
-fi
-
-# Generic BLAS library?
-if test $acx_blas_ok = no; then
-	AC_CHECK_LIB(blas, $sgemm, [acx_blas_ok=yes; BLAS_LIBS="-lblas"])
-fi
-
-AC_SUBST(BLAS_LIBS)
-
-LIBS="$acx_blas_save_LIBS"
-
-# Test to check if the installed BLAS is ATLAS because it has a strange
-# naming scheme for catlas_?axpby
-if test x"$acx_blas_atlas" = xyes; then
-        AC_DEFINE(HAVE_ATLAS_BLAS,1,[Define if you have an ATLAS BLAS library.])
-fi
-
-# Finally, execute ACTION-IF-FOUND/ACTION-IF-NOT-FOUND:
-if test x"$acx_blas_ok" = xyes; then
-        ifelse([$1],,AC_DEFINE(HAVE_BLAS,1,[Define if you have a BLAS library.]),[$1])
-        :
-else
-        acx_blas_ok=no
-        $2
-fi
-])
-m4trace:acx_lapack.m4:1: -1- AC_DEFUN([ACX_LAPACK], [
-AC_REQUIRE([ACX_BLAS])
-acx_lapack_ok=no
-
-AC_ARG_WITH(lapack,
-        [AC_HELP_STRING([--with-lapack=<lib>], [use LAPACK library <lib>])])
-case $with_lapack in
-        yes | "") ;;
-        no) acx_lapack_ok=disable ;;
-        -* | */* | *.a | *.so | *.so.* | *.o) LAPACK_LIBS="$with_lapack" ;;
-        *) LAPACK_LIBS="-l$with_lapack" ;;
-esac
-
-# Get fortran linker name of LAPACK function to check for.
-AC_F77_FUNC(cheev)
-
-# We cannot use LAPACK if BLAS is not found
-if test "x$acx_blas_ok" != xyes; then
-        acx_lapack_ok=noblas
-        LAPACK_LIBS=""
-fi
-
-# First, check LAPACK_LIBS environment variable
-if test "x$LAPACK_LIBS" != x; then
-        save_LIBS="$LIBS"; LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
-        AC_MSG_CHECKING([for $cheev in $LAPACK_LIBS])
-        AC_TRY_LINK_FUNC($cheev, [acx_lapack_ok=yes], [LAPACK_LIBS=""])
-        AC_MSG_RESULT($acx_lapack_ok)
-        LIBS="$save_LIBS"
-        if test $acx_lapack_ok = no; then
-                LAPACK_LIBS=""
-        fi
-fi
-
-# LAPACK linked to by default?  (is sometimes included in BLAS lib)
-if test $acx_lapack_ok = no; then
-        save_LIBS="$LIBS"; LIBS="$LIBS $BLAS_LIBS $FLIBS"
-        AC_CHECK_FUNC($cheev, [acx_lapack_ok=yes])
-        LIBS="$save_LIBS"
-fi
-
-# Generic LAPACK library?
-for lapack in lapack lapack_rs6k; do
-        if test $acx_lapack_ok = no; then
-                save_LIBS="$LIBS"; LIBS="$BLAS_LIBS $LIBS"
-                AC_CHECK_LIB($lapack, $cheev,
-                    [acx_lapack_ok=yes; LAPACK_LIBS="-l$lapack"], [], [$FLIBS])
-                LIBS="$save_LIBS"
-        fi
-done
-
-AC_SUBST(LAPACK_LIBS)
-
-# Finally, execute ACTION-IF-FOUND/ACTION-IF-NOT-FOUND:
-if test x"$acx_lapack_ok" = xyes; then
-        ifelse([$1],,AC_DEFINE(HAVE_LAPACK,1,[Define if you have LAPACK library.]),[$1])
-        :
-else
-        acx_lapack_ok=no
-        $2
-fi
-])
 m4trace:configure.ac:1: -1- m4_pattern_forbid([^_?A[CHUM]_])
 m4trace:configure.ac:1: -1- m4_pattern_forbid([_AC_])
 m4trace:configure.ac:1: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs LIBOBJS'])
@@ -3115,57 +2910,44 @@ m4trace:configure.ac:74: -1- m4_pattern_allow([^F77_FUNC$])
 m4trace:configure.ac:74: -1- m4_pattern_allow([^F77_FUNC_$])
 m4trace:configure.ac:74: -1- m4_pattern_allow([^F77_FUNC$])
 m4trace:configure.ac:74: -1- m4_pattern_allow([^F77_FUNC_$])
-m4trace:configure.ac:75: -1- ACX_BLAS
-m4trace:configure.ac:75: -1- m4_pattern_allow([^BLAS_LIBS$])
-m4trace:configure.ac:75: -1- m4_pattern_allow([^HAVE_ATLAS_BLAS$])
-m4trace:configure.ac:75: -2- m4_pattern_allow([^HAVE_BLAS$])
-m4trace:configure.ac:76: -1- ACX_LAPACK
-m4trace:configure.ac:76: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
-../../lib/autoconf/general.m4:1481: AC_ARG_WITH is expanded from...
-acx_lapack.m4:1: ACX_LAPACK is expanded from...
-configure.ac:76: the top level])
-m4trace:configure.ac:76: -1- m4_pattern_allow([^LAPACK_LIBS$])
-m4trace:configure.ac:76: -2- m4_pattern_allow([^HAVE_LAPACK$])
-m4trace:configure.ac:77: -1- m4_pattern_allow([^HAVE_LIBRRQR$])
-m4trace:configure.ac:97: -1- PKG_CHECK_MODULES([GSL], [gsl])
-m4trace:configure.ac:97: -1- PKG_PROG_PKG_CONFIG
-m4trace:configure.ac:97: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG_PATH$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^GSL_CFLAGS$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^GSL_LIBS$])
-m4trace:configure.ac:97: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_CFLAGS=`$PKG_CONFIG --[]cflags "gsl" 2>/dev/null`
+m4trace:configure.ac:98: -1- PKG_CHECK_MODULES([GSL], [gsl])
+m4trace:configure.ac:98: -1- PKG_PROG_PKG_CONFIG
+m4trace:configure.ac:98: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^PKG_CONFIG_PATH$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^GSL_CFLAGS$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^GSL_LIBS$])
+m4trace:configure.ac:98: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_CFLAGS=`$PKG_CONFIG --[]cflags "gsl" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:97: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_LIBS=`$PKG_CONFIG --[]libs "gsl" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:97: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:98: -1- PKG_CHECK_MODULES([GLIB], [glib-2.0])
-m4trace:configure.ac:98: -1- m4_pattern_allow([^GLIB_CFLAGS$])
-m4trace:configure.ac:98: -1- m4_pattern_allow([^GLIB_LIBS$])
-m4trace:configure.ac:98: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_CFLAGS=`$PKG_CONFIG --[]cflags "glib-2.0" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:98: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_LIBS=`$PKG_CONFIG --[]libs "glib-2.0" 2>/dev/null`
+m4trace:configure.ac:98: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_LIBS=`$PKG_CONFIG --[]libs "gsl" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
 m4trace:configure.ac:98: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:100: -1- m4_pattern_allow([^GLIB_CFLAGS$])
-m4trace:configure.ac:101: -1- m4_pattern_allow([^GLIB_LIBS$])
-m4trace:configure.ac:102: -1- m4_pattern_allow([^GSL_CFLAGS$])
-m4trace:configure.ac:103: -1- m4_pattern_allow([^GSL_LIBS$])
-m4trace:configure.ac:108: -1- m4_pattern_allow([^CFLAGS$])
-m4trace:configure.ac:109: -1- m4_pattern_allow([^CPPFLAGS$])
-m4trace:configure.ac:110: -1- m4_pattern_allow([^LDFLAGS$])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:131: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:131: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:131: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:131: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:131: -1- _LT_PROG_LTMAIN
-m4trace:configure.ac:131: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:99: -1- PKG_CHECK_MODULES([GLIB], [glib-2.0])
+m4trace:configure.ac:99: -1- m4_pattern_allow([^GLIB_CFLAGS$])
+m4trace:configure.ac:99: -1- m4_pattern_allow([^GLIB_LIBS$])
+m4trace:configure.ac:99: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_CFLAGS=`$PKG_CONFIG --[]cflags "glib-2.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
+m4trace:configure.ac:99: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_LIBS=`$PKG_CONFIG --[]libs "glib-2.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
+m4trace:configure.ac:99: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:101: -1- m4_pattern_allow([^GLIB_CFLAGS$])
+m4trace:configure.ac:102: -1- m4_pattern_allow([^GLIB_LIBS$])
+m4trace:configure.ac:103: -1- m4_pattern_allow([^GSL_CFLAGS$])
+m4trace:configure.ac:104: -1- m4_pattern_allow([^GSL_LIBS$])
+m4trace:configure.ac:109: -1- m4_pattern_allow([^CFLAGS$])
+m4trace:configure.ac:110: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:111: -1- m4_pattern_allow([^LDFLAGS$])
+m4trace:configure.ac:132: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:132: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:132: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:132: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:132: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:132: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:132: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:132: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:132: -1- _LT_PROG_LTMAIN
+m4trace:configure.ac:132: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS

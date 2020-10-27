@@ -165,7 +165,7 @@ gchar *gqr_rule_name_base(gqr_t type) ;
 gchar *gqr_rule_name_singularity(gqr_t type) ;
 
 gdouble gqr_finite_part_tn_log(gdouble x, gint n) ;
-gint gqr_legendre_integrals(gint N, gdouble *I, gdouble *P) ;
+gint gqr_legendre_integrals(gint N, gdouble *i, gdouble *P) ;
 
 gint gqr_function_nextroot(gdouble *P, gdouble *Q, gdouble *R,
 			   gdouble x0, gdouble u0,

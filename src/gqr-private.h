@@ -19,8 +19,8 @@
  *
  **********************************************************************/
 
-#ifndef _GQR_PRIVATE_H_INCLUDED_
-#define _GQR_PRIVATE_H_INCLUDED_
+#ifndef GQR_PRIVATE_H_INCLUDED
+#define GQR_PRIVATE_H_INCLUDED
 
 #include <glib.h>
 
@@ -78,4 +78,4 @@ gint grule_multi_nsingular(gint n, gint m, gdouble x, gdouble y,
 			   gint ns, gint *s, 
 			   gdouble *xk, gdouble *wt) ;
 
-#endif /*_BEM2D_PRIVATE_H_INCLUDED_*/
+#endif /*GQR_PRIVATE_H_INCLUDED*/

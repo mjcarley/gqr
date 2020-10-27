@@ -31,7 +31,7 @@
 #define GQR_MINOR_VERSION 1
 
 /* Define if you have an ATLAS BLAS library. */
-#define HAVE_ATLAS_BLAS 1
+/* #undef HAVE_ATLAS_BLAS */
 
 /* Define if you have a BLAS library. */
 #define HAVE_BLAS 1
@@ -47,6 +47,9 @@
 
 /* Define to 1 if you have the `m' library (-lm). */
 #define HAVE_LIBM 1
+
+/* Define to 1 if you have the `rrqr' library (-lrrqr). */
+#define HAVE_LIBRRQR 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
