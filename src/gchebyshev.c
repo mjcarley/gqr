@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 by  Michael Carley */
+/* Copyright (C) 2007, 2020 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -18,8 +18,6 @@
  * along with gqr.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************************************/
-
-
 
 #include <stdio.h>
 #include <math.h>

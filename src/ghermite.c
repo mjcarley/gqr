@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 by  Michael Carley */
+/* Copyright (C) 2007, 2020 by  Michael Carley */
 
 /**********************************************************************
  *

@@ -1,0 +1,24 @@
+Brief notes on installation requirements
+
+You need a working BLAS and LAPACK installed and visible to the linker.
+
+For the generalized rules using the Bremer and Gimbutas algorithms,
+you need to install ACM 782 which you can download here:
+
+https://dl.acm.org/doi/10.1145/290200.287638
+
+When you have downloaded 782.gz, you will need to process it to
+correct some errors in the shar archive as follows:
+
+> cp 782.gz 782.sh
+
+> sed -i '1,3d' 782.sh
+
+> sed -i 's/\$[\(]/\\$\(/g' 782.sh
+> sed -i 's/\$[\?]/\\$?/g' 782.sh
+
+> sh 782.sh
+
+This will unpack the archive and allow it to compile correctly. When
+you have compiled it, move rrqr.a to librrqr.a in a place where your
+compiler can see it, before configuring gqr.

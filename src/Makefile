@@ -138,7 +138,8 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libgqr_la_LIBADD =
 am_libgqr_la_OBJECTS = ghermite.lo grule.lo fpart.lo glegendre.lo \
 	korsunsky.lo smith.lo gchebyshev.lo kolrokh.lo lsqr.lo \
-	msingular.lo nsingular.lo integrals.lo roots.lo gqr-logging.lo
+	msingular.lo nsingular.lo integrals.lo roots.lo gqr-logging.lo \
+	discret.lo
 libgqr_la_OBJECTS = $(am_libgqr_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -223,7 +224,7 @@ AWK = gawk
 BLAS_LIBS = -lblas
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2 -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+CFLAGS = -O0 -g -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -373,7 +374,8 @@ libgqr_la_SOURCES = \
 	integrals.c \
 	roots.c \
 	gqr-logging.c \
-	gqr-private.h
+	gqr-private.h \
+	discret.c
 
 include_HEADERS = \
 	gqr.h 
@@ -495,6 +497,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/discret.Plo
 include ./$(DEPDIR)/fpart.Plo
 include ./$(DEPDIR)/gchebyshev.Plo
 include ./$(DEPDIR)/ghermite.Plo

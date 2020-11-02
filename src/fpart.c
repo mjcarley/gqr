@@ -1,4 +1,4 @@
-/* Copyright (C) 2007, 2008 by  Michael Carley */
+/* Copyright (C) 2007, 2008, 2020 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -126,7 +126,7 @@ gdouble gqr_finite_part(gdouble a, gdouble b, gdouble y, gdouble g)
  * aerodynamics: The problem revisited', AIAA Journal,
  * 25(9):1258--1260. 
  * 
- * @param f a gqr_func which returns the \f$j\f$th derivative of the
+ * @param f a gqr_func_t which returns the \f$j\f$th derivative of the
  * function;
  * @param data data to pass to f;
  * @param y position of the singularity;
@@ -139,7 +139,7 @@ gdouble gqr_finite_part(gdouble a, gdouble b, gdouble y, gdouble g)
  * \f$\int_{a}^{b}f(x)/(y-x)^{\gamma}\,\mathrm{d}x\f$. 
  */
 
-gdouble gqr_finite_part_integral(gqr_func f, gpointer data,
+gdouble gqr_finite_part_integral(gqr_func_t f, gpointer data,
 				 gdouble y, gdouble gm,
 				 gdouble a, gdouble b, gqr_rule_t *g)
 

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-unknown-linux-gnu
 host_triplet = x86_64-unknown-linux-gnu
-bin_PROGRAMS = gqr-rule$(EXEEXT)
+bin_PROGRAMS = gqr-rule$(EXEEXT) gqr-test$(EXEEXT)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -113,6 +113,10 @@ AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+gqr_test_SOURCES = gqr-test.c
+gqr_test_OBJECTS = gqr-test.$(OBJEXT)
+gqr_test_LDADD = $(LDADD)
+gqr_test_DEPENDENCIES = $(top_builddir)/src/.libs/libgqr.a
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -147,8 +151,8 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = gqr-rule.c
-DIST_SOURCES = gqr-rule.c
+SOURCES = gqr-rule.c gqr-test.c
+DIST_SOURCES = gqr-rule.c gqr-test.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -187,7 +191,7 @@ AWK = gawk
 BLAS_LIBS = -lblas
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2 -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+CFLAGS = -O0 -g -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -403,6 +407,10 @@ gqr-rule$(EXEEXT): $(gqr_rule_OBJECTS) $(gqr_rule_DEPENDENCIES) $(EXTRA_gqr_rule
 	@rm -f gqr-rule$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(gqr_rule_OBJECTS) $(gqr_rule_LDADD) $(LIBS)
 
+gqr-test$(EXEEXT): $(gqr_test_OBJECTS) $(gqr_test_DEPENDENCIES) $(EXTRA_gqr_test_DEPENDENCIES) 
+	@rm -f gqr-test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(gqr_test_OBJECTS) $(gqr_test_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -410,6 +418,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/gqr-rule.Po
+include ./$(DEPDIR)/gqr-test.Po
 
 .c.o:
 	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

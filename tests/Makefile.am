@@ -5,7 +5,8 @@ LDADD = $(top_builddir)/src/.libs/libgqr.a
 
 DEPS = $(top_builddir)/src/libgqr.la
 
-bin_PROGRAMS = gqr-rule
+bin_PROGRAMS = gqr-rule \
+	gqr-test
 #bin_SCRIPTS = gtstemplate
 
 #EXTRA_DIST = gtstemplate

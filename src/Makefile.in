@@ -138,7 +138,8 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libgqr_la_LIBADD =
 am_libgqr_la_OBJECTS = ghermite.lo grule.lo fpart.lo glegendre.lo \
 	korsunsky.lo smith.lo gchebyshev.lo kolrokh.lo lsqr.lo \
-	msingular.lo nsingular.lo integrals.lo roots.lo gqr-logging.lo
+	msingular.lo nsingular.lo integrals.lo roots.lo gqr-logging.lo \
+	discret.lo
 libgqr_la_OBJECTS = $(am_libgqr_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -373,7 +374,8 @@ libgqr_la_SOURCES = \
 	integrals.c \
 	roots.c \
 	gqr-logging.c \
-	gqr-private.h
+	gqr-private.h \
+	discret.c
 
 include_HEADERS = \
 	gqr.h 
@@ -495,6 +497,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/discret.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fpart.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gchebyshev.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ghermite.Plo@am__quote@

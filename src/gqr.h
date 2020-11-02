@@ -1,4 +1,4 @@
-/* Copyright (C) 2007, 2010 by  Michael Carley */
+/* Copyright (C) 2007, 2010, 2020 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -42,7 +42,7 @@ enum {
 } ;
 
 /**
- * @typedef gqr_func
+ * @typedef gqr_func_t
  * @ingroup gqr
  *
  * A type for evaluating integrands and their derivatives. 
@@ -54,7 +54,21 @@ enum {
  * \f$t\f$.
  */
 
-  typedef gdouble (* gqr_func)(gdouble t, gint i, gpointer data) ;
+  typedef gdouble (* gqr_func_t)(gdouble t, gint i, gpointer data) ;
+
+/**
+ * @typedef gqr_adapt_func_t
+ * @ingroup gqr
+ *
+ * A type for evaluating functions to be used in adaptive discretizations.
+ * @param t evaluation point;
+ * @param i the index of the function to be evaluated;
+ * @param data user data to be passed to the function.
+ *
+ * @return value of the \f$f_i(t)\f$
+ */
+
+  typedef gdouble (* gqr_adapt_func_t)(gdouble t, gint i, gpointer data) ;
 
 /**
  * @typedef gqr_t
@@ -153,7 +167,7 @@ gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b,
 gqr_t gqr_rule_from_name(gchar *str, gqr_parameter_t *p) ;
 
 gdouble gqr_finite_part(gdouble a, gdouble b, gdouble y, gdouble g) ;
-gdouble gqr_finite_part_integral(gqr_func f, gpointer data,
+gdouble gqr_finite_part_integral(gqr_func_t f, gpointer data,
 				 gdouble y, gdouble gm,
 				 gdouble a, gdouble b, gqr_rule_t *g) ;
 gdouble gqr_finite_part_1mt_n(gint n, gint m) ;
@@ -176,5 +190,18 @@ gint gqr_function_roots(gdouble *P, gdouble *Q, gdouble *R,
 gint gqr_logging_init(FILE *f, gchar *p, 
 		      GLogLevelFlags log_level,
 		      gpointer exit_func) ;
+
+gint gqr_discretize_interp(gqr_rule_t *rule, gdouble *Q) ;
+gint gqr_discretize_adaptive(gqr_adapt_func_t func, gint idx, gpointer data,
+			     gqr_rule_t *rule, gdouble *Q,
+			     gdouble *ival, gint *ni, gint nimax, 
+			     gdouble tol) ;
+gint gqr_discretize_eval(gqr_rule_t *rule, gdouble *Q,
+			 gdouble *ival, gint ni,
+			 gdouble *u, gint nu, gint ustr,
+			 gdouble x, gdouble *f) ;
+gint gqr_discretize_fill(gqr_adapt_func_t func, gint idx, gpointer data,
+			 gqr_rule_t *rule, gdouble *ival, gint ni,
+			 gdouble *u, gint ustr) ;
 
 #endif /*GQR_H_INCLUDED*/

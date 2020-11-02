@@ -29,7 +29,8 @@ libgqr_la_SOURCES = \
 	integrals.c \
 	roots.c \
 	gqr-logging.c \
-	gqr-private.h
+	gqr-private.h \
+	discret.c
 
 include_HEADERS = \
 	gqr.h 

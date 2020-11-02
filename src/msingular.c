@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 by  Michael Carley */
+/* Copyright (C) 2007, 2020 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -272,7 +272,7 @@ gint grule_multi_singular(gint n, gint m, gdouble x,
       }
     } else {
       for ( i = 0 ; i < m ; i ++ ) 
-	M[(ss+1)*m+i] = gqr_finite_part_integral((gqr_func)legendre_func, &i,
+	M[(ss+1)*m+i] = gqr_finite_part_integral((gqr_func_t)legendre_func, &i,
 						 x, (gdouble)s[ss], -1, 1, h) ;
 
       for ( i = 0 ; i < n ; i ++ ) {

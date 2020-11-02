@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <glib.h>
 #include <gsl/gsl_sf.h>
@@ -11,6 +12,30 @@
 gint _gqr_quad_2_r(gint N, gdouble x, gdouble y, gdouble *I) ;
 gint _gqr_quad_log_new(gint N, gdouble x, gdouble y, gdouble *I) ;
 gint _gqr_quad_log(gint N, gdouble x, gdouble y, gdouble *I) ;
+
+gint dgeqpx_(gint *job, gint *m, gint *n, gint *k,
+	     gdouble *A, gint *lda, gdouble *C, gint *ldc,
+	     gint *jpvt, gdouble *ircond, gdouble *orcond,
+	     gint *rank, gdouble *svlues, gdouble *work,
+	     gint *lwork, gint *info) ;
+
+gchar *tests[] = {"discretization",
+		  "orthogonalization",
+		  ""} ;
+
+static gint parse_test(gchar *arg)
+
+{
+  gint i = 0 ;
+  
+  while ( strlen(tests[i]) != 0) {
+    if ( !strcmp(tests[i], arg) ) return i ;
+    i ++ ;
+  }
+
+  return -1 ;
+}
+
 
 gdouble _grule_hpoly(gint n, gdouble x)
 
@@ -46,13 +71,13 @@ gdouble func_Pn(gdouble x, gint q, gpointer data)
 
 {
   gdouble P, t1, t2 ;
-  gint n, k ; 
+  gint n, k ;
 
   n = 5 ;
 
   t1 = 1-x ; t2 = 1+x ;
   for ( (P = 0.0), (k = q) ; k <= n ; k ++ ) {
-    P += (gsl_pow_int(-1,q)*gsl_pow_int(t1,k-q) + 
+    P += (gsl_pow_int(-1,q)*gsl_pow_int(t1,k-q) +
 	  gsl_pow_int(-1,n)*gsl_pow_int(t2,k-q))*
       gsl_pow_int(-1,k)/gsl_sf_fact(k)*gsl_sf_fact(n+k)/gsl_sf_fact(n-k)/
       gsl_pow_int(2,k+1)/gsl_sf_fact(k-q) ;
@@ -84,11 +109,11 @@ gdouble func_power(gdouble x, gint m, gint *n)
   switch (m) {
   default: g_assert_not_reached() ; break ;
   case 0: return gsl_pow_int(x,(*n)) ; break ;
-  case 1: if ( *n == 0) return 0.0 ; 
-    return (*n)*gsl_pow_int(x,(*n)-1) ; 
+  case 1: if ( *n == 0) return 0.0 ;
+    return (*n)*gsl_pow_int(x,(*n)-1) ;
     break ;
-  case 2: if ( *n <= 1 ) return 0.0 ; 
-    return (*n)*(*n-1)*gsl_pow_int(x,(*n)-2) ; 
+  case 2: if ( *n <= 1 ) return 0.0 ;
+    return (*n)*(*n-1)*gsl_pow_int(x,(*n)-2) ;
     break ;
   }
 
@@ -104,7 +129,7 @@ gdouble func_krsin(gdouble x, gint m, gpointer data)
   case 1: return (2*cos(2*x)-3*sin(3*x)) ; break ;
   }
 
-  return 0.0 ;  
+  return 0.0 ;
 }
 
 gdouble func_log_test(gdouble t, gint m, gpointer *data)
@@ -131,7 +156,7 @@ gdouble func_log_test(gdouble t, gint m, gpointer *data)
   return f ;
 }
 
-gdouble log_test(gdouble x, gint q, gint n) 
+gdouble log_test(gdouble x, gint q, gint n)
 
 {
   gint m, k ;
@@ -203,36 +228,228 @@ gdouble log_test(gdouble x, gint q, gint n)
   return I ;
 }
 
+gint legendre_interp_matrix_test(gint n, gdouble x0, gdouble x1)
+
+{
+  gdouble Q[8192] ;
+  gqr_rule_t *rule ;
+  gint i, j ;
+  
+  rule = gqr_rule_alloc(n) ;
+  gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, n, NULL) ;
+
+  gqr_discretize_interp(rule, Q) ;
+
+  for ( i = 0 ; i < n ; i ++ ) {
+    for ( j = 0 ; j < n ; j ++ )
+      fprintf(stdout, "%lg ", Q[i*n+j]) ;
+    fprintf(stdout, "\n") ;
+  }
+  
+  return 0 ;
+}
+
+gdouble discretization_test_func(gdouble t, gint i, gpointer data)
+
+{
+  gdouble f ;
+  
+  f = sin(t) ;
+  
+  return f ;
+}
+
+gint legendre_discretization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
+
+{
+  gdouble ival[8193], Q[8192], emax, *u, x, f[32], g[32] ;
+  gqr_adapt_func_t func = discretization_test_func ;
+  gqr_rule_t *rule ;
+  gint ni, nimax, nn, nx, ustr, nu, i, idx ;
+  gpointer data = NULL ;
+  
+  nimax = 1024 ; ustr = 3 ; nu = 1 ; idx = 0 ; nx = 1024 ;
+
+  ival[0] = x0 ; ival[1] = x1 ;
+  
+  rule = gqr_rule_alloc(nq) ;
+  gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, nq, NULL) ;
+
+  gqr_discretize_interp(rule, Q) ;
+
+  ni = 1 ;
+
+  nn = 1 ;
+  while ( nn != 0 ) {
+    nn = gqr_discretize_adaptive(func, idx, data, rule,
+				 Q, ival, &ni, nimax, tol) ;
+  }
+
+  fprintf(stderr, "ni = %d\n", ni) ;
+
+  /*fill function array*/
+  u = (gdouble *)g_malloc(nq*(ni+1)*ustr*sizeof(gdouble)) ;
+  gqr_discretize_fill(func, 0, data, rule, ival, ni, u, ustr) ;
+
+  /*check evaluation*/
+  emax = 0.0 ;
+  for ( i = 0 ; i < nx ; i ++ ) {
+    x = x0 + (x1 - x0)*i/nx ;
+    gqr_discretize_eval(rule, Q, ival, ni, u, nu, ustr, x, g) ;
+    f[0] = func(x, idx, data) ;
+    emax = MAX(emax, fabs(f[0] - g[0])) ;
+    fprintf(stdout, "%lg %lg %lg\n", x, f[0], g[0]) ;
+  }
+
+  fprintf(stderr, "max error: %lg\n", emax) ;
+  
+  return 0 ;
+}
+
+gdouble orthogonalization_test_func(gdouble t, gint i, gpointer data)
+
+{
+  if ( t == 0 ) return 1.0/t ;
+
+  return pow(t, i-1) ;
+}
+
+gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
+
+{
+  gdouble ival[8193], Q[8192], emax, *u, x, f[32], g[32], *A, *C, *work ;
+  gqr_adapt_func_t func = orthogonalization_test_func ;
+  gqr_rule_t *rule ;
+  gint ni, nimax, nn, nx, ustr, nu, i, j, idx, nf, n, m, k, lwork ;
+  gint jpvt[1024], rank, info, job, nfunc ;
+  gdouble ircond, orcond, svlues[1024] ;
+  gpointer data = NULL ;
+
+  nf = 8 ; ustr = nf ;
+  nimax = 1024 ; nu = 1 ; idx = 0 ; nx = 1024 ;
+
+  ival[0] = x0 ; ival[1] = x1 ;
+  
+  rule = gqr_rule_alloc(nq) ;
+  gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, nq, NULL) ;
+
+  gqr_discretize_interp(rule, Q) ;
+
+  ni = 1 ;
+
+  /*split interval for discretization*/
+  for ( i = 0 ; i < nf ; i ++ ) {
+    nn = 1 ;
+    while ( nn != 0 ) {
+      nn = gqr_discretize_adaptive(func, idx, data, rule,
+				   Q, ival, &ni, nimax, tol) ;
+    }
+  }
+
+  fprintf(stderr, "ni = %d\n", ni) ;
+
+  /*number of points in discretized functions*/
+  nfunc = nq*ni ;
+  
+  /*use FORTRAN indexing from here*/
+  /*fill function array*/
+  u = (gdouble *)g_malloc(nfunc*nf*sizeof(gdouble)) ;
+  A = (gdouble *)g_malloc(nfunc*nf*sizeof(gdouble)) ;
+  /*this needs checking*/
+  C = (gdouble *)g_malloc0(nfunc*nf*sizeof(gdouble)) ;
+  /*fill columns of matrix A with functions*/
+  ustr = 1 ;
+  for ( i = 0 ; i < nf ; i ++ ) {
+    gqr_discretize_fill(func, i, data, rule, ival, ni, &(A[i*nfunc]), ustr) ;
+  }
+
+  /*need to weight columns of A by quadrature weights in long rule*/
+  for ( i = 0 ; i < ni ; i ++ ) {
+    gdouble dx ;
+    dx = 0.5*(ival[i+1] - ival[i]) ;
+    for ( j = 0 ; j < nq ; j ++ ) {
+      for ( k = 0 ; k < nf ; k ++ ) {
+	A[k*nfunc+i*nq+j] *= sqrt(gqr_rule_weight(rule, j)*dx) ;
+      }
+    }
+  }
+  
+  /*perform RRQR*/
+  job = 2 ;    /*no transpose operations (in FORTRAN indexing)*/
+  n = nf ;     /*number of columns in A*/
+  m = nfunc ;  /*number of rows in A*/
+  k = nfunc ;     /*number of rows in C*/
+  lwork = 2*m*n + 2*n + MAX(k, n) ;
+  work = (gdouble *)g_malloc0(lwork*sizeof(gdouble)) ;
+  dgeqpx_(&job, &m, &n, &k, A, &m, C, &k, jpvt, &ircond, &orcond,
+	  &rank, svlues, work, &lwork, &info) ;
+
+  /*check orthogonality*/
+
+  return 0 ;
+}
+
 gint main(gint argc, gchar **argv)
 
 {
   gqr_rule_t *g, *gleg ;
-  gqr_func func ;
+  gqr_func_t func ;
   gqr_parameter_t p ;
   gqr_t type ;
   gpointer fdata[2] ;
   gdouble a, b, y, yy ;
   gdouble y0, y1, dy ;
   gdouble dx, xbar, x ;
-  gdouble g0, g1, g2, glog ;
-  gint i, j, ns ;
-  gint ngp, ngps ;
-  gint N, M ;
-  gint n, nmax ;
-  gchar ch ;
+  gdouble g0, g1, g2, glog, tol ;
+  gint i, j, ns, ngp, ngps, N, M, n, nmax, nq, test, nx ;
+  gchar ch, *progname ;
   gdouble *I ;
-  gdouble P[3], Q[3], R[3] ;
-  gdouble r[512], du[512] ;
-  gdouble x0, du0 ;
+  gdouble P[3], Q[3], R[3], r[512], du[512], x0, x1, du0, s0, t0 ;
   gint np ;
-
+  FILE *input ;
+  
   N = 32 ;
   x = 0.4 ; y = 0.3 ;
   np = 64 ;
 
   N = 3 ;
 
-  /* type = gqr_rule_from_name("GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR",&p) */
+  progname = g_strdup(g_path_get_basename(argv[0])) ;
+
+  input = stdin ;
+
+  a = 1.0 ; b = 3.0 ; tol = 1e-9 ; nq = 32 ;
+  
+  while ( (ch = getopt(argc, argv, "a:b:e:n:q:s:T:t:")) != EOF ) {
+    switch (ch) {
+    default: g_assert_not_reached() ; break ;
+    case 'a': a = atof(optarg) ; break ;
+    case 'b': b = atof(optarg) ; break ;
+    case 'e': tol = atof(optarg) ; break ;
+    case 'n': nx  = atoi(optarg) ; break ;
+    case 'q': nq  = atoi(optarg) ; break ;
+    case 's': s0  = atof(optarg) ; break ;
+    case 'T': test = parse_test(optarg) ; break ;      
+    case 't': t0  = atof(optarg) ; break ;
+    }
+  }
+
+  if ( test == 0 ) {
+    legendre_discretization_test(nq, a, b, tol) ;
+
+    return 0 ;
+  }
+  
+  if ( test == 1 ) {
+    orthogonalization_test(nq, a, b, tol) ;
+    
+    return 0 ;
+  }
+  
+  return 0 ;
+
+  
+/* type = gqr_rule_from_name("GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR",&p) */
 
 /*   P[2] = -1 ; P[1] =  0 ; P[0] = 1 ; */
 /*   Q[2] =  0 ; Q[1] = -2 ; Q[0] = 0 ; */
@@ -252,6 +469,11 @@ gint main(gint argc, gchar **argv)
 /*   for ( np = 0 ; np < N ; np ++ )  */
 /*     fprintf(stdout, "%1.32e %1.32e\n", r[np], du[np]) ; */
 
+  /* legendre_interp_matrix_test(8, 0.3, 0.9) ; */
+
+
+  return 0 ;
+  
   gqr_parameter_clear(&p) ;
 
   g = gqr_rule_alloc(np) ;
