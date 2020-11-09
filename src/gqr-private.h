@@ -72,10 +72,19 @@ gint grule_logarithmic_smith(gint n, gdouble *x, gdouble *w) ;
 gint grule_hermite(gint n, gdouble *x, gdouble *w) ;
 
 gint grule_multi_singular(gint n, gint m, gdouble x,
-			   gint ns, gint *s, 
-			   gdouble *xk, gdouble *wt) ;
+			  gint ns, gint *s, 
+			  gdouble *xk, gdouble *wt) ;
 gint grule_multi_nsingular(gint n, gint m, gdouble x, gdouble y,
 			   gint ns, gint *s, 
 			   gdouble *xk, gdouble *wt) ;
+gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p) ;
+
+gint rrqr(gdouble *A, gint m, gint n, gdouble *tau, gint *jpvt,
+	  gdouble *work, gint lwork) ;
+gint rrqr_rank(gdouble *R, gint m, gint n, gdouble ee) ;
+gint rrqr_qr(gdouble *A, gint m, gint n, gdouble *tau, gint rank,
+	     gdouble *Q, gdouble *R11, gdouble *work, gint lwork) ;
+
+gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p) ;
 
 #endif /*GQR_PRIVATE_H_INCLUDED*/

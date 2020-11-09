@@ -54,6 +54,24 @@
 #include "gqr.h"
 #include "gqr-private.h"
 
+gchar *gqr_pointers[] =
+  {
+   "scattering_radial",
+   "  basis functions for the radial integrals in Bremer and Gimbutas,\n"
+   "On the numerical evaluation of the singular integrals of scattering\n"
+   "theory, 2013\n"
+   "parameter list:\n"
+   "  integer: [number of basis functions]\n"
+   "           [base quadrature length]\n"
+   "           [maximum number of discretization intervals]\n"
+   "           [maximum rank for orthogonalization (rule length)]\n"
+   "  float:   [start of quadrature interval]\n"
+   "           [end of quadrature interval]\n"
+   "           [tolerance for discretization]\n"
+   "           [ratio of radii (see Bremer and Gimbutas)]\n",
+   ""			 
+} ;
+
 /** 
  * Allocate a Gaussian quadrature rule.
  * 
@@ -262,6 +280,12 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
     grule_hermite(n, g->x, g->w) ; g->n = n ;
     g->a = -1 ; g->b = 1 ; g->type = type ;    
     break ;
+  case GQR_GAUSS_GENERALIZED:
+    g->n = grule_bgr(g->x, g->w, p) ;
+    g->a = gqr_parameter_double(p, 0) ;
+    g->b = gqr_parameter_double(p, 1) ;
+    g->type = type ;    
+    break ;
   }
 
   return 0 ;
@@ -444,6 +468,32 @@ gqr_t gqr_rule_from_name(gchar *str, gqr_parameter_t *p)
   if ( p != NULL ) p->type = rule ;
 
   return rule ;
+}
+
+gpointer gqr_pointer_parse(gchar *str)
+
+{
+  if ( !strcmp(str, "scattering_radial") )
+    return grule_bgr_func_scattering_r ;
+  
+  return NULL ;
+}
+
+gint gqr_pointers_list(FILE *output, gboolean verbose)
+
+{
+  gint i ;
+
+  i = 0 ; 
+  while ( strlen(gqr_pointers[2*i]) != 0 ) {
+    fprintf(output, "%s\n", gqr_pointers[2*i+0]) ;
+    if ( verbose ) {
+      fprintf(output, "\n%s\n", gqr_pointers[2*i+1]) ;
+    }
+    i ++ ; 
+  }
+  
+  return 0 ;
 }
 
 /**

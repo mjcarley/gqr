@@ -96,21 +96,21 @@ static void gqr_runge_kutta_solve(gdouble th0, gdouble th1, gint ns,
 				  gdouble *x)
 
 {
-  gdouble p, q, r, dp, dq, dr, k0, k1, h, th ;
+  gdouble p, q, r, dp, dr, k0, k1, h, th ;
   gint i ;
 
   h = (th1-th0)/(gdouble)ns ; 
 
   p = GQR_POLYVAL(P,(*x)) ; q = GQR_POLYVAL(Q,(*x)) ;
   r = GQR_POLYVAL(R,(*x)) ;
-  dp = GQR_POLYDER(P,(*x)) ; dq = GQR_POLYDER(Q,(*x)) ;
+  dp = GQR_POLYDER(P,(*x)) ;
   dr = GQR_POLYDER(R,(*x)) ;
 
   k0 = -h*p*r/(r*sqrt(p*r) + 0.25*(dr*p-dp*r+2*r*q)*sin(2*th0)) ;  
   for ( (i = 0), (th = th0 + h) ; i < ns ; (i ++), (th += h) ) {
     p = GQR_POLYVAL(P,(*x)+k0) ; q = GQR_POLYVAL(Q,(*x)+k0) ;
     r = GQR_POLYVAL(R,(*x)+k0) ;
-    dp = GQR_POLYDER(P,(*x)+k0) ; dq = GQR_POLYDER(Q,(*x)+k0) ;
+    dp = GQR_POLYDER(P,(*x)+k0) ;
     dr = GQR_POLYDER(R,(*x)+k0) ;
     k1 = -h*p*r/(r*sqrt(p*r) + 0.25*(dr*p-dp*r+2*r*q)*sin(2*th)) ;
     *x += 0.5*(k0+k1) ;

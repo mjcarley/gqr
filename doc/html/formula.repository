@@ -33,3 +33,6 @@
 \form#32:$u'(x)$
 \form#33:$q(x)$
 \form#34:$r(x)$
+\form#35:$f_i(t)$
+\form#36:$f_{-i-1}(t)$
+\form#37:$i<0$

@@ -13,15 +13,12 @@ gint _gqr_quad_2_r(gint N, gdouble x, gdouble y, gdouble *I) ;
 gint _gqr_quad_log_new(gint N, gdouble x, gdouble y, gdouble *I) ;
 gint _gqr_quad_log(gint N, gdouble x, gdouble y, gdouble *I) ;
 
-gint dgeqpx_(gint *job, gint *m, gint *n, gint *k,
-	     gdouble *A, gint *lda, gdouble *C, gint *ldc,
-	     gint *jpvt, gdouble *ircond, gdouble *orcond,
-	     gint *rank, gdouble *svlues, gdouble *work,
-	     gint *lwork, gint *info) ;
-
 gchar *tests[] = {"discretization",
 		  "orthogonalization",
 		  ""} ;
+
+gint rrqr(gdouble *A, gint m, gint n, gdouble *tau, gint *jpvt,
+	  gdouble *work, gint lwork) ;
 
 static gint parse_test(gchar *arg)
 
@@ -249,7 +246,7 @@ gint legendre_interp_matrix_test(gint n, gdouble x0, gdouble x1)
   return 0 ;
 }
 
-gdouble discretization_test_func(gdouble t, gint i, gpointer data)
+gdouble discretization_test_func(gdouble t, gint i, gqr_parameter_t *p)
 
 {
   gdouble f ;
@@ -306,32 +303,57 @@ gint legendre_discretization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   return 0 ;
 }
 
-gdouble orthogonalization_test_func(gdouble t, gint i, gpointer data)
+gdouble orthogonalization_test_func(gdouble t, gint i, gqr_parameter_t *p)
 
 {
-  if ( t == 0 ) return 1.0/t ;
+  gdouble d, f ;
 
-  return pow(t, i-1) ;
+  d = 1e-7 ;
+
+  f = (1.0-d)*t + d ;
+  
+  if ( i == 0 ) return 1.0/f ;
+
+  return pow(f, i-1) ;
 }
 
 gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
 
 {
-  gdouble ival[8193], Q[8192], emax, *u, x, f[32], g[32], *A, *C, *work ;
+  gdouble *ival, *Q, *R11, *u, x, *A, *work ;
+  gdouble w, r[16384], z[16384] ;
   gqr_adapt_func_t func = orthogonalization_test_func ;
   gqr_rule_t *rule ;
-  gint ni, nimax, nn, nx, ustr, nu, i, j, idx, nf, n, m, k, lwork ;
-  gint jpvt[1024], rank, info, job, nfunc ;
-  gdouble ircond, orcond, svlues[1024] ;
+  gint ni, nimax, nn, i, j, nf, k, lwork ;
+  gint rank, rankmax, nfunc, *pvt ;
   gpointer data = NULL ;
 
-  nf = 8 ; ustr = nf ;
-  nimax = 1024 ; nu = 1 ; idx = 0 ; nx = 1024 ;
+  nf = 32 ;
+  nimax = 16384*4 ; 
 
+  ival = (gdouble *)g_malloc(nimax*sizeof(gdouble)) ;
+  pvt = (gint *)g_malloc0(nimax*nq*sizeof(gint)) ;
+  
+  rankmax = nf ;
+
+  fprintf(stderr, "orthogonalization test\n") ;
+  fprintf(stderr, "======================\n") ;
+  fprintf(stderr, "interval:   %lg, %lg\n", x0, x1) ;
+  fprintf(stderr, "tolerance:  %lg\n",      tol) ;
+  fprintf(stderr, "quadrature: %d\n",       nq) ;
+  fprintf(stderr, "functions:  %d\n",       nf) ;
+  
+  lwork = 3*nimax*nq+1 + rankmax ;
+  work = (gdouble *)g_malloc(lwork*sizeof(gdouble)) ;
+  fprintf(stderr, "lwork:      %d\n",       lwork) ;
+  
   ival[0] = x0 ; ival[1] = x1 ;
   
   rule = gqr_rule_alloc(nq) ;
   gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, nq, NULL) ;
+
+  Q   = (gdouble *)g_malloc(nq*nq*sizeof(gdouble)) ;
+  R11 = (gdouble *)g_malloc(rankmax*rankmax*sizeof(gdouble)) ;
 
   gqr_discretize_interp(rule, Q) ;
 
@@ -341,26 +363,23 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   for ( i = 0 ; i < nf ; i ++ ) {
     nn = 1 ;
     while ( nn != 0 ) {
-      nn = gqr_discretize_adaptive(func, idx, data, rule,
+      nn = gqr_discretize_adaptive(func, i, data, rule,
 				   Q, ival, &ni, nimax, tol) ;
     }
   }
 
-  fprintf(stderr, "ni = %d\n", ni) ;
+  fprintf(stderr, "intervals:  %d\n", ni) ;
 
   /*number of points in discretized functions*/
   nfunc = nq*ni ;
   
   /*use FORTRAN indexing from here*/
   /*fill function array*/
-  u = (gdouble *)g_malloc(nfunc*nf*sizeof(gdouble)) ;
-  A = (gdouble *)g_malloc(nfunc*nf*sizeof(gdouble)) ;
-  /*this needs checking*/
-  C = (gdouble *)g_malloc0(nfunc*nf*sizeof(gdouble)) ;
+  u = (gdouble *)g_malloc(nfunc*rankmax*sizeof(gdouble)) ;
+  A = (gdouble *)g_malloc(nfunc*     nf*sizeof(gdouble)) ;
   /*fill columns of matrix A with functions*/
-  ustr = 1 ;
   for ( i = 0 ; i < nf ; i ++ ) {
-    gqr_discretize_fill(func, i, data, rule, ival, ni, &(A[i*nfunc]), ustr) ;
+    gqr_discretize_fill(func, i, data, rule, ival, ni, &(A[i*nfunc]), 1) ;
   }
 
   /*need to weight columns of A by quadrature weights in long rule*/
@@ -373,46 +392,114 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
       }
     }
   }
+
+  gqr_discretize_orthogonalize(A, nfunc, nf, tol, &rank, rankmax,
+			       u, R11, pvt, work, lwork) ;
+  fprintf(stderr, "rank:       %d\n", rank) ;
+
+  /*generate a quadrature rule*/
+  memset(r, 0, nf*sizeof(gdouble)) ;
+  for ( i = 0 ; i < ni ; i ++ ) {
+    for ( j = 0 ; j < nq ; j ++ ) {
+      gqr_discretize_quadrature(rule, ival, ni, i, j, &x, &w) ;
+      for ( k = 0 ; k < nf ; k ++ ) {
+	r[k] += u[k*nfunc+i*nq+j]*sqrt(w) ;
+      }
+    }
+  }
+
+  /*there should be some way to do the RRQR on the transpose without
+    explicitly transposing, but I haven't found it yet*/
+  for ( i = 0 ; i < rank ; i ++ ) {
+    for ( j = 0 ; j < nfunc ; j ++ ) {
+      A[j*rank+i] = u[i*nfunc+j] ;
+    }
+  }
+
+  memset(pvt, 0, nfunc*sizeof(gint)) ;
+  gqr_discretize_orthogonalize(A, rank, nfunc, 1e-15, &rank, rankmax,
+  			       u, R11, pvt, work, lwork) ;
+
+  for ( i = 0 ; i < rank ; i ++ ) {
+    z[i] = 0.0 ;
+    for ( j = 0 ; j < rank ; j ++ ) {
+      /*this is the transpose multiplication in FORTRAN indexing*/
+      z[i] += u[i*rank+j]*r[j] ;
+    }
+  }
+
+  i = rank-1 ;
+  z[rank-1] = z[rank-1]/R11[i*rank+i] ;
+  for ( i = rank-2 ; i >= 0 ; i -- ) {
+    for ( j = i+1 ; j < rank ; j ++ ) {
+      z[i] -= R11[j*rank+i]*z[j] ;
+    }
+    z[i] /= R11[i*rank+i] ;
+  }
+
+  for ( i = 0 ; i < rank ; i ++ ) {
+    /*subtract one to switch from FORTRAN indexing*/
+    gqr_discretize_quadrature(rule, ival, ni, pvt[i]-1, -1, &x, &w) ;
+    fprintf(stdout, "%1.24e %1.24e\n", x, sqrt(w)*z[i]) ;
+  }
   
-  /*perform RRQR*/
-  job = 2 ;    /*no transpose operations (in FORTRAN indexing)*/
-  n = nf ;     /*number of columns in A*/
-  m = nfunc ;  /*number of rows in A*/
-  k = nfunc ;     /*number of rows in C*/
-  lwork = 2*m*n + 2*n + MAX(k, n) ;
-  work = (gdouble *)g_malloc0(lwork*sizeof(gdouble)) ;
-  dgeqpx_(&job, &m, &n, &k, A, &m, C, &k, jpvt, &ircond, &orcond,
-	  &rank, svlues, work, &lwork, &info) ;
-
+  return 0 ;
+#if 0  
   /*check orthogonality*/
+  edmax = eoffmax = 0.0 ;
+  for ( n = 0 ; n < rank ; n ++ ) {
+    for ( m = 0 ; m < n ; m ++ ) {
+      Iq = 0.0 ;
 
+      for ( i = 0 ; i < ni ; i ++ ) {
+	for ( j = 0 ; j < nq ; j ++ ) {
+	  gqr_discretize_quadrature(rule, ival, ni, i, j, &x, &w) ;
+	  Iq += u[n*nfunc+i*nq+j]*u[m*nfunc+i*nq+j] ;
+	}
+      }
+      eoffmax = MAX(eoffmax, fabs(Iq)) ;
+    }
+    m = n ; 
+    Iq = 0.0 ;
+    
+    for ( i = 0 ; i < ni ; i ++ ) {
+      for ( j = 0 ; j < nq ; j ++ ) {
+	gqr_discretize_quadrature(rule, ival, ni, i, j, &x, &w) ;
+	Iq += u[n*nfunc+i*nq+j]*u[m*nfunc+i*nq+j] ;
+      }
+    }
+    edmax = MAX(edmax, fabs(Iq-1.0)) ;
+
+    for ( m = n+1 ; m < rank ; m ++ ) {
+      Iq = 0.0 ;
+
+      for ( i = 0 ; i < ni ; i ++ ) {
+	for ( j = 0 ; j < nq ; j ++ ) {
+	  gqr_discretize_quadrature(rule, ival, ni, i, j, &x, &w) ;
+	  Iq += u[n*nfunc+i*nq+j]*u[m*nfunc+i*nq+j] ;
+	}
+      }
+      eoffmax = MAX(eoffmax, fabs(Iq)) ;
+    }
+  }
+
+  fprintf(stderr, "orthogonality error: %lg, %lg\n", edmax, eoffmax) ;
+#endif
+  
   return 0 ;
 }
 
 gint main(gint argc, gchar **argv)
 
 {
-  gqr_rule_t *g, *gleg ;
-  gqr_func_t func ;
-  gqr_parameter_t p ;
-  gqr_t type ;
-  gpointer fdata[2] ;
-  gdouble a, b, y, yy ;
-  gdouble y0, y1, dy ;
-  gdouble dx, xbar, x ;
-  gdouble g0, g1, g2, glog, tol ;
-  gint i, j, ns, ngp, ngps, N, M, n, nmax, nq, test, nx ;
+  gdouble a, b ;
+  gdouble x, tol, s0, t0, y ;
+  gint N, M, n, nmax, nq, test, nx ;
   gchar ch, *progname ;
-  gdouble *I ;
-  gdouble P[3], Q[3], R[3], r[512], du[512], x0, x1, du0, s0, t0 ;
-  gint np ;
   FILE *input ;
   
   N = 32 ;
   x = 0.4 ; y = 0.3 ;
-  np = 64 ;
-
-  N = 3 ;
 
   progname = g_strdup(g_path_get_basename(argv[0])) ;
 
@@ -446,142 +533,5 @@ gint main(gint argc, gchar **argv)
     return 0 ;
   }
   
-  return 0 ;
-
-  
-/* type = gqr_rule_from_name("GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR",&p) */
-
-/*   P[2] = -1 ; P[1] =  0 ; P[0] = 1 ; */
-/*   Q[2] =  0 ; Q[1] = -2 ; Q[0] = 0 ; */
-/*   R[2] =  0 ; R[1] =  0 ; R[0] = np*(np+1) ; */
-
-/*   P[2] = 0 ; P[1] = 0 ; P[0] = 1 ; */
-/*   Q[2] = 0 ; Q[1] = 0 ; Q[0] = 0 ; */
-/*   R[2] = -1 ; R[1] = 0 ; R[0] = 2*np+1 ; */
-
-/*   x0 = 0.0 ; */
-/*   du0 = _grule_diff_hpoly(np, x0) ; */
-
-/* /\*   gqr_diff_legendre(np, x0, &du0) ; *\/ */
-/*   gqr_function_nextroot(P, Q, R, 0.0, _grule_hpoly(np, 0.0), &x0, &du0) ; */
-/*   gqr_function_roots(P, Q, R, x0, du0, N, r, du) ; */
-
-/*   for ( np = 0 ; np < N ; np ++ )  */
-/*     fprintf(stdout, "%1.32e %1.32e\n", r[np], du[np]) ; */
-
-  /* legendre_interp_matrix_test(8, 0.3, 0.9) ; */
-
-
-  return 0 ;
-  
-  gqr_parameter_clear(&p) ;
-
-  g = gqr_rule_alloc(np) ;
-  gqr_rule_select(g, GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR, np, &p) ;
-  gqr_rule_write(g, stdout) ;
-
-  return 0 ;
-
-/*   I = (gdouble *)g_malloc((N+1)*sizeof(gdouble)) ; */
-/*   _gqr_quad_log(N, x, y, I) ; */
-/*   for ( i = 0 ; i <= N ; i ++ ) */
-/*     fprintf(stdout, "%1.16e\n", I[i]) ; */
-/*   _gqr_quad_log_new(N, x, y, I) ; */
-/*   for ( i = 0 ; i <= N ; i ++ ) */
-/*     fprintf(stdout, "%1.16e\n", I[i]) ; */
-/*   return 0 ; */
-  
-  /*Chebyshev tests*/
-/*   g = gqr_rule_alloc(32) ; */
-/*   for ( i = 1 ; i < 5 ; i ++ ) { */
-/*     gqr_rule_select(g, GQR_GAUSS_CHEBYSHEV_2, i, NULL) ; */
-/*     gqr_rule_write(g, stdout) ; */
-/*   } */
-/*   a = -1.0 ; b = 1.0 ; */
-/*   for ( i = 0 ; i < 16384 ; i ++ )  */
-/*     gqr_rule_select(g, GQR_GAUSS_CHEBYSHEV_1, 16384, NULL) ; */
-/*   gqr_rule_select(g, GQR_GAUSS_LEGENDRE, 8, NULL) ; */
-/*   gqr_rule_write(g, stdout) ; */
-/*   return 0 ; */
-/*   gqr_rule_scale(g, a, b, &xbar, &dx) ; */
-/*   for ( n = 0 ; n < 8 ; n ++ ) { */
-/*     for ( (i = 0), (g0 = 0.0) ; i < gqr_rule_length(g) ; i ++ ) { */
-/*       x = gqr_rule_abscissa(g,i)*dx + xbar ; */
-/*       g0 += gqr_rule_weight(g,i)*dx*gsl_pow_int(x,n) ; */
-/*     } */
-/*     fprintf(stdout, "%d %1.16e\n", n, g0) ; */
-/*   } */
-/*   return 0 ; */
-
-  /*logarithmic Green's function test*/
-  func = func_log_test ;
-  fdata[0] = &y ; fdata[1] = &n ;
-  y0 = -2.0 ; y1 = 1.0 ; dy = 0.0125 ;
-/*   dy = 4.0/257.0 ;  */
-  ns = (gint)floor((y1 - y0)/dy)+1 ;
-  ngp = 1024 ; ngps = 2048 ;
-  a = -1.0 ; b = 1.0 ;
-  g = gqr_rule_alloc(ngps) ; 
-  gleg = gqr_rule_alloc(ngp) ;
-
-  M = 4 ; N = 16 ; nmax = 4 ; y = 0.0 ;
-  while ( (ch = getopt(argc, argv, "M:N:n:y:")) != EOF ) {
-    switch(ch) {
-    default: g_assert_not_reached() ; break ;
-    case 'M': M = atoi(optarg) ; break ;
-    case 'N': N = atoi(optarg) ; break ;
-    case 'n': nmax = atoi(optarg) ; break ;
-    case 'y': y = atof(optarg) ; break ;
-    }
-  }
-  
-  gqr_parameter_clear(&p) ;
-  gqr_parameter_set_int(&p, M) ;
-  gqr_parameter_set_double(&p, 0.4) ;
-  gqr_parameter_set_double(&p, 0.3) ;
-  gqr_rule_select(g, GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR, N, &p) ;
-  gqr_rule_write(g, stdout) ;
-
-
-  gqr_parameter_clear(&p) ;
-  gqr_parameter_set_int(&p, M) ;
-  gqr_parameter_set_int(&p, 0) ;
-/*   gqr_parameter_set_int(&p, 1) ; */
-  gqr_parameter_set_int(&p, 2) ;
-  gqr_parameter_set_double(&p, 0.4) ;
-  gqr_parameter_set_double(&p, 0.3) ;
-  gqr_rule_select(g, GQR_GAUSS_LEGENDRE | GQR_GAUSS_MULTISINGULAR, N, &p) ;
-  gqr_rule_write(g, stdout) ;
-  
-
-  return 0 ;
-
-  for ( j = 0 ; j < ns ; j ++ ) {
-    yy = y0 + j*dy ;
-    gqr_parameter_clear(&p) ;
-    gqr_parameter_set_int(&p, M) ;
-    if ( gsl_fcmp(yy, 1.0, 2e-16) == 0) yy = 1.0 ;
-    gqr_parameter_set_double(&p, yy) ;
-    gqr_rule_select(g, GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR, N, &p) ;
-    gqr_rule_select(gleg, GQR_GAUSS_LEGENDRE, ngp, NULL) ;
-
-    gqr_rule_scale(g, a, b, &xbar, &dx) ;
-    y = xbar + dx*yy ;
-    for ( n = 0 ; n < nmax ; n ++ ) {
-      for ( ( i = 0 ), ( glog = g0 = g1 = g2 = 0.0 ) ; 
-	    i < gqr_rule_length(g) ; i ++ ) {
-	x = gqr_rule_abscissa(g,i)*dx + xbar ;
-	glog += (func_log_test(x, 2, fdata)+
-		 func_log_test(x, 1, fdata)+
-		 func_log_test(x, 0, fdata))
-	  *gqr_rule_weight(g,i)*dx ;
-      }
-      fprintf(stdout, "%d %g %g %g %g\n",
-	      n, y, glog, 
-	      log_test(y, 2, n)+log_test(y, 1, n)+log_test(y, 0, n),
-	      log_test(y, 2, n)+log_test(y, 1, n)+log_test(y, 0, n)-glog) ;
-    }
-  }
-
   return 0 ;
 }

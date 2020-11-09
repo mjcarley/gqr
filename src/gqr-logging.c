@@ -75,7 +75,7 @@ void gqr_logging_func(const gchar *log_domain,
 
   if ( log_level > level ) return ;
 
-  fprintf(f, "%s%s-%s: %s\n", p, 
+  fprintf(f, "%s: %s-%s: %s\n", p, 
 	  G_LOG_DOMAIN, gqr_logging_string(log_level),
 	  message) ;
 

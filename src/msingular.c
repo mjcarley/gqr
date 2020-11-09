@@ -34,7 +34,7 @@
   The third argument is a pointer to match the GQRFunc typedef.
  */
 
-gdouble legendre_func(gdouble t, gint d, gint *m)
+static gdouble legendre_func(gdouble t, gint d, gint *m)
 
 {
   if ( t < -1.0 || t > 1.0 ) 
@@ -180,7 +180,7 @@ gint grule_multi_singular(gint n, gint m, gdouble x,
 {
   gdouble *fp2 ;
   gdouble *P, *Q, *Px, *dPx ;
-  gdouble *fp, pv ;
+  gdouble *fp ;
   gdouble t ;
   gqr_rule_t *g, *h ;
   gint i, j, k, ss, ns ;
@@ -249,7 +249,7 @@ gint grule_multi_singular(gint n, gint m, gdouble x,
   else
     for ( i = 1 ; i < n ; i ++ ) fp2[i] = 2.0/(2.0*i+1)*(Q[i+1]-Q[i-1]) ;
 
-  pv = gqr_finite_part(-1, 1, x, 1.0) ;
+  /* pv = gqr_finite_part(-1, 1, x, 1.0) ; */
   for ( i = 1 ; i <= smax ; i ++ ) 
     fp[i] = gqr_finite_part(-1, 1, x, (gdouble)i) ;
 

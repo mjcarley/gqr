@@ -41,6 +41,12 @@ gint dgeqp3_(gint *m, gint *n, gdouble *A, gint *lda, gint *jpvt,
 
 gint dlarf_(gchar *side, gint *m, gint *n, gdouble *v, gint *incv,
 	    gdouble *tau, gdouble *C, gint *ldc, gdouble *work) ;
+gint dlarfb_(gchar *side, gchar *trans, gchar *direct, gchar *storev,
+	     gint *m, gint *n, gint *k, gdouble *v, gint *ldv,
+	     gdouble *t, gint *ldt, gdouble *c, gint *ldc,
+	     gdouble *work, gint *ldwork) ;
+gint dlarft_(gchar *direct, gchar *storev, gint *n, gint *k,
+	     gdouble *v, gint *ldv, gdouble *tau, gdouble *t, gint *ldt) ;
 
 /*FORTRAN matrix indexing*/
 #define matrix_index(_m,_n,_i,_j) ((_i) + (_j)*(_m))
@@ -101,14 +107,14 @@ gint rrqr_rank(gdouble *R, gint m, gint n, gdouble ee)
 }
 
 gint rrqr_qr(gdouble *A, gint m, gint n, gdouble *tau, gint rank,
-	     gdouble *Q, gdouble *R11)
+	     gdouble *Q, gdouble *R11, gdouble *work, gint lwork)
 
 {
-  gint i, j, r, nv, nc, one = 1 ;
-  gdouble work[8192] ;
+  gint i, j, ldwork ;
+  gdouble T[8192] ;
   
   for ( j = 0 ; j < rank ; j ++ ) {
-    for ( i = 0 ; i < m ; i ++ ) {
+    for ( i = 0 ; i < MIN(m,rank) ; i ++ ) {
       Q[matrix_index(m, rank, i, j)] = 0.0 ;
     }
     Q[matrix_index(m, rank, j, j)] = 1.0 ;
@@ -120,12 +126,49 @@ gint rrqr_qr(gdouble *A, gint m, gint n, gdouble *tau, gint rank,
     }
   }
 
-  for ( r = rank-1 ; r >= 0 ; r -- ) {
-    A[matrix_index(m,n,r,r)] = 1.0 ;
-    nv = m - r ; nc = rank - r ;
-    dlarf_("L", &nv, &nc, &(A[matrix_index(m,n,r,r)]), &one,
-	   &(tau[r]), &(Q[matrix_index(m,rank,r,r)]), &m, work) ;
+  /*this is correct for "L"*/
+  ldwork = rank ;
+  dlarft_("F", "C", &rank, &rank, A, &m, tau, T, &rank) ;
+  dlarfb_("L", "N", "F", "C", &m, &rank, &rank, A, &m, T, &rank, Q, &m, work,
+	  &ldwork) ;
+  
+  /*R11 is rank x rank; Q is m x rank*/
+  /*make diagonals of R11 positive: multiply columns of R11 by sign of
+    diagonal entry, multiply rows of Q*/
+  for ( i = 0 ; i < rank ; i ++ ) {
+    if ( R11[matrix_index(rank,rank,i,i)] < 0.0 ) {
+      for ( j = 0 ; j < rank ; j ++ ) {
+	R11[matrix_index(rank,rank,i,j)] *= -1 ;
+      }
+      for ( j = 0 ; j < m ; j ++ ) {
+	Q[matrix_index(m,rank,j,i)] *= -1 ;
+      }
+    }
   }
+  
+  return 0 ;
+}
+
+gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
+				  gdouble tol,
+				  gint *rank, gint rankmax,
+				  gdouble *Q, gdouble *R11,
+				  gint *pvt,
+				  gdouble *work, gint lwork)
+
+{
+  gdouble *tau ;
+
+  if ( lwork < (3*n+1) + rankmax )
+    g_error("%s: workspace too small (%d < %d)",
+	    __FUNCTION__, lwork, 3*n+1 + rankmax) ;
+  
+  tau = &(work[3*n+1]) ;
+  
+  rrqr(A, m, n, tau, pvt, work, 3*n+1) ;
+  *rank = rrqr_rank(A, m, n, tol) ;
+  if ( *rank > rankmax ) *rank = rankmax ;    
+  rrqr_qr(A, m, n, tau, *rank, Q, R11, work, lwork) ;
   
   return 0 ;
 }
@@ -200,7 +243,7 @@ gint gqr_discretize_interp(gqr_rule_t *rule, gdouble *Q)
   return 0 ;
 }
 
-gint point_interval(gdouble *ival, gint ni, gdouble x)
+static gint point_interval(gdouble *ival, gint ni, gdouble x)
 
 {
   gint i0, i1, i ;
@@ -269,6 +312,31 @@ gint gqr_discretize_fill(gqr_adapt_func_t func, gint idx, gpointer data,
       u[(i*nq+j)*ustr] = func(x, idx, data) ;
     }
   }
+
+  return 0 ;
+}
+
+gint gqr_discretize_quadrature(gqr_rule_t *rule,
+			       gdouble *ival, gint ni, gint i, gint j,
+			       gdouble *x, gdouble *w)
+
+{
+  gdouble dx, xb ;
+
+  /*for negative j, treat i as absolute index*/
+  if ( j < 0 ) {
+    j = i % gqr_rule_length(rule) ;
+    i = i/gqr_rule_length(rule) ;
+  }
+  
+  g_assert(i < ni && i >= 0) ;
+  g_assert(j < gqr_rule_length(rule) && j >= 0) ;
+
+  dx = 0.5*(ival[i+1] - ival[i]) ;
+  xb = 0.5*(ival[i+1] + ival[i]) ;
+
+  *x = dx*gqr_rule_abscissa(rule, j) + xb ;
+  *w = dx*gqr_rule_weight(rule, j) ;
 
   return 0 ;
 }

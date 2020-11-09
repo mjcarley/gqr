@@ -3,80 +3,173 @@
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-gdouble {\bf gqr\_\-finite\_\-part} (gdouble a, gdouble b, gdouble y, gdouble g)
+gdouble {\bf gqr\+\_\+finite\+\_\+part} (gdouble a, gdouble b, gdouble y, gdouble g)
 \item 
-gdouble {\bf gqr\_\-finite\_\-part\_\-integral} ({\bf gqr\_\-func} f, gpointer data, gdouble y, gdouble gm, gdouble a, gdouble b, {\bf gqr\_\-rule\_\-t} $\ast$g)
+gdouble {\bf gqr\+\_\+finite\+\_\+part\+\_\+integral} ({\bf gqr\+\_\+func\+\_\+t} f, gpointer data, gdouble y, gdouble gm, gdouble a, gdouble b, {\bf gqr\+\_\+rule\+\_\+t} $\ast$g)
 \item 
-gdouble {\bf gqr\_\-finite\_\-part\_\-1mt\_\-n} (gint n, gint m)
+gdouble {\bf gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n} (gint n, gint m)
 \item 
-gdouble {\bf gqr\_\-legendre\_\-dPdx} (gdouble x, gint n, gint m)
+gdouble {\bf gqr\+\_\+legendre\+\_\+d\+Pdx} (gdouble x, gint n, gint m)
 \item 
-gdouble {\bf gqr\_\-finite\_\-part\_\-Pn1} (gint n, gint m)
+gdouble {\bf gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1} (gint n, gint m)
 \item 
-gdouble {\bf gqr\_\-finite\_\-part\_\-tn\_\-log} (gdouble x, gint n)
+gdouble {\bf gqr\+\_\+finite\+\_\+part\+\_\+tn\+\_\+log} (gdouble x, gint n)
 \end{DoxyCompactItemize}
 
 
+\subsection{Detailed Description}
+
+
 \subsection{Function Documentation}
-\index{finite@{finite}!gqr\_\-finite\_\-part@{gqr\_\-finite\_\-part}}
-\index{gqr\_\-finite\_\-part@{gqr\_\-finite\_\-part}!finite@{finite}}
-\subsubsection[{gqr\_\-finite\_\-part}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\_\-finite\_\-part (gdouble {\em a}, \/  gdouble {\em b}, \/  gdouble {\em y}, \/  gdouble {\em g})}\label{group__finite_gad3b485753045033ddc1c8f73909aa6e3}
-Compute the finite part integral $\mathrm{FP}\int_{a}^{b}1/(y-x)^{\gamma}\,\mathrm{d}x$ using the method of Brandao, M. P., 1987, `Improper integrals in theoretical aerodynamics: The problem revisited', AIAA Journal, 25(9):1258-\/-\/1260.
+\index{Evaluation of finite part integrals@{Evaluation of finite part integrals}!gqr\+\_\+finite\+\_\+part@{gqr\+\_\+finite\+\_\+part}}
+\index{gqr\+\_\+finite\+\_\+part@{gqr\+\_\+finite\+\_\+part}!Evaluation of finite part integrals@{Evaluation of finite part integrals}}
+\subsubsection[{gqr\+\_\+finite\+\_\+part}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\+\_\+finite\+\_\+part (
+\begin{DoxyParamCaption}
+\item[{gdouble}]{a, }
+\item[{gdouble}]{b, }
+\item[{gdouble}]{y, }
+\item[{gdouble}]{g}
+\end{DoxyParamCaption}
+)}\label{group__finite_gad3b485753045033ddc1c8f73909aa6e3}
+Compute the finite part integral $\mathrm{FP}\int_{a}^{b}1/(y-x)^{\gamma}\,\mathrm{d}x$ using the method of Brandao, M. P., 1987, `\+Improper integrals in theoretical aerodynamics\+: The problem revisited\textquotesingle{}, A\+I\+A\+A Journal, 25(9)\+:1258--1260.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em a}]lower limit of integration; \item[{\em b}]upper limit of integration; \item[{\em y}]location of singularity; \item[{\em g}]order of singularity, $\gamma$.\end{DoxyParams}
+{\em a} & lower limit of integration; \\
+\hline
+{\em b} & upper limit of integration; \\
+\hline
+{\em y} & location of singularity; \\
+\hline
+{\em g} & order of singularity, $\gamma$.\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 finite part of $\int_{a}^{b}1/(y-x)^{\gamma}\,\mathrm{d}x$. 
 \end{DoxyReturn}
-\index{finite@{finite}!gqr\_\-finite\_\-part\_\-1mt\_\-n@{gqr\_\-finite\_\-part\_\-1mt\_\-n}}
-\index{gqr\_\-finite\_\-part\_\-1mt\_\-n@{gqr\_\-finite\_\-part\_\-1mt\_\-n}!finite@{finite}}
-\subsubsection[{gqr\_\-finite\_\-part\_\-1mt\_\-n}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\_\-finite\_\-part\_\-1mt\_\-n (gint {\em n}, \/  gint {\em m})}\label{group__finite_gaf599fd6c488ff6d9e2959ddf585265a4}
+
+
+Referenced by gqr\+\_\+finite\+\_\+part\+\_\+integral().
+
+\index{Evaluation of finite part integrals@{Evaluation of finite part integrals}!gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n@{gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n}}
+\index{gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n@{gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n}!Evaluation of finite part integrals@{Evaluation of finite part integrals}}
+\subsubsection[{gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n (
+\begin{DoxyParamCaption}
+\item[{gint}]{n, }
+\item[{gint}]{m}
+\end{DoxyParamCaption}
+)}\label{group__finite_gaf599fd6c488ff6d9e2959ddf585265a4}
 Return the finite part of $\int_{-1}^{1}(1-t)^n/(1+t)^m\,\mathrm{d}t$.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em n}]exponent of $(1-t)$; \item[{\em m}]exponent of $(1+t)$;\end{DoxyParams}
+{\em n} & exponent of $(1-t)$; \\
+\hline
+{\em m} & exponent of $(1+t)$;\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 finite part of integral. 
 \end{DoxyReturn}
-\index{finite@{finite}!gqr\_\-finite\_\-part\_\-integral@{gqr\_\-finite\_\-part\_\-integral}}
-\index{gqr\_\-finite\_\-part\_\-integral@{gqr\_\-finite\_\-part\_\-integral}!finite@{finite}}
-\subsubsection[{gqr\_\-finite\_\-part\_\-integral}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\_\-finite\_\-part\_\-integral ({\bf gqr\_\-func} {\em f}, \/  gpointer {\em data}, \/  gdouble {\em y}, \/  gdouble {\em gm}, \/  gdouble {\em a}, \/  gdouble {\em b}, \/  {\bf gqr\_\-rule\_\-t} $\ast$ {\em g})}\label{group__finite_gae1a0bb5eaf86443d1881606dca14b892}
-Compute the finite part integral $FP\int_{a}^{b}f(x)/(y-x)^{\gamma}\,\mathrm{d}x$ using a Gaussian quadrature for the regular integral. The method is that of Brandao, M. P., 1987, `Improper integrals in theoretical aerodynamics: The problem revisited', AIAA Journal, 25(9):1258-\/-\/1260.
+
+
+Referenced by gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1().
+
+\index{Evaluation of finite part integrals@{Evaluation of finite part integrals}!gqr\+\_\+finite\+\_\+part\+\_\+integral@{gqr\+\_\+finite\+\_\+part\+\_\+integral}}
+\index{gqr\+\_\+finite\+\_\+part\+\_\+integral@{gqr\+\_\+finite\+\_\+part\+\_\+integral}!Evaluation of finite part integrals@{Evaluation of finite part integrals}}
+\subsubsection[{gqr\+\_\+finite\+\_\+part\+\_\+integral}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\+\_\+finite\+\_\+part\+\_\+integral (
+\begin{DoxyParamCaption}
+\item[{{\bf gqr\+\_\+func\+\_\+t}}]{f, }
+\item[{gpointer}]{data, }
+\item[{gdouble}]{y, }
+\item[{gdouble}]{gm, }
+\item[{gdouble}]{a, }
+\item[{gdouble}]{b, }
+\item[{{\bf gqr\+\_\+rule\+\_\+t} $\ast$}]{g}
+\end{DoxyParamCaption}
+)}\label{group__finite_ga5cb0889b54637f0811e5d2bde36fa298}
+Compute the finite part integral $FP\int_{a}^{b}f(x)/(y-x)^{\gamma}\,\mathrm{d}x$ using a Gaussian quadrature for the regular integral. The method is that of Brandao, M. P., 1987, `\+Improper integrals in theoretical aerodynamics\+: The problem revisited\textquotesingle{}, A\+I\+A\+A Journal, 25(9)\+:1258--1260.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em f}]a gqr\_\-func which returns the $j$th derivative of the function; \item[{\em data}]data to pass to f; \item[{\em y}]position of the singularity; \item[{\em gm}]strength (exponent) of the singularity; \item[{\em a}]lower limit of integration; \item[{\em b}]upper limit of integration; \item[{\em g}]Gaussian quadrature rule for the regular integral.\end{DoxyParams}
+{\em f} & a gqr\+\_\+func\+\_\+t which returns the $j$th derivative of the function; \\
+\hline
+{\em data} & data to pass to f; \\
+\hline
+{\em y} & position of the singularity; \\
+\hline
+{\em gm} & strength (exponent) of the singularity; \\
+\hline
+{\em a} & lower limit of integration; \\
+\hline
+{\em b} & upper limit of integration; \\
+\hline
+{\em g} & Gaussian quadrature rule for the regular integral.\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 the finite part of $\int_{a}^{b}f(x)/(y-x)^{\gamma}\,\mathrm{d}x$. 
 \end{DoxyReturn}
-\index{finite@{finite}!gqr\_\-finite\_\-part\_\-Pn1@{gqr\_\-finite\_\-part\_\-Pn1}}
-\index{gqr\_\-finite\_\-part\_\-Pn1@{gqr\_\-finite\_\-part\_\-Pn1}!finite@{finite}}
-\subsubsection[{gqr\_\-finite\_\-part\_\-Pn1}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\_\-finite\_\-part\_\-Pn1 (gint {\em n}, \/  gint {\em m})}\label{group__finite_gac419ae4d5e3e92696ef9d93ab2b409a4}
+
+
+References gqr\+\_\+finite\+\_\+part(), and gqr\+\_\+rule\+\_\+scale().
+
+\index{Evaluation of finite part integrals@{Evaluation of finite part integrals}!gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1@{gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1}}
+\index{gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1@{gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1}!Evaluation of finite part integrals@{Evaluation of finite part integrals}}
+\subsubsection[{gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\+\_\+finite\+\_\+part\+\_\+\+Pn1 (
+\begin{DoxyParamCaption}
+\item[{gint}]{n, }
+\item[{gint}]{m}
+\end{DoxyParamCaption}
+)}\label{group__finite_gac419ae4d5e3e92696ef9d93ab2b409a4}
 Compute the finite part of $\int_{-1}^{1}P_{n}(x)/(1+t)^{m}\,\mathrm{d}x$.
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em n}]order of Legendre polynomial; \item[{\em m}]order of singularity.\end{DoxyParams}
+{\em n} & order of Legendre polynomial; \\
+\hline
+{\em m} & order of singularity.\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 $\int_{-1}^{1}P_{n}(x)/(1+t)^{m}\,\mathrm{d}x$. 
 \end{DoxyReturn}
-\index{finite@{finite}!gqr\_\-finite\_\-part\_\-tn\_\-log@{gqr\_\-finite\_\-part\_\-tn\_\-log}}
-\index{gqr\_\-finite\_\-part\_\-tn\_\-log@{gqr\_\-finite\_\-part\_\-tn\_\-log}!finite@{finite}}
-\subsubsection[{gqr\_\-finite\_\-part\_\-tn\_\-log}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\_\-finite\_\-part\_\-tn\_\-log (gdouble {\em x}, \/  gint {\em n})}\label{group__finite_ga1af1c5ba0a9fb3f797c27f314f73c353}
+
+
+References gqr\+\_\+finite\+\_\+part\+\_\+1mt\+\_\+n().
+
+\index{Evaluation of finite part integrals@{Evaluation of finite part integrals}!gqr\+\_\+finite\+\_\+part\+\_\+tn\+\_\+log@{gqr\+\_\+finite\+\_\+part\+\_\+tn\+\_\+log}}
+\index{gqr\+\_\+finite\+\_\+part\+\_\+tn\+\_\+log@{gqr\+\_\+finite\+\_\+part\+\_\+tn\+\_\+log}!Evaluation of finite part integrals@{Evaluation of finite part integrals}}
+\subsubsection[{gqr\+\_\+finite\+\_\+part\+\_\+tn\+\_\+log}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\+\_\+finite\+\_\+part\+\_\+tn\+\_\+log (
+\begin{DoxyParamCaption}
+\item[{gdouble}]{x, }
+\item[{gint}]{n}
+\end{DoxyParamCaption}
+)}\label{group__finite_ga1af1c5ba0a9fb3f797c27f314f73c353}
 Return the value of $\int_{-1}^{1}t^{n}\log|x-t|\,\mathrm{d}t$.
 
 @param n power of $t$; @param x position of singularity.
 
-@return value of integral. \index{finite@{finite}!gqr\_\-legendre\_\-dPdx@{gqr\_\-legendre\_\-dPdx}}
-\index{gqr\_\-legendre\_\-dPdx@{gqr\_\-legendre\_\-dPdx}!finite@{finite}}
-\subsubsection[{gqr\_\-legendre\_\-dPdx}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\_\-legendre\_\-dPdx (gdouble {\em x}, \/  gint {\em n}, \/  gint {\em m})}\label{group__finite_gafdf20c225f6de1835e824b5017d84536}
-Compute the $m$th derivative of the $n$th Legendre polynomial $P_{n}(x)$ by direct evaluation (i.e. without using the recursion relation).
+@return value of integral. \index{Evaluation of finite part integrals@{Evaluation of finite part integrals}!gqr\+\_\+legendre\+\_\+d\+Pdx@{gqr\+\_\+legendre\+\_\+d\+Pdx}}
+\index{gqr\+\_\+legendre\+\_\+d\+Pdx@{gqr\+\_\+legendre\+\_\+d\+Pdx}!Evaluation of finite part integrals@{Evaluation of finite part integrals}}
+\subsubsection[{gqr\+\_\+legendre\+\_\+d\+Pdx}]{\setlength{\rightskip}{0pt plus 5cm}gdouble gqr\+\_\+legendre\+\_\+d\+Pdx (
+\begin{DoxyParamCaption}
+\item[{gdouble}]{x, }
+\item[{gint}]{n, }
+\item[{gint}]{m}
+\end{DoxyParamCaption}
+)}\label{group__finite_gafdf20c225f6de1835e824b5017d84536}
+Compute the $m$th derivative of the $n$th Legendre polynomial $P_{n}(x)$ by direct evaluation (i.\+e. without using the recursion relation).
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em x}]$x$; \item[{\em n}]order of Legendre polynomial; \item[{\em m}]order of derivative.\end{DoxyParams}
+{\em x} & $x$; \\
+\hline
+{\em n} & order of Legendre polynomial; \\
+\hline
+{\em m} & order of derivative.\\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 $P_{n}^{(m)}(x)$. 
 \end{DoxyReturn}

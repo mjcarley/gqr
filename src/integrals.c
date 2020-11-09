@@ -48,13 +48,13 @@
 gint gqr_quad_3_r(gint N, gdouble x, gdouble y, gdouble *I)
 
 {
-  gdouble Rp1, Rm1, R2, Ir ;
+  gdouble Rp1, Rm1, Ir ;
   gint i, sgn ;
 
   g_assert(y != 0.0) ;
   Rm1 = sqrt((x+1.0)*(x+1.0) + y*y) ;
   Rp1 = sqrt((x-1.0)*(x-1.0) + y*y) ;
-  R2 = x*x + y*y ;
+  /* R2 = x*x + y*y ; */
   if ( y == 0.0 ) {
     I[0] = 0.5/(x-1.0)/(x-1.0) - 0.5/(x+1.0)/(x+1.0) ;
     I[1] = 0.5/(x-1.0)/(x-1.0) + 1.5/(x+1.0)/(x+1.0) ;

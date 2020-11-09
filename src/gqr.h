@@ -42,35 +42,6 @@ enum {
 } ;
 
 /**
- * @typedef gqr_func_t
- * @ingroup gqr
- *
- * A type for evaluating integrands and their derivatives. 
- * @param t evaluation point;
- * @param i the order of derivative to be evaluated;
- * @param data user data to be passed to the function.
- *
- * @return value of the \f$i\f$th derivative of the function at
- * \f$t\f$.
- */
-
-  typedef gdouble (* gqr_func_t)(gdouble t, gint i, gpointer data) ;
-
-/**
- * @typedef gqr_adapt_func_t
- * @ingroup gqr
- *
- * A type for evaluating functions to be used in adaptive discretizations.
- * @param t evaluation point;
- * @param i the index of the function to be evaluated;
- * @param data user data to be passed to the function.
- *
- * @return value of the \f$f_i(t)\f$
- */
-
-  typedef gdouble (* gqr_adapt_func_t)(gdouble t, gint i, gpointer data) ;
-
-/**
  * @typedef gqr_t
  * @ingroup gqr
  *
@@ -91,10 +62,16 @@ typedef enum {
   GQR_GAUSS_HERMITE = 4,	/**< Hermite */
   GQR_GAUSS_LAGUERRE = 5,	/**< Laguerre */
   GQR_GAUSS_JACOBI = 6,		/**< Jacobi */
-  GQR_GAUSS_LOGARITHMIC = 1 << 8, /**< Logarithmic singularities */
-  GQR_GAUSS_SINGULAR = 1 << 9,	/**< First order and logarithmic singularities */
-  GQR_GAUSS_HYPERSINGULAR = 1 << 10, /**<  Singularities up to second order*/
-  GQR_GAUSS_MULTISINGULAR = 1 << 11 /**< Multiple singularities which must be specified in the rule initialization */
+  GQR_GAUSS_LOGARITHMIC = 1 << 8, /**< logarithmic singularities */
+  GQR_GAUSS_SINGULAR = 1 << 9,	/**< first order and logarithmic
+				   singularities */
+  GQR_GAUSS_HYPERSINGULAR = 1 << 10, /**<  singularities up to second order*/
+  GQR_GAUSS_MULTISINGULAR = 1 << 11, /**< multiple singularities which
+				       must be specified in the rule
+				       initialization */
+  GQR_GAUSS_GENERALIZED = 1 << 12 /**< generalized Gaussian quadratures using
+				     the algorithm of Bremer, Gimbutas and
+				     Rokhlin */
 } gqr_t ;
 
 #define GQR_GAUSS_REGULAR 0
@@ -117,8 +94,9 @@ typedef  struct _gqr_parameter_t gqr_parameter_t ;
 
 struct _gqr_parameter_t {
   gqr_t type ;
-  gint i[8], ni, nf ;
-  gdouble f[8] ;
+  gint i[32], ni, nf, np ;
+  gdouble f[32] ;
+  gpointer p[32] ;
 } ;
 
 /**
@@ -140,21 +118,59 @@ struct _gqr_rule_t {
   gdouble *x, *w ;
 } ;
 
-#define gqr_rule_length(g) (g->n)
-#define gqr_rule_abscissa(g,_i) (g->x[(_i)])
-#define gqr_rule_weight(g,_i) (g->w[(_i)])
-#define gqr_rule_type(g) (g->type)
-#define gqr_parameter_int(p,_i) (p->i[(_i)])
-#define gqr_parameter_double(p,_i) (p->f[(_i)])
-#define gqr_parameter_clear(p) ((p)->ni=(p)->nf=0)
-#define gqr_parameter_clear_int(p) ((p)->ni=0)
-#define gqr_parameter_clear_float(p) ((p)->nf=0)
-#define gqr_parameter_set_double(p,_f) ((p)->f[((p)->nf)++] = (_f))
-#define gqr_parameter_set_int(p,_i) ((p)->i[((p)->ni)++] = (_i))
-#define gqr_parameter_ni(p) (((p)->ni))
-#define gqr_parameter_nf(p) (((p)->nf))
-#define gqr_rule_base_type(t) (t & GQR_RULE_MASK)
-#define gqr_rule_singularity_type(t) (t & GQR_SINGULARITY_MASK)
+#define gqr_rule_length(_g) ((_g)->n)
+#define gqr_rule_abscissa(_g,_i) ((_g)->x[(_i)])
+#define gqr_rule_weight(_g,_i) ((_g)->w[(_i)])
+#define gqr_rule_type(_g) ((_g)->type)
+#define gqr_parameter_int(_p,_i) ((_p)->i[(_i)])
+#define gqr_parameter_double(_p,_i) ((_p)->f[(_i)])
+#define gqr_parameter_pointer(_p,_i) ((_p)->p[(_i)])
+#define gqr_parameter_clear(_p) ((_p)->ni=(_p)->nf=(_p)->np=0)
+#define gqr_parameter_clear_int(_p) ((_p)->ni=0)
+#define gqr_parameter_clear_float(_p) ((_p)->nf=0)
+#define gqr_parameter_set_double(_p,_f) ((_p)->f[((_p)->nf)++] = (_f))
+#define gqr_parameter_set_pointer(_p,_f) ((_p)->p[((_p)->np)++] = (_f))
+#define gqr_parameter_set_int(_p,_i) ((_p)->i[((_p)->ni)++] = (_i))
+#define gqr_parameter_ni(_p) (((_p)->ni))
+#define gqr_parameter_nf(_p) (((_p)->nf))
+#define gqr_parameter_np(_p) (((_p)->np))
+#define gqr_rule_base_type(_t) ((_t) & GQR_RULE_MASK)
+#define gqr_rule_singularity_type(_t) ((_t) & GQR_SINGULARITY_MASK)
+
+/**
+ * @typedef gqr_func_t
+ * @ingroup gqr
+ *
+ * A type for evaluating integrands and their derivatives. 
+ * @param t evaluation point;
+ * @param i the order of derivative to be evaluated;
+ * @param data user data to be passed to the function.
+ *
+ * @return value of the \f$i\f$th derivative of the function at
+ * \f$t\f$.
+ */
+
+  typedef gdouble (* gqr_func_t)(gdouble t, gint i, gpointer data) ;
+
+/**
+ * @typedef gqr_adapt_func_t
+ * @ingroup gqr
+ *
+ * A type for evaluating functions to be used in adaptive
+ * discretizations. Optionally, if \a i is negative, the function call
+ * should be interpreted as a request for the integral of the function
+ * between limits defined in the first two floating point entries in
+ * the parameter list \a p, with the function index taken as -(i+1).
+ * 
+ * @param t evaluation point;
+ * @param i the index of the function to be evaluated;
+ * @param p parameter list to be passed to the function.
+ *
+ * @return value of the function \f$f_i(t)\f$, or the integral of
+ * \f$f_{-i-1}(t)\f$ if \f$i<0\f$.
+ */
+
+typedef gdouble (* gqr_adapt_func_t)(gdouble t, gint i, gqr_parameter_t *p) ;
 
 gint gqr_rule_free(gqr_rule_t *g) ;
 gqr_rule_t *gqr_rule_alloc(gint n) ;
@@ -190,6 +206,7 @@ gint gqr_function_roots(gdouble *P, gdouble *Q, gdouble *R,
 gint gqr_logging_init(FILE *f, gchar *p, 
 		      GLogLevelFlags log_level,
 		      gpointer exit_func) ;
+gpointer gqr_pointer_parse(gchar *str) ;
 
 gint gqr_discretize_interp(gqr_rule_t *rule, gdouble *Q) ;
 gint gqr_discretize_adaptive(gqr_adapt_func_t func, gint idx, gpointer data,
@@ -203,5 +220,18 @@ gint gqr_discretize_eval(gqr_rule_t *rule, gdouble *Q,
 gint gqr_discretize_fill(gqr_adapt_func_t func, gint idx, gpointer data,
 			 gqr_rule_t *rule, gdouble *ival, gint ni,
 			 gdouble *u, gint ustr) ;
+gint gqr_discretize_quadrature(gqr_rule_t *rule,
+			       gdouble *ival, gint ni, gint i, gint j,
+			       gdouble *x, gdouble *w) ;
+gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
+				  gdouble tol,
+				  gint *rank, gint rankmax,
+				  gdouble *Q, gdouble *R11,
+				  gint *pvt,
+				  gdouble *work, gint lwork) ;
+gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
+			gint *imax, gdouble *emax,
+			FILE *output) ;
+gint gqr_pointers_list(FILE *output, gboolean verbose) ;
 
 #endif /*GQR_H_INCLUDED*/

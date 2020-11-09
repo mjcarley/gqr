@@ -32,30 +32,40 @@ gint main(gint argc, gchar **argv)
 {
   gqr_rule_t *g ;
   gqr_parameter_t p ;
-  gdouble x, y ;
-  gint N, M ;
-  gint *s, i, ns ;
+  gdouble x, y, emax ;
+  gint N, M, *s, i, ns, imax ;
   gchar ch ;
-  gboolean print_help ;
+  gboolean print_help, error_check ;
   gqr_t rule, baserule, singularity ;
 
   M = 4 ; N = 16 ; x = G_MAXDOUBLE ; y = G_MAXDOUBLE ;
   baserule = GQR_GAUSS_LEGENDRE ; singularity = GQR_GAUSS_REGULAR ;
-  s = NULL ; print_help = FALSE ;
+  s = NULL ;
+  print_help = FALSE ; error_check = FALSE ;
   gqr_logging_init(stderr, argv[0], G_LOG_LEVEL_WARNING, NULL) ;
 
-  while ( (ch = getopt(argc, argv, "hCHLM:N:s:Tx:y:")) != EOF ) {
+  gqr_parameter_clear(&p) ;
+
+  while ( (ch = getopt(argc, argv, "hCef:GHi:LM:N:p:Ps:Tx:y:")) != EOF ) {
     switch(ch) {
     case 'h':
     default: 
       print_help = TRUE ;
       break ;
     case 'C': baserule = GQR_GAUSS_CHEBYSHEV_1 ; break ;
+    case 'e': error_check = TRUE ; break ;
+    case 'f': gqr_parameter_set_double(&p, atof(optarg)) ; break ;
+    case 'G': baserule = GQR_GAUSS_GENERALIZED ; break ;
     case 'H': baserule = GQR_GAUSS_HERMITE ; break ;
+    case 'i': gqr_parameter_set_int(&p, atoi(optarg)) ; break ;
     case 'L': baserule = GQR_GAUSS_LEGENDRE ; break ;
     case 'M': M = atoi(optarg) ; break ;
     case 'N': N = atoi(optarg) ; break ;
     case 'T': baserule = GQR_GAUSS_CHEBYSHEV_2 ; break ;
+    case 'P': gqr_pointers_list(stderr, TRUE) ; return 0 ; break ;
+    case 'p':
+      gqr_parameter_set_pointer(&p, gqr_pointer_parse(optarg)) ;
+      break ;
     case 's': fill_array(optarg, &s, &ns) ; break ;
     case 'x': x = atof(optarg) ; break ;
     case 'y': y = atof(optarg) ; break ;
@@ -69,10 +79,17 @@ gint main(gint argc, gchar **argv)
 	    "Options:\n"
 	    "        -h print this message and exit\n"
 	    "        -C Gauss-(T)Chebyshev of the first kind quadrature\n"
+	    "        -e calculate estimated error in quadrature of basis "
+	    "functions\n"
+	    "        -f # set float in parameter list\n"
+	    "        -G generalized Gaussian quadrature\n"
 	    "        -H Gauss-Hermite quadrature\n"
+	    "        -i # set integer in parameter list\n"
 	    "        -L Gauss-Legendre quadrature (default)\n"
 	    "        -M <order of polynomials to handle>\n"
 	    "        -N <number of points in rule>\n"
+	    "        -P list pointer names which can be parsed as parameters\n"
+	    "        -p # set (parsed) pointer in parameter list\n"	    
 	    "        -s <list of singularity orders>\n"	      
 	    "        -T Gauss-(T)Chebyshev of the second kind quadrature\n"
 	    "        -x <x coordinate of singularity>\n"
@@ -84,7 +101,6 @@ gint main(gint argc, gchar **argv)
   rule = baserule ;
   g = gqr_rule_alloc(N) ;
 
-  gqr_parameter_clear(&p) ;
   if ( x != G_MAXDOUBLE ) {
     gqr_parameter_set_int(&p, M) ;
     gqr_parameter_set_double(&p, x) ;
@@ -105,5 +121,14 @@ gint main(gint argc, gchar **argv)
   gqr_rule_select(g, rule, N, &p) ;
   gqr_rule_write(g, stdout) ;
 
+  if ( baserule != GQR_GAUSS_GENERALIZED ) return 0 ;
+
+  if ( !error_check ) return 0 ;
+
+  /*check quadratures against analytical results, where available*/
+  gqr_rule_bgr_check(g, &p, &imax, &emax, stderr) ;
+
+  fprintf(stderr, "maximum error: %lg, basis function %d\n", emax, imax) ;
+  
   return 0 ;
 }
