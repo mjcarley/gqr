@@ -139,7 +139,7 @@ libgqr_la_LIBADD =
 am_libgqr_la_OBJECTS = ghermite.lo grule.lo fpart.lo glegendre.lo \
 	korsunsky.lo smith.lo gchebyshev.lo kolrokh.lo lsqr.lo \
 	msingular.lo nsingular.lo integrals.lo roots.lo gqr-logging.lo \
-	discret.lo bgr.lo
+	discret.lo bgr.lo rrqr.lo
 libgqr_la_OBJECTS = $(am_libgqr_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -224,7 +224,7 @@ AWK = gawk
 BLAS_LIBS = -lblas
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2 -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+CFLAGS = -O0 -g -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -241,7 +241,7 @@ EXEEXT =
 F77 = g77
 FFLAGS = -g -O2
 FGREP = /usr/bin/grep -F
-FLIBS =  -L/home/michael/Codes/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../x86_64-slackware-linux/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../.. -lgfortran -lm -lquadmath
+FLIBS =  -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../x86_64-slackware-linux/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../.. -lgfortran -lm -lquadmath
 GLIB_CFLAGS = -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include
 GLIB_LIBS = -lglib-2.0
 GQR_MAJOR_VERSION = 0
@@ -258,9 +258,9 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LAPACK_LIBS = 
 LD = /usr/x86_64-slackware-linux/bin/ld -m elf_x86_64
-LDFLAGS = -L/home/michael/Codes/lib -lglib-2.0 -lgsl -lgslcblas -lm
+LDFLAGS =  -lglib-2.0 -lgsl -lgslcblas -lm
 LIBOBJS = 
-LIBS = -lglib-2.0 -lgsl -lgslcblas -lm  -lblas -lrrqr -lm   -L/home/michael/Codes/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../x86_64-slackware-linux/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../.. -lgfortran -lm -lquadmath
+LIBS = -lglib-2.0 -lgsl -lgslcblas -lm  -lblas -lm   -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../x86_64-slackware-linux/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../.. -lgfortran -lm -lquadmath
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
@@ -376,7 +376,8 @@ libgqr_la_SOURCES = \
 	gqr-logging.c \
 	gqr-private.h \
 	discret.c \
-	bgr.c
+	bgr.c \
+	rrqr.c
 
 include_HEADERS = \
 	gqr.h 
@@ -513,6 +514,7 @@ include ./$(DEPDIR)/lsqr.Plo
 include ./$(DEPDIR)/msingular.Plo
 include ./$(DEPDIR)/nsingular.Plo
 include ./$(DEPDIR)/roots.Plo
+include ./$(DEPDIR)/rrqr.Plo
 include ./$(DEPDIR)/smith.Plo
 
 .c.o:

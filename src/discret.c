@@ -88,6 +88,8 @@ gint rrqr(gdouble *A, gint m, gint n, gdouble *tau, gint *jpvt,
     g_error("%s: workspace too small (%d < %d)",
 	    __FUNCTION__, lwork, 3*n+1) ;
   dgeqp3_(&m, &n, A, &m, jpvt, tau, work, &lwork, &info) ;
+
+  g_assert(info == 0) ;
   
   return 0 ;
 }
@@ -98,8 +100,9 @@ gint rrqr_rank(gdouble *R, gint m, gint n, gdouble ee)
   gint rank ;
 
   for ( rank = 1 ; rank < MIN(m,n) ; rank ++ ) {
-    if ( fabs(R[matrix_index(m,n,rank,rank)]) <
-	 fabs(R[matrix_index(m,n,   0,   0)])*ee)
+    /* if ( fabs(R[matrix_index(m,n,rank,rank)]) < */
+    /* 	 fabs(R[matrix_index(m,n,   0,   0)])*ee) */
+    if ( fabs(R[matrix_index(m,n,rank,rank)]) < ee )
       return rank ;
   }
   
@@ -153,7 +156,7 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
 				  gdouble tol,
 				  gint *rank, gint rankmax,
 				  gdouble *Q, gdouble *R11,
-				  gint *pvt,
+				  gint *pvt, gint *ldr,
 				  gdouble *work, gint lwork)
 
 {
@@ -162,6 +165,11 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
   if ( lwork < (3*n+1) + rankmax )
     g_error("%s: workspace too small (%d < %d)",
 	    __FUNCTION__, lwork, 3*n+1 + rankmax) ;
+
+
+  gqr_srrqr(A, m, n, 1.0, tol, Q, R11, pvt, rank, ldr, work, lwork) ;
+
+  return 0 ;
   
   tau = &(work[3*n+1]) ;
   
@@ -213,6 +221,11 @@ gint gqr_discretize_adaptive(gqr_adapt_func_t func, gint idx, gpointer data,
 
   qsort(ival, *ni+1, sizeof(gdouble), compare_double) ;
 
+  /*check for duplicates*/
+  for ( i = 0 ; i < *ni ; i ++ ) {
+    g_assert(ival[i] < ival[i+1]) ;
+  }
+  
   return nn ;
 }
 
@@ -304,7 +317,7 @@ gint gqr_discretize_fill(gqr_adapt_func_t func, gint idx, gpointer data,
   
   nq = gqr_rule_length(rule) ;
   
-  for ( i = 0 ; i < ni+1 ; i ++ ) {
+  for ( i = 0 ; i < ni ; i ++ ) {
     dx = 0.5*(ival[i+1] - ival[i]) ;
     xb = 0.5*(ival[i+1] + ival[i]) ;
     for ( j = 0 ; j < nq ; j ++ ) {

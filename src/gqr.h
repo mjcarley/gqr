@@ -227,7 +227,7 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
 				  gdouble tol,
 				  gint *rank, gint rankmax,
 				  gdouble *Q, gdouble *R11,
-				  gint *pvt,
+				  gint *pvt, gint *ldr,
 				  gdouble *work, gint lwork) ;
 gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
 			gint *imax, gdouble *emax,

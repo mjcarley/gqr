@@ -7,8 +7,8 @@ ghermite.lo: ghermite.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
  /usr/lib64/gcc/x86_64-slackware-linux/5.5.0/include/stdarg.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/include/bits/stdio.h /usr/include/glib-2.0/glib.h \
- /usr/include/glib-2.0/glib/galloca.h /usr/include/glib-2.0/glib/gtypes.h \
+ /usr/include/glib-2.0/glib.h /usr/include/glib-2.0/glib/galloca.h \
+ /usr/include/glib-2.0/glib/gtypes.h \
  /usr/lib64/glib-2.0/include/glibconfig.h \
  /usr/include/glib-2.0/glib/gmacros.h \
  /usr/lib64/gcc/x86_64-slackware-linux/5.5.0/include-fixed/limits.h \
@@ -92,8 +92,7 @@ ghermite.lo: ghermite.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
  /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
- /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h ../config.h \
- gqr.h gqr-private.h
+ /usr/include/bits/mathcalls.h ../config.h gqr.h gqr-private.h
 
 /usr/include/stdc-predef.h:
 
@@ -126,8 +125,6 @@ ghermite.lo: ghermite.c /usr/include/stdc-predef.h /usr/include/stdio.h \
 /usr/include/bits/stdio_lim.h:
 
 /usr/include/bits/sys_errlist.h:
-
-/usr/include/bits/stdio.h:
 
 /usr/include/glib-2.0/glib.h:
 
@@ -372,8 +369,6 @@ ghermite.lo: ghermite.c /usr/include/stdc-predef.h /usr/include/stdio.h \
 /usr/include/bits/mathdef.h:
 
 /usr/include/bits/mathcalls.h:
-
-/usr/include/bits/mathinline.h:
 
 ../config.h:
 

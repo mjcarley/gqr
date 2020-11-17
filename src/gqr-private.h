@@ -84,6 +84,9 @@ gint rrqr(gdouble *A, gint m, gint n, gdouble *tau, gint *jpvt,
 gint rrqr_rank(gdouble *R, gint m, gint n, gdouble ee) ;
 gint rrqr_qr(gdouble *A, gint m, gint n, gdouble *tau, gint rank,
 	     gdouble *Q, gdouble *R11, gdouble *work, gint lwork) ;
+gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
+	       gdouble *Q, gdouble *R, gint *pvt, gint *rank, gint *ldr,
+	       gdouble *work, gint lwork) ;
 
 gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p) ;
 

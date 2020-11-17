@@ -325,7 +325,7 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   gqr_adapt_func_t func = orthogonalization_test_func ;
   gqr_rule_t *rule ;
   gint ni, nimax, nn, i, j, nf, k, lwork ;
-  gint rank, rankmax, nfunc, *pvt ;
+  gint rank, rankmax, nfunc, *pvt, ldr ;
   gpointer data = NULL ;
 
   nf = 32 ;
@@ -394,7 +394,7 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   }
 
   gqr_discretize_orthogonalize(A, nfunc, nf, tol, &rank, rankmax,
-			       u, R11, pvt, work, lwork) ;
+			       u, R11, pvt, &ldr, work, lwork) ;
   fprintf(stderr, "rank:       %d\n", rank) ;
 
   /*generate a quadrature rule*/
@@ -418,7 +418,7 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
 
   memset(pvt, 0, nfunc*sizeof(gint)) ;
   gqr_discretize_orthogonalize(A, rank, nfunc, 1e-15, &rank, rankmax,
-  			       u, R11, pvt, work, lwork) ;
+  			       u, R11, pvt, &ldr, work, lwork) ;
 
   for ( i = 0 ; i < rank ; i ++ ) {
     z[i] = 0.0 ;
