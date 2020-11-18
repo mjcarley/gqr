@@ -57,10 +57,11 @@
 gchar *gqr_pointers[] =
   {
    "scattering_radial",
-   "  basis functions for the radial integrals in Bremer and Gimbutas,\n"
-   "On the numerical evaluation of the singular integrals of scattering\n"
-   "theory, 2013\n"
-   "parameter list:\n"
+   "basis functions for the radial integrals in Bremer and Gimbutas,\n"
+   "\"On the numerical evaluation of the singular integrals of scattering\n"
+   "theory\", 2013, https://doi.org/10.1016/j.jcp.2013.05.048\n"
+   "(equation 26)\n\n"
+   "parameter list:\n\n"
    "  integer: [number of basis functions]\n"
    "           [base quadrature length]\n"
    "           [maximum number of discretization intervals]\n"
@@ -69,6 +70,23 @@ gchar *gqr_pointers[] =
    "           [end of quadrature interval]\n"
    "           [tolerance for discretization]\n"
    "           [ratio of radii (see Bremer and Gimbutas)]\n",
+   "scattering_radial_range",
+   "basis functions for the radial integrals in Bremer and Gimbutas,\n"
+   "\"On the numerical evaluation of the singular integrals of scattering\n"
+   "theory\", 2013, https://doi.org/10.1016/j.jcp.2013.05.048\n"
+   "(equation 26, with multiple values of d distributed between minimum\n"
+   "and maximum)\n\n"
+   "parameter list:\n\n"
+   "  integer: [number of basis functions]\n"
+   "           [base quadrature length]\n"
+   "           [maximum number of discretization intervals]\n"
+   "           [maximum rank for orthogonalization (rule length)]\n"
+   "           [number of radius ratios d]\n"
+   "  float:   [start of quadrature interval]\n"
+   "           [end of quadrature interval]\n"
+   "           [tolerance for discretization]\n"
+   "           [minimum ratio of radii]\n"
+   "           [maximum ratio of radii]\n",
    ""			 
 } ;
 
@@ -475,6 +493,9 @@ gpointer gqr_pointer_parse(gchar *str)
 {
   if ( !strcmp(str, "scattering_radial") )
     return grule_bgr_func_scattering_r ;
+  
+  if ( !strcmp(str, "scattering_radial_range") )
+    return grule_bgr_func_scattering_range_r ;
   
   return NULL ;
 }

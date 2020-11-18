@@ -54,7 +54,7 @@ void drot_(gint *N, gdouble *dx, gint *incx, gdouble *dy, gint *incy,
 
 #define matrix_index(_m,_n,_i,_j) ((_i) + (_j)*(_m))
 
-gint column_swap(gdouble *a, gint m, gint n, gint j, gint k)
+static gint column_swap(gdouble *a, gint m, gint n, gint j, gint k)
 
 {
   gint one = 1 ;
@@ -65,7 +65,7 @@ gint column_swap(gdouble *a, gint m, gint n, gint j, gint k)
   return 0 ;
 }
 
-gint column_shuffle(gdouble *a, gint m, gint n, gint j0, gint lda)
+static gint column_shuffle(gdouble *a, gint m, gint n, gint j0, gint lda)
 
 {
   gint i, j ;
@@ -82,7 +82,7 @@ gint column_shuffle(gdouble *a, gint m, gint n, gint j0, gint lda)
   return 0 ;
 }  
 
-gint row_shuffle(gdouble *a, gint m, gint n, gint i0, gint i1, gint lda)
+static gint row_shuffle(gdouble *a, gint m, gint n, gint i0, gint i1, gint lda)
 
 {
   gint i, j ;
@@ -99,7 +99,7 @@ gint row_shuffle(gdouble *a, gint m, gint n, gint i0, gint i1, gint lda)
   return 0 ;
 }  
 
-gint array_shuffle_int(gint *a, gint n, gint i0)
+static gint array_shuffle_int(gint *a, gint n, gint i0)
 
 {
   gint tmp, i ;
@@ -112,7 +112,7 @@ gint array_shuffle_int(gint *a, gint n, gint i0)
   return 0 ;
 }
 
-gint array_shuffle_double(gdouble *a, gint n, gint i0)
+static gint array_shuffle_double(gdouble *a, gint n, gint i0)
 
 {
   gint i ;
@@ -136,19 +136,21 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
  */
   
 {
-  gdouble tau[8192], *AB, *gamma, omega[1024], tmp ;
+  gdouble *tau, *AB, *gamma, *omega, tmp, *Atmp ;
   gdouble ta, tb, Gs, Gc ;
+  gdouble ga, mu, nu, rho, ga_bar ;
+  gdouble *b1, *b2, *u1, *u2, *c1T, *c2T, *c1Tbar, *c2Tbar ;
   gint info, i, j, k, mab, nab, n12, ii, itmp, iter, one = 1 ;
-  gint nr, mr ;
-  gint cp ;
-  cp = 0 ;
+  gint nr, mr, lw, Rm, len ;
   
-  /* lwork = 8192 ; */
   /*do the pivoting QR factorization*/
   memset(pvt, 0, MAX(m,n)*sizeof(gint)) ;
-  memset(tau, 0, 8192*sizeof(gdouble)) ;
-  dgeqp3_(&m, &n, A, &m, pvt, tau, work, &lwork, &info) ;
+  lw = 3*n+1 ;
+  tau = &(work[lw]) ; 
+  dgeqp3_(&m, &n, A, &m, pvt, tau, work, &lw, &info) ;
 
+  gamma = &(work[0]) ;  
+  
   /*subtract one from pvt to convert to C indexing*/
   for ( i = 0 ; i < n ; i ++ ) pvt[i] -= 1 ;
   
@@ -159,8 +161,15 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 
   /*size R*/
   /* mr = n ; nr = n ; */
-  mr = k+3 ; nr = n ;
-  
+  mr = k+1 ; nr = n ;
+  if ( k == m )
+    Rm = m ;
+  else
+    Rm = mr ;
+  Rm = k ;
+
+  /* mr = m ; nr = n ; Rm = n ; */
+
   /* copy the useful bit of A into R */
   for ( j = 0 ; j < nr ; j ++ ) {
     for ( i = 0 ; i <= MIN(mr,j) ; i ++ ) {
@@ -190,12 +199,19 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
     }
   }
 
+  if ( k == n ) {
+    *rank = k ;
+    *ldr = mr ;
+    fprintf(stderr, "rank == number of columns\n") ;
+    return 0 ;
+  }
+  
   /*number of columns in R12*/
   n12 = nr - k ;
   
   /*linear solve with R11 and R12 packed in A upon exit from dgeqp3*/
   nab = nr - k ; mab = k ;
-  AB = (gdouble *)g_malloc0(nab*mab*sizeof(gdouble)) ;
+  AB = &(gamma[n]) ;
   for ( i = 0 ; i < mab ; i ++ ) {
     for ( j = 0 ; j < nab ; j ++ ) {
       AB[matrix_index(mab,nab,i,j)] = R[matrix_index(mr,nr,i,k+j)] ;
@@ -205,46 +221,44 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
   /*initialize AB = A^{-1}B*/
   dtrtrs_("U", "N", "N", &k, &nab, R, &mr, AB, &mab, &info) ;
 
-  gamma = (gdouble *)g_malloc0(n*sizeof(gdouble)) ;
   if ( k != m ) {
     for ( j = 0 ; j < n-k ; j ++ ) {
-      i = n-k ;
+      i = j + 1 ;
       gamma[j] = blaswrap_dnrm2(i,&(A[matrix_index(m,n,k,k+j)]), one) ;
-      /* g_assert(!isnan(gamma[j])) ; */
     }
   } else {
     memset(gamma, 0, (n-k)*sizeof(gdouble)) ;
   }
 
   /*copy R11 into work for inversion*/
+  omega = &(AB[mab*nab]) ;
+  Atmp = &(omega[MAX(m,n)]) ;
   for ( i = 0 ; i < k ; i ++ ) {
     for ( j = 0 ; j < k ; j ++ ) {
-      work[matrix_index(k,k,i,j)] = R[matrix_index(mr,nr,i,j)] ;
+      Atmp[matrix_index(k,k,i,j)] = R[matrix_index(mr,nr,i,j)] ;
     }
   }
 
-  dtrtri_("U", "N", &k, work, &k, &info) ;
-
-  /* fprintf(stderr, "%lg\n", work[matrix_index(k,k,k-1,k-1)]) ; exit(0) ; */
+  dtrtri_("U", "N", &k, Atmp, &k, &info) ;
   
   for ( i = 0 ; i < k ; i ++ ) {
     omega[i] =
-      1.0/blaswrap_dnrm2(k, &(work[matrix_index(k,k,i,0)]), k) ;
+      1.0/blaswrap_dnrm2(k, &(Atmp[matrix_index(k,k,i,0)]), k) ;
   }
-  
+
+  len = MAX(m,n) ;
   iter = 0 ;
   while ( 1 ) {
     while ( 1 ) {
       iter ++ ;
-      gint jj, Rm ;
+      gint jj ;
 
-      /* Rm = MIN(mr,nr) ; */
-      Rm = MIN(m,n) ;
       for ( j = 0 ; j < n12 ; j ++ ) {
 	for ( i = 0 ; i < k ; i ++ ) {
 	  tmp = gamma[j]/omega[i] ;
 	  tmp *= tmp ;
 	  tmp += AB[matrix_index(mab,nab,i,j)]*AB[matrix_index(mab,nab,i,j)] ;
+	  g_assert(!isnan(tmp)) ;
 	  if ( tmp > f*f ) { break ; }
 	}
 	if ( tmp > f*f ) { break ; }
@@ -292,10 +306,8 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 	    Q[matrix_index(m,k,ii,k-1)] *= -1 ;
 	}
       }
-      /* fprintf(stderr, "%lg\n", R[matrix_index(mr,nr,k-1,k-1)]) ; exit(0) ; */
       
       if ( k < Rm ) {
-	/* fprintf(stderr, "k=%d, Rm=%d, mr=%d\n", k, Rm, mr) ; */
 	for ( ii = k + 1 ; ii < Rm ; ii ++ ) {
 	  ta = R[matrix_index(mr,nr,k ,k)] ;
 	  tb = R[matrix_index(mr,nr,ii,k)] ;
@@ -315,15 +327,13 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 	  	&Gc, &Gs) ;
 	}
       }
-      /* fprintf(stderr, "%lg\n", R[matrix_index(mr,nr,k-1,k-1)]) ; exit(0) ; */
-
       itmp = pvt[k-1] ; pvt[k-1] = pvt[k] ; pvt[k] = itmp ;
-      gdouble ga, mu, nu, rho, ga_bar ;
-      gdouble *b1, *b2, *u1, *u2, *c1T, *c2T, *c1Tbar, *c2Tbar ;
 
-      b1 = &(work[0]) ; b2 = &(b1[n]) ; u1 = &(b2[n]) ; u2 = &(u1[n]) ;
-      c1T = &(u2[n]) ; c2T = &(c1T[n]) ;
-      c1Tbar = &(c2T[n]) ; c2Tbar = &(c1Tbar[n]) ;
+      /* b1 = &(Atmp[k*k]) ; */
+      b1 = &(Atmp[0]) ;  b2 = &(b1[len]) ;
+      u1 = &(b2[len])   ;  u2 = &(u1[len]) ;
+      c1T = &(u2[len])  ; c2T = &(c1T[len]) ;
+      c1Tbar = &(c2T[len]) ; c2Tbar = &(c1Tbar[len]) ;
       
       ga = R[matrix_index(mr, nr, k-1, k-1)] ;
       mu = R[matrix_index(mr, nr, k-1, k  )]/ga ;
@@ -333,20 +343,15 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 	nu = 0.0 ;
       }
       rho = sqrt(mu*mu + nu*nu) ;
-      /* fprintf(stderr, "%lg %lg\n", mu, nu) ; exit(0) ; */
       
       ga_bar = ga*rho ;
-
-      /* fprintf(stderr, "%lg %lg\n", ga, rho) ; exit(0) ; */
       
       ii = k - 1 ;
-      /* fprintf(stderr, "%d %d\n", iter, ii) ; */
       blaswrap_dcopy(ii, &(R[matrix_index(mr, nr, 0, k-1)]), one, b1, one) ;
       blaswrap_dcopy(ii, &(R[matrix_index(mr, nr, 0, k  )]), one, b2, one) ;
       blaswrap_dcopy(ii, b2, one, &(R[matrix_index(mr, nr, 0, k-1)]), one) ;
       blaswrap_dcopy(ii, b1, one, &(R[matrix_index(mr, nr, 0, k  )]), one) ;
 
-      /* fprintf(stderr, "%lg\n", R[matrix_index(mr,nr,k-1,k-1)]) ; exit(0) ; */
       ii = nr - k - 1 ;
       blaswrap_dcopy(ii, &(R[matrix_index(mr, nr, k-1, k+1)]), mr, c1T, one) ;
       if ( k+1 > Rm ) {
@@ -359,8 +364,6 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
       	c1Tbar[ii] = (mu*c1T[ii] + nu*c2T[ii])/rho ;
       	c2Tbar[ii] = (nu*c1T[ii] - mu*c2T[ii])/rho ;
       }
-
-      /* fprintf(stderr, "%lg\n", R[matrix_index(mr,nr,k-1,k-1)]) ; exit(0) ; */
 
       R[matrix_index(mr,nr,k-1,k-1)] = ga_bar ;
       R[matrix_index(mr,nr,k-1,k  )] = ga*mu/rho ;
@@ -391,14 +394,9 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 
       gamma[0] = ga*nu/rho ;
       for ( ii = 1 ; ii < n12 ; ii ++ ) {
-	/* g_assert(!isnan(gamma[ii])) ; */
 	gamma[ii] = sqrt(gamma[ii]*gamma[ii] +
 			 c2Tbar[ii-1]*c2Tbar[ii-1] -
 			 c2T[ii-1]*c2T[ii-1]) ;
-	/* if ( isnan(gamma[ii]) ) */
-	/*   g_error("NaN: ii==%d; c2T=%lg; c2Tbar=%lg; nu=%lg; mu=%lg; rho=%lg; " */
-	/* 	  "c1T=%lg;", */
-	/* 	  ii, c2T[ii-1], c2Tbar[ii-1], nu, mu, rho, c1T[ii-1]) ; */
       }
 
       ii = k - 1 ; 
@@ -411,7 +409,6 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 			     b1[ii]*b1[ii]/ga/ga) ;
       }
       if ( k < Rm ) {
-	/*this is a Q update*/
 	gdouble Q1, Q2 ;
 	for ( ii = 0 ; ii < m ; ii ++ ) {
 	  Q1 = Q[matrix_index(m,k,ii,k-1)] ;
@@ -420,9 +417,6 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 	  Q[matrix_index(m,k,ii,k  )] = (Q1*nu - Q2*mu)/rho ;
 	}
       }
-
-      /* fprintf(stderr, "end loop\n")  ; */
-      /* return 0 ; */
     }
 
     tmp = G_MAXDOUBLE ;

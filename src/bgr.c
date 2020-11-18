@@ -73,6 +73,8 @@ gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p)
   g_assert(gqr_parameter_nf(p) > 3) ;
   d = gqr_parameter_double(p, 3) ;
 
+  g_assert(d > 0.0) ;
+  
   f = (1.0-d)*t + d ;
   
   if ( i == 0 ) return 1.0/f ;
@@ -91,6 +93,75 @@ gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p)
   if ( i == 0 ) {
     return (log((1.0-d)*x1+d) - log((1.0-d)*x0+d))/(1.0-d) ;
   }
+  
+  i -= 1 ;
+  return (pow((1.0-d)*x1+d,i+1) -
+	  pow((1.0-d)*x0+d,i+1))/(gdouble)(i+1)/(1.0-d) ;
+  
+  return 0.0 ;
+}
+
+gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
+					  gqr_parameter_t *p)
+
+/*
+ * quadratures for radial functions in Bremer and Gimbutas, On the
+ * numerical evaluation of the singular integrals of scattering
+ * theory.
+ */
+  
+{
+  gdouble d0, d1, d, f, x0, x1 ;
+  gint nd, i, j ;
+  static gqr_rule_t *rule = NULL ;
+
+  g_assert(gqr_parameter_ni(p) > 4) ;
+  nd = gqr_parameter_int(p, 4) ;
+  
+  if ( rule == NULL ) {
+    rule = gqr_rule_alloc(4*nd) ;
+  }
+
+  if ( gqr_rule_length(rule) != nd ) {
+    gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, nd, NULL) ;
+  }
+
+  g_assert(gqr_parameter_nf(p) > 4) ;
+  d0 = gqr_parameter_double(p, 3) ;
+  d1 = gqr_parameter_double(p, 4) ;
+
+  g_assert(d0 > 0.0) ;
+  g_assert(d1 > d0) ;
+
+  if ( idx >= 0 ) {
+    /*select value of d in range*/
+    i = idx/nd ;
+    j = idx % nd ;
+  
+    d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, j) ;
+  
+    f = (1.0-d)*t + d ;
+  
+    if ( i == 0 ) return 1.0/f ;
+
+    if ( i > 0 ) {
+      f = pow(f, i-1) ;
+      return f ;
+    }
+  }
+
+  /*calculate integral of f over specified range*/
+  x0  = gqr_parameter_double(p, 0) ;
+  x1  = gqr_parameter_double(p, 1) ;
+
+  idx = -(idx+1) ;
+
+  if ( i == 0 ) {
+    return (log((1.0-d)*x1+d) - log((1.0-d)*x0+d))/(1.0-d) ;
+  }
+  
+  i = idx/nd ;
+  j = idx % nd ;
   
   i -= 1 ;
   return (pow((1.0-d)*x1+d,i+1) -
@@ -184,14 +255,14 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   lwork = 3*nimax*nq+1 + 8*rankmax*nfunc ;
   work = (gdouble *)g_malloc(lwork*sizeof(gdouble)) ;
 
-  R11 = (gdouble *)g_malloc0(nfunc*nf*sizeof(gdouble)) ;
+  R11 = (gdouble *)g_malloc0(nfunc*(nf+2)*sizeof(gdouble)) ;
   r   = (gdouble *)g_malloc0(nf*sizeof(gdouble)) ;
   z   = (gdouble *)g_malloc0(rankmax*sizeof(gdouble)) ;
 
   /*use FORTRAN indexing from here*/
   /*fill function array*/
-  u = (gdouble *)g_malloc0(nfunc*MAX(rankmax,nf)*sizeof(gdouble)) ;
-  A = (gdouble *)g_malloc0(nfunc*MAX(rankmax,nf)*sizeof(gdouble)) ;
+  u = (gdouble *)g_malloc0(nfunc*(MAX(rankmax,nf)+1)*sizeof(gdouble)) ;
+  A = (gdouble *)g_malloc0(nfunc*(MAX(rankmax,nf)+1)*sizeof(gdouble)) ;
   /*fill columns of matrix A with functions*/
   for ( i = 0 ; i < nf ; i ++ ) {
     gqr_discretize_fill(func, i, p, rule, ival, ni, &(A[i*nfunc]), 1) ;
@@ -200,7 +271,7 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   /* fprintf(stdout, "f = [...\n") ; */
   /* print_matrix(A, nfunc, nf, stdout) ; */
   /* fprintf(stdout, "] ;\n\n") ; */
-  
+
   /*need to weight columns of A by quadrature weights in long rule*/
   test0 = 0.0 ;
   for ( i = 0 ; i < ni ; i ++ ) {
@@ -221,6 +292,8 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   /* fprintf(stdout, "A = [...\n") ; */
   /* print_matrix(A, nfunc, nf, stdout) ; */
   /* fprintf(stdout, "] ;\n\n") ; */
+
+  /* exit(0) ; */
   
   gqr_discretize_orthogonalize(A, nfunc, nf, tol, &rank, rankmax,
   			       u, R11, pvt, &ldr, work, lwork) ;
@@ -235,8 +308,10 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   /* fprintf(stdout, "] ;\n\n") ; */
   
   /* fprintf(stdout, "R = [...\n") ; */
-  /* print_matrix(R11, nf, nf, stdout) ; */
+  /* print_matrix(R11, ldr, nf, stdout) ; */
   /* fprintf(stdout, "] ;\n\n") ; */
+
+  /* exit(0) ; */
   
   /*generate a quadrature rule*/
   /* fprintf(stdout, "x = [...\n") ; */
@@ -271,7 +346,7 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   memset(u, 0, nfunc*nf*sizeof(gdouble)) ;
   memset(R11, 0, nfunc*nf*sizeof(gdouble)) ;
   memset(work, 0, lwork*sizeof(gdouble)) ;
-  gqr_discretize_orthogonalize(A, rank, nfunc, tol/100, &rank, rankmax,
+  gqr_discretize_orthogonalize(A, rank, nfunc, tol, &rank, rankmax,
   			       u, R11, pvt, &ldr, work, lwork) ;
 
   fprintf(stderr, "rank == %d\n", rank) ;

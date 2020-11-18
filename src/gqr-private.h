@@ -89,5 +89,7 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 	       gdouble *work, gint lwork) ;
 
 gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p) ;
+gdouble grule_bgr_func_scattering_range_r(gdouble t, gint i,
+					  gqr_parameter_t *p) ;
 
 #endif /*GQR_PRIVATE_H_INCLUDED*/
