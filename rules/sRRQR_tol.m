@@ -75,7 +75,9 @@ AB = linsolve(R(1:k, 1:k), R(1:k, (k+1):end), struct('UT', true));
 %   Initialization of gamma, i.e., norm of C's columns (C refers to R22)
 gamma = zeros(n-k, 1);                                    
 if k ~= size(R,1)
+  disp(["Hello"]) ;
   gamma = (sum(R((k+1):end, (k+1):end).^2, 1).^(1/2))';
+  return ;
 end
 
 %   Initialization of omega, i.e., reciprocal of inv(A)'s row norm 
@@ -87,7 +89,7 @@ omega = sum(tmp.^2, 2).^(-1/2);
 %   the remaining (n-k) columns.
 %   STEP 1: Strong RRQR with the fixed rank k. 
 %   STEP 2: Check whether a smaller rank k can meet the threshold.
-[Rm, ~] = size(R);
+[Rm, ~] = size(R)
 iter = 0 ;
 while 1
   %%   STEP 1: Strong RRQR with the fixed rank k. 
@@ -98,11 +100,16 @@ while 1
     tmp = (1./omega * gamma').^2 + AB.^2;
     [i,j] = find(tmp > f*f, 1, 'first');
     %%   if no entry of tmp greater than f*f, no interchange needed and the
-    %%   present Q, R, p is a strong RRQR. 
-    if isempty(i)           
+    %%   present Q, R, p is a strong RRQR.
+    R0 = gamma ;
+    if isempty(i)
+      disp("Empty") ;
       break;
     end
-        
+
+    R0 = R ;
+    return ;
+    
     %%   Interchange the i th and (k+j) th column of target matrix A and 
     %%   update QR decomposition (Q, R, p), AB, gamma, and omega.
     %%   First step : interchanging the k+1 and k+j th columns    
