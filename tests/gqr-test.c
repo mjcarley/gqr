@@ -8,6 +8,7 @@
 #include <gsl/gsl_math.h>
 
 #include "gqr.h"
+#include "gqr-private.h"
 
 gint _gqr_quad_2_r(gint N, gdouble x, gdouble y, gdouble *I) ;
 gint _gqr_quad_log_new(gint N, gdouble x, gdouble y, gdouble *I) ;
@@ -369,7 +370,7 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   }
 
   fprintf(stderr, "intervals:  %d\n", ni) ;
-
+  
   /*number of points in discretized functions*/
   nfunc = nq*ni ;
   
@@ -489,6 +490,40 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   return 0 ;
 }
 
+gint adaptive_function_check(void)
+
+{
+  gint nj, nk, nimax, rmax, nf, nq ;
+  gint i ;
+  gqr_parameter_t p ;
+  gqr_adapt_func_t func = grule_bgr_func_scattering_th ;
+  
+  nj = 4 ; nk = 5 ; nq = 16 ;
+
+  nf = nj*(nj+3)*3/2 + nj*(3*nj+7)/2 + nk + nk-1 ;
+  
+  gqr_parameter_clear(&p) ;
+
+  gqr_parameter_set_double(&p, 0.0) ;
+  gqr_parameter_set_double(&p, 1.0) ;
+  gqr_parameter_set_double(&p, 1e-9) ;
+  gqr_parameter_set_double(&p, 0.7) ;
+  gqr_parameter_set_double(&p, 1.5) ;
+
+  gqr_parameter_set_int(&p, nf) ;
+  gqr_parameter_set_int(&p, nq) ;
+  gqr_parameter_set_int(&p, nimax) ;
+  gqr_parameter_set_int(&p, rmax) ;
+  gqr_parameter_set_int(&p, nj) ;
+  gqr_parameter_set_int(&p, nk) ;
+
+  for ( i = 0 ; i < nf ; i ++ ) {
+    func(0.4, i, &p) ;
+  }
+  
+  return 0 ;
+}
+
 gint main(gint argc, gchar **argv)
 
 {
@@ -500,7 +535,8 @@ gint main(gint argc, gchar **argv)
   
   N = 32 ;
   x = 0.4 ; y = 0.3 ;
-
+  test = -1 ;
+  
   progname = g_strdup(g_path_get_basename(argv[0])) ;
 
   input = stdin ;
@@ -532,6 +568,8 @@ gint main(gint argc, gchar **argv)
     
     return 0 ;
   }
+
+  adaptive_function_check() ;
   
   return 0 ;
 }

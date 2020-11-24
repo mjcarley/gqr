@@ -35,23 +35,24 @@ gint main(gint argc, gchar **argv)
   gdouble x, y, emax ;
   gint N, M, *s, i, ns, imax ;
   gchar ch ;
-  gboolean print_help, error_check ;
+  gboolean print_help, error_check, analytic_check ;
   gqr_t rule, baserule, singularity ;
 
   M = 4 ; N = 16 ; x = G_MAXDOUBLE ; y = G_MAXDOUBLE ;
   baserule = GQR_GAUSS_LEGENDRE ; singularity = GQR_GAUSS_REGULAR ;
   s = NULL ;
-  print_help = FALSE ; error_check = FALSE ;
+  print_help = FALSE ; error_check = FALSE ; analytic_check = FALSE ;
   gqr_logging_init(stderr, argv[0], G_LOG_LEVEL_WARNING, NULL) ;
 
   gqr_parameter_clear(&p) ;
 
-  while ( (ch = getopt(argc, argv, "hCef:GHi:LM:N:p:Ps:Tx:y:")) != EOF ) {
+  while ( (ch = getopt(argc, argv, "haCef:GHi:LM:N:p:Ps:Tx:y:")) != EOF ) {
     switch(ch) {
     case 'h':
     default: 
       print_help = TRUE ;
       break ;
+    case 'a': analytic_check = TRUE ; break ;
     case 'C': baserule = GQR_GAUSS_CHEBYSHEV_1 ; break ;
     case 'e': error_check = TRUE ; break ;
     case 'f': gqr_parameter_set_double(&p, atof(optarg)) ; break ;
@@ -126,7 +127,7 @@ gint main(gint argc, gchar **argv)
   if ( !error_check ) return 0 ;
 
   /*check quadratures against analytical results, where available*/
-  gqr_rule_bgr_check(g, &p, &imax, &emax, stderr) ;
+  gqr_rule_bgr_check(g, &p, &imax, &emax, analytic_check, stderr) ;
 
   fprintf(stderr, "maximum error: %lg, basis function %d\n", emax, imax) ;
   

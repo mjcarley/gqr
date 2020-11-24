@@ -8,14 +8,15 @@ x0=0
 x1=1
 tol=1e-9
 d=1e-1
-d0=1e-6
-d1=1e-5
-nf=64
-nq=32
-nd=16
+d0=1e-7
+d1=1e-6
+nf=32
+nq=48
+nd=8
 nimax=2048
-rmax=65
+rmax=128
 func=scattering_radial_range
+analytic=-a
 
 #echo "-G -p ${func} -f ${x0} -f ${x1} -f ${tol} -f ${d} -i ${nf} -i ${nq} \
 #     -i ${nimax} -i ${rmax} -N 32 -e"
@@ -26,9 +27,9 @@ func=scattering_radial_range
 #		  -N 48 -e > rule.dat
 		  
 echo "-G -p ${func} -f ${x0} -f ${x1} -f ${tol} -f ${d0} -f ${d1} \
-     -i ${nf} -i ${nq} -i ${nimax} -i ${rmax} -i ${nd} -N 32 -e"
+     -i ${nf} -i ${nq} -i ${nimax} -i ${rmax} -i ${nd} -N 32 -e ${analytic}"
 
 ../tests/gqr-rule -G -p ${func} \
 		  -f ${x0} -f ${x1} -f ${tol} -f ${d0} -f ${d1} \
 		  -i ${nf} -i ${nq} -i ${nimax} -i ${rmax} -i ${nd}\
-		  -N 48 -e > matrices.m ##rule.dat
+		  -N 48 -e ${analytic} > rule.dat

@@ -230,7 +230,7 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
 				  gint *pvt, gint *ldr,
 				  gdouble *work, gint lwork) ;
 gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
-			gint *imax, gdouble *emax,
+			gint *imax, gdouble *emax, gboolean analytic,
 			FILE *output) ;
 gint gqr_pointers_list(FILE *output, gboolean verbose) ;
 

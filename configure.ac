@@ -74,7 +74,7 @@ AC_F77_DUMMY_MAIN
 AC_F77_WRAPPERS
 ACX_BLAS
 ACX_LAPACK
-AC_CHECK_LIB(rrqr, dgeqpx_,[],[],[-llapack -lblas])
+##AC_CHECK_LIB(rrqr, dgeqpx_,[],[],[-llapack -lblas])
 
 #PKG_CHECK_MODULES(gsl, gsl, [gsl_cflags=`pkg-config --cflags-only-I gsl`
 #		        gsl_libs=`pkg-config --libs gsl`],			

@@ -87,6 +87,23 @@ gchar *gqr_pointers[] =
    "           [tolerance for discretization]\n"
    "           [minimum ratio of radii]\n"
    "           [maximum ratio of radii]\n",
+   "scattering_angular",
+   "basis functions for the angular integrals in Bremer and Gimbutas,\n"
+   "\"On the numerical evaluation of the singular integrals of scattering\n"
+   "theory\", 2013, https://doi.org/10.1016/j.jcp.2013.05.048\n"
+   "(equation 27)\n\n"
+   "parameter list:\n\n"
+   "  integer: [number of basis functions]\n"
+   "           [base quadrature length]\n"
+   "           [maximum number of discretization intervals]\n"
+   "           [maximum rank for orthogonalization (rule length)]\n"
+   "           [number of basis functions M(u)]\n"
+   "           [number of plain trigonometric functions cos, sin]\n"
+   "  float:   [start of quadrature interval]\n"
+   "           [end of quadrature interval]\n"
+   "           [tolerance for discretization]\n"
+   "           [radius r_0 (see Bremer and Gimbutas)]\n"
+   "           [angular range theta_0 (see Bremer and Gimbutas)]\n",
    ""			 
 } ;
 
@@ -497,6 +514,12 @@ gpointer gqr_pointer_parse(gchar *str)
   if ( !strcmp(str, "scattering_radial_range") )
     return grule_bgr_func_scattering_range_r ;
   
+  if ( !strcmp(str, "scattering_angular") )
+    return grule_bgr_func_scattering_th ;
+
+  if ( !strcmp(str, "scattering_angular_range") )
+    return grule_bgr_func_scattering_range_th ;
+
   return NULL ;
 }
 

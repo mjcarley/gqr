@@ -74,84 +74,6 @@ static gint legendre_fill(gint n, gdouble x, gdouble *P)
   return 0 ;
 }
 
-gint rrqr(gdouble *A, gint m, gint n, gdouble *tau, gint *jpvt,
-	  gdouble *work, gint lwork)
-
-{
-  gint info ;
-  /**
-   * perform rrqr on A using LAPACK function A is supplied in FORTRAN
-   * ordering, so vectors lie on rows in C ordering
-   */
-
-  if ( lwork < 3*n+1 )
-    g_error("%s: workspace too small (%d < %d)",
-	    __FUNCTION__, lwork, 3*n+1) ;
-  dgeqp3_(&m, &n, A, &m, jpvt, tau, work, &lwork, &info) ;
-
-  g_assert(info == 0) ;
-  
-  return 0 ;
-}
-
-gint rrqr_rank(gdouble *R, gint m, gint n, gdouble ee)
-
-{
-  gint rank ;
-
-  for ( rank = 1 ; rank < MIN(m,n) ; rank ++ ) {
-    /* if ( fabs(R[matrix_index(m,n,rank,rank)]) < */
-    /* 	 fabs(R[matrix_index(m,n,   0,   0)])*ee) */
-    if ( fabs(R[matrix_index(m,n,rank,rank)]) < ee )
-      return rank ;
-  }
-  
-  return rank ;
-}
-
-gint rrqr_qr(gdouble *A, gint m, gint n, gdouble *tau, gint rank,
-	     gdouble *Q, gdouble *R11, gdouble *work, gint lwork)
-
-{
-  gint i, j, ldwork ;
-  gdouble T[8192] ;
-  
-  for ( j = 0 ; j < rank ; j ++ ) {
-    for ( i = 0 ; i < MIN(m,rank) ; i ++ ) {
-      Q[matrix_index(m, rank, i, j)] = 0.0 ;
-    }
-    Q[matrix_index(m, rank, j, j)] = 1.0 ;
-    for ( i = 0 ; i <= j ; i ++ ) {
-      R11[matrix_index(rank,rank,i,j)] = A[matrix_index(m,n,i,j)] ;
-    }
-    for ( i = j+1 ; i < rank ; i ++ ) {
-      R11[matrix_index(rank,rank,i,j)] = 0.0 ;
-    }
-  }
-
-  /*this is correct for "L"*/
-  ldwork = rank ;
-  dlarft_("F", "C", &rank, &rank, A, &m, tau, T, &rank) ;
-  dlarfb_("L", "N", "F", "C", &m, &rank, &rank, A, &m, T, &rank, Q, &m, work,
-	  &ldwork) ;
-  
-  /*R11 is rank x rank; Q is m x rank*/
-  /*make diagonals of R11 positive: multiply columns of R11 by sign of
-    diagonal entry, multiply rows of Q*/
-  for ( i = 0 ; i < rank ; i ++ ) {
-    if ( R11[matrix_index(rank,rank,i,i)] < 0.0 ) {
-      for ( j = 0 ; j < rank ; j ++ ) {
-	R11[matrix_index(rank,rank,i,j)] *= -1 ;
-      }
-      for ( j = 0 ; j < m ; j ++ ) {
-	Q[matrix_index(m,rank,j,i)] *= -1 ;
-      }
-    }
-  }
-  
-  return 0 ;
-}
-
 gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
 				  gdouble tol,
 				  gint *rank, gint rankmax,
@@ -160,8 +82,6 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
 				  gdouble *work, gint lwork)
 
 {
-  gdouble *tau ;
-
   if ( lwork < (3*n+1) + rankmax )
     g_error("%s: workspace too small (%d < %d)",
 	    __FUNCTION__, lwork, 3*n+1 + rankmax) ;
@@ -170,20 +90,11 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
   gqr_srrqr(A, m, n, 1.0, tol, Q, R11, pvt, rank, ldr, work, lwork) ;
 
   return 0 ;
-  
-  tau = &(work[3*n+1]) ;
-  
-  rrqr(A, m, n, tau, pvt, work, 3*n+1) ;
-  *rank = rrqr_rank(A, m, n, tol) ;
-  if ( *rank > rankmax ) *rank = rankmax ;    
-  rrqr_qr(A, m, n, tau, *rank, Q, R11, work, lwork) ;
-  
-  return 0 ;
 }
 
 gint gqr_discretize_adaptive(gqr_adapt_func_t func, gint idx, gpointer data,
 			     gqr_rule_t *rule, gdouble *Q,
-			     gdouble *ival, gint *ni, gint nimax, 
+			     gdouble *ival, gint *ni, gint nimax,
 			     gdouble tol)
 
 /*
@@ -225,7 +136,7 @@ gint gqr_discretize_adaptive(gqr_adapt_func_t func, gint idx, gpointer data,
   for ( i = 0 ; i < *ni ; i ++ ) {
     g_assert(ival[i] < ival[i+1]) ;
   }
-  
+
   return nn ;
 }
 

@@ -221,13 +221,12 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
   /*initialize AB = A^{-1}B*/
   dtrtrs_("U", "N", "N", &k, &nab, R, &mr, AB, &mab, &info) ;
 
+  memset(gamma, 0, (n-k)*sizeof(gdouble)) ;
   if ( k != m ) {
-    for ( j = 0 ; j < n-k ; j ++ ) {
+    for ( j = 0 ; j < MIN(n-k,m-1) ; j ++ ) {
       i = j + 1 ;
       gamma[j] = blaswrap_dnrm2(i,&(A[matrix_index(m,n,k,k+j)]), one) ;
     }
-  } else {
-    memset(gamma, 0, (n-k)*sizeof(gdouble)) ;
   }
 
   /*copy R11 into work for inversion*/
@@ -242,8 +241,7 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
   dtrtri_("U", "N", &k, Atmp, &k, &info) ;
   
   for ( i = 0 ; i < k ; i ++ ) {
-    omega[i] =
-      1.0/blaswrap_dnrm2(k, &(Atmp[matrix_index(k,k,i,0)]), k) ;
+    omega[i] = 1.0/blaswrap_dnrm2(k, &(Atmp[matrix_index(k,k,i,0)]), k) ;
   }
 
   len = MAX(m,n) ;
@@ -432,6 +430,7 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
       break ;
     }
 
+    /*untested code past this point (no test input available)*/
     g_assert_not_reached() ;
   
     if ( i < k - 1 ) {

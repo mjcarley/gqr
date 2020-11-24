@@ -63,7 +63,7 @@ gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p)
 /*
  * quadratures for radial functions in Bremer and Gimbutas, On the
  * numerical evaluation of the singular integrals of scattering
- * theory.
+ * theory, http://dx.doi.org/10.1016/j.jcp.2013.05.048
  * 
  */
   
@@ -107,7 +107,7 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
 /*
  * quadratures for radial functions in Bremer and Gimbutas, On the
  * numerical evaluation of the singular integrals of scattering
- * theory.
+ * theory, http://dx.doi.org/10.1016/j.jcp.2013.05.048
  */
   
 {
@@ -156,12 +156,14 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
 
   idx = -(idx+1) ;
 
+  i = idx/nd ;
+  j = idx % nd ;
+  
+  d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, j) ;
+  
   if ( i == 0 ) {
     return (log((1.0-d)*x1+d) - log((1.0-d)*x0+d))/(1.0-d) ;
   }
-  
-  i = idx/nd ;
-  j = idx % nd ;
   
   i -= 1 ;
   return (pow((1.0-d)*x1+d,i+1) -
@@ -177,6 +179,286 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
  *
  */
 
+gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
+					   gqr_parameter_t *p)
+
+/*
+ * quadratures for angular functions in Bremer and Gimbutas, On the
+ * numerical evaluation of the singular integrals of scattering
+ * theory, http://dx.doi.org/10.1016/j.jcp.2013.05.048
+ * at range of values of r_0, \theta_0
+ * 
+ * indexing of functions is:
+ * idx = 0, nj*(nj+3)*3/2 M_j(\theta_{0}u)\cos(i\theta_{0}u), i=0,3*(j+1)+2
+ * idx -= nj*(nj+3)*3/2
+ * idx = 0, nj*(3*nj+7)/2 M_j(\theta_{0}u)\sin(i\theta_{0}u), i=1,3*(j+1)+2
+ * 
+ */
+  
+{
+  gdouble r0, th0, th, f, x0, x1, M, thmin, thmax, rmin, rmax ;
+  gint nj, nk, i, j, k, off, nr, nt, nrt, tr, tt ;
+  static gqr_rule_t *rrule = NULL, *trule = NULL ;
+  
+  g_assert(gqr_parameter_ni(p) > 7) ;
+  nj = gqr_parameter_int(p, 4) ;
+  nk = gqr_parameter_int(p, 5) ;
+  nr = gqr_parameter_int(p, 6) ;
+  nt = gqr_parameter_int(p, 7) ;
+
+  g_assert(gqr_parameter_nf(p) > 6) ;
+  rmin = gqr_parameter_double(p, 3) ;
+  rmax = gqr_parameter_double(p, 4) ;
+  thmin = gqr_parameter_double(p, 5) ;
+  thmax = gqr_parameter_double(p, 6) ;
+
+  if ( rrule == NULL ) {
+    rrule = gqr_rule_alloc(4*nr) ;
+    trule = gqr_rule_alloc(4*nt) ;
+  }
+
+  if ( gqr_rule_length(rrule) != nr ) {
+    gqr_rule_select(rrule, GQR_GAUSS_LEGENDRE, nr, NULL) ;
+  }
+
+  if ( gqr_rule_length(trule) != nt ) {
+    gqr_rule_select(trule, GQR_GAUSS_LEGENDRE, nt, NULL) ;
+  }
+
+  g_assert(gqr_parameter_nf(p) > 4) ;
+  
+  /*total number of entries per (r_0,\theta_0) pair*/
+  nrt = nj*(nj+3)*3/2 + nj*(3*nj+7)/2 + nk + nk - 1 ;
+
+  /*i = tr*ni + tt */
+  i = idx/nrt ;
+  tr = i/nt ;
+  tt = i % nt ;
+
+  r0 = 0.5*(rmax + rmin) +
+    0.5*(rmax - rmin)*gqr_rule_abscissa(rrule, tr) ;
+  th0 = 0.5*(thmax + thmin) +
+    0.5*(thmax - thmin)*gqr_rule_abscissa(trule, tt) ;
+  
+  g_assert(r0 > 0.0) ;
+  g_assert(r0 < 1.0) ;
+
+  /*set idx in the range of values for a single (r_0,\theta_0) pair*/
+  idx = idx % nrt ;
+  
+  off = 0 ; 
+
+  th = th0*t ;
+  M = r0*sin(th0)/(r0*sin(th0-th) + sin(th)) ;
+
+  if ( idx < nj*(nj+3)*3/2 ) {
+    /*M_j \sin*/
+    for ( j = 0 ; j < nj ; j ++ ) {
+      if ( j*(j+3)*3/2 > idx ) break ;
+    }
+
+    j -- ;
+
+    i = idx - j*(j+3)*3/2 ;
+
+    if ( j == 0 ) M = log(M) ;
+    else M = pow(M, j) ;
+
+    f = M*cos(i*th) ;
+    
+    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
+
+    g_assert(!isnan(f)) ;
+    return f ;
+  }
+
+  off += nj*(nj+3)*3/2 ;
+  idx -= nj*(nj+3)*3/2 ;
+
+  if ( idx < nj*(3*nj+7)/2 ) {
+    /*M_j \sin*/
+    for ( j = 0 ; j < nj ; j ++ ) {
+      if ( j*(3*j+7)/2 > idx ) break ;
+    }
+
+    j -- ;
+
+    i = idx - j*(3*j+7)/2 ;
+    i ++ ; /*don't use the \sin i\theta term for i==0*/
+
+    if ( j == 0 ) M = log(M) ;
+    else M = pow(M, j) ;
+
+    f = M*cos(i*th) ;
+    
+    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
+    
+    g_assert(!isnan(f)) ;
+
+    return f ;
+  }
+
+  off += nj*(3*nj+7)/2 ;
+  idx -= nj*(3*nj+7)/2 ;
+
+  if ( idx < nk ) {
+    /*cos k\theta*/
+
+    k = idx ;
+
+    f = cos(k*th) ;
+    
+    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
+    g_assert(!isnan(f)) ;
+
+    return f ;
+  }
+
+  off += nk ;
+  idx -= nk ;
+
+  if ( idx < nk ) {
+    /*sin k\theta*/
+
+    k = idx + 1 ;
+    
+    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
+
+    f = cos(k*th) ;
+
+    return f ;
+  }
+
+  g_error("%s: function index (%d) out of range (nj=%d, nk=%d)",
+	  __FUNCTION__, idx+off, nj, nk) ;
+
+  /*calculate integral of f over specified range*/
+  /* x0  = gqr_parameter_double(p, 0) ; */
+  /* x1  = gqr_parameter_double(p, 1) ; */
+
+
+  return 0.0 ;
+}
+
+
+gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
+
+/*
+ * quadratures for angular functions in Bremer and Gimbutas, On the
+ * numerical evaluation of the singular integrals of scattering
+ * theory, http://dx.doi.org/10.1016/j.jcp.2013.05.048
+ * 
+ * indexing of functions is:
+ * idx = 0, nj*(nj+3)*3/2 M_j(\theta_{0}u)\cos(i\theta_{0}u), i=0,3*(j+1)+2
+ * idx -= nj*(nj+3)*3/2
+ * idx = 0, nj*(3*nj+7)/2 M_j(\theta_{0}u)\sin(i\theta_{0}u), i=1,3*(j+1)+2
+ * 
+ */
+  
+{
+  gdouble r0, th0, th, f, x0, x1, M ;
+  gint ni, nj, nk, i, j, k, off ;
+  
+  g_assert(gqr_parameter_ni(p) > 5) ;
+  nj = gqr_parameter_int(p, 4) ;
+  nk = gqr_parameter_int(p, 5) ;
+
+  g_assert(gqr_parameter_nf(p) > 4) ;
+  r0 = gqr_parameter_double(p, 3) ;
+  th0 = gqr_parameter_double(p, 4) ;
+
+  g_assert(r0 > 0.0) ;
+  g_assert(r0 < 1.0) ;
+
+  off = 0 ; 
+
+  th = th0*t ;
+  M = r0*sin(th0)/(r0*sin(th0-th) + sin(th)) ;
+
+  if ( idx < nj*(nj+3)*3/2 ) {
+    /*M_j \sin*/
+    for ( j = 0 ; j < nj ; j ++ ) {
+      if ( j*(j+3)*3/2 > idx ) break ;
+    }
+
+    j -- ;
+
+    i = idx - j*(j+3)*3/2 ;
+
+    if ( j == 0 ) M = log(M) ;
+    else M = pow(M, j) ;
+
+    f = M*cos(i*th) ;
+    
+    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
+    
+    return f ;
+  }
+
+  off += nj*(nj+3)*3/2 ;
+  idx -= nj*(nj+3)*3/2 ;
+
+  if ( idx < nj*(3*nj+7)/2 ) {
+    /*M_j \sin*/
+    for ( j = 0 ; j < nj ; j ++ ) {
+      if ( j*(3*j+7)/2 > idx ) break ;
+    }
+
+    j -- ;
+
+    i = idx - j*(3*j+7)/2 ;
+    i ++ ; /*don't use the \sin i\theta term for i==0*/
+
+    if ( j == 0 ) M = log(M) ;
+    else M = pow(M, j) ;
+
+    f = M*cos(i*th) ;
+    
+    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
+    
+    return f ;
+  }
+
+  off += nj*(3*nj+7)/2 ;
+  idx -= nj*(3*nj+7)/2 ;
+
+  if ( idx < nk ) {
+    /*cos k\theta*/
+
+    k = idx ;
+
+    f = cos(k*th) ;
+    
+    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
+    return f ;
+  }
+
+  off += nk ;
+  idx -= nk ;
+
+  if ( idx < nk ) {
+    /*sin k\theta*/
+
+    k = idx + 1 ;
+    
+    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
+
+    f = cos(k*th) ;
+
+    return f ;
+  }
+
+  g_error("%s: function index (%d) out of range (nj=%d, nk=%d)",
+	  __FUNCTION__, idx+off, nj, nk) ;
+
+  /*calculate integral of f over specified range*/
+  /* x0  = gqr_parameter_double(p, 0) ; */
+  /* x1  = gqr_parameter_double(p, 1) ; */
+
+
+  return 0.0 ;
+}
+
 gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
 
 /*
@@ -187,11 +469,13 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
  * double  0: a, start of integration range
  * double  1: b,  of integration range
  * double  2: tol, discretization tolerance
+ * double  3 onwards, parameters to be supplied to adapt_func
  *
  * int     0: number of basis functions to include
  * int     1: nq, number of points in quadrature rule for discretization
  * int     2: nimax, maximum number of discretization intervals
  * int     3: rankmax, maximum length of output quadrature
+ * int     r onwards, parameters to be supplied to adapt_func
  * 
  */
   
@@ -414,12 +698,14 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
 }
 
 gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
-			gint *imax, gdouble *emax,
+			gint *imax, gdouble *emax, gboolean analytic,
 			FILE *output)
 
 {
-  gdouble x0, x1, dx, xb, x, f, Iq[256], Ia[256] ;
-  gint i, j, nf ;
+  gdouble x0, x1, dx, xb, x, f, *Iq, *Ia, tol, *Qi, *ival ;
+  gdouble xi, wi ;
+  gint i, j, k, nf, nn, ni, nimax, nq ;
+  gqr_rule_t *r ;
   gqr_adapt_func_t func ;
   
   if ( gqr_parameter_np(p) < 1 ) 
@@ -436,13 +722,14 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
   
   x0 = gqr_parameter_double(p, 0) ;
   x1 = gqr_parameter_double(p, 1) ;
+  tol = gqr_parameter_double(p, 2) ;
 
   nf = gqr_parameter_int(p, 0) ;
 
-  g_assert(nf < 256) ;
+  Iq = (gdouble *)g_malloc(nf*sizeof(gdouble)) ;
+  Ia = (gdouble *)g_malloc(nf*sizeof(gdouble)) ;
   
   xb = gqr_rule_scale(rule, x0, x1, &xb, &dx) ;
-  /* xb = gqr_rule_scale(rule, rule->a, rule->b, &xb, &dx) ; */
   *imax = 0 ; *emax = 0.0 ;
   for ( i = 0 ; i < nf ; i ++ ) {
     Iq[i] = 0.0 ;
@@ -451,19 +738,74 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
       f = func(x, i, p) ;
       Iq[i] += f*gqr_rule_weight(rule, j)*dx ;
     }
+  }
 
-    Ia[i] = func(x, -i-1, p) ;
+  if ( analytic ) {
+    x = 0.0 ;
+    for ( i = 0 ; i < nf ; i ++ ) {
+      Ia[i] = func(x, -i-1, p) ;
+      if ( fabs(Ia[i] - Iq[i]) > *emax ) {
+	*emax = fabs(Ia[i] - Iq[i]) ;
+	*imax = i ;
+      }
+    }
+    
+    if ( output != NULL ) {
+      for ( i = 0 ; i < nf ; i ++ ) 
+	fprintf(output, "%d %lg %lg %lg\n",
+		i, Iq[i], Ia[i], fabs(Ia[i]-Iq[i])) ;
+    }
+
+    return 0 ;
+  }
+
+  /*integrate the discretized version of the functions*/
+  nq      = gqr_parameter_int(p, 1) ;
+  nimax   = gqr_parameter_int(p, 2) ;
+  r = gqr_rule_alloc(nq) ;
+  gqr_rule_select(r, GQR_GAUSS_LEGENDRE, nq, NULL) ;
+
+  ival = (gdouble *)g_malloc((nimax+1)*sizeof(gdouble)) ;
+
+  ival[0] = x0 ; ival[1] = x1 ;
+  Qi = (gdouble *)g_malloc(nq*nq*sizeof(gdouble)) ;
+  gqr_discretize_interp(rule, Qi) ;
+
+  ni = 1 ;
+
+  /*split interval for discretization*/
+  for ( i = 0 ; i < nf ; i ++ ) {
+    nn = 1 ;
+    while ( nn != 0 && ni < nimax ) {
+      nn = gqr_discretize_adaptive(func, i, p, rule,
+				   Qi, ival, &ni, nimax, tol) ;
+    }
+  }
+
+  /*integrals of discretized functions*/
+  memset(Ia, 0, nf*sizeof(gdouble)) ;
+  for ( j = 0 ; j < ni ; j ++ ) {
+    for ( k = 0 ; k < nq ; k ++ ) {
+      gqr_discretize_quadrature(r, ival, ni, j, k, &xi, &wi) ;
+      for ( i = 0 ; i < nf ; i ++ ) {
+	Ia[i] += func(xi, i, p)*wi ;
+      }
+    }
+  }
+
+  *emax = 0.0 ; *imax = 0 ;
+  for ( i = 0 ; i < nf ; i ++ ) {
     if ( fabs(Ia[i] - Iq[i]) > *emax ) {
       *emax = fabs(Ia[i] - Iq[i]) ;
       *imax = i ;
     }
   }
-
+    
   if ( output != NULL ) {
     for ( i = 0 ; i < nf ; i ++ ) 
       fprintf(output, "%d %lg %lg %lg\n",
 	      i, Iq[i], Ia[i], fabs(Ia[i]-Iq[i])) ;
   }
-  
+
   return 0 ;
 }

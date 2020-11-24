@@ -1,0 +1,41 @@
+## generate a generalized Gaussian quadrature rule on the interval
+## (0,1) for basis functions scattering_angular ((1-d)t + d)^i,
+## i=-1,0,...,(nf)-2, discretized to a tolerance (tol) using an (nq) point
+## quadrature rule on a maximum of (nimax) intervals, with error check
+## on integrals of basis functions
+
+x0=0
+x1=1
+tol=1e-12
+r0=1e-3
+th0=0.1
+rmin=1e-3
+rmax=1e-2
+thmin=0.0
+thmax=0.3
+nj=2
+nk=2
+nr=7
+nth=9
+nf=16
+nq=40
+nd=2
+nimax=256
+rankmax=65
+func=scattering_angular_range
+analytic=
+#-a
+
+((nf=nj*(nj+3)*3/2 + nj*(3*nj+7)/2 + nk + nk-1))
+
+((nf=nf*nr*nth))
+rankmax=${nf}
+
+args="-G -p ${func} -f ${x0} -f ${x1} -f ${tol} -f ${rmin} -f ${rmax} \
+	 -f ${thmin} -f ${thmax} \
+  -i ${nf} -i ${nq} -i ${nimax} -i ${rankmax} -i ${nj} -i ${nk} \
+  -i ${nr} -i ${nth} -N 48 -e"
+
+echo ${args}
+
+../tests/gqr-rule ${args} > rule.dat

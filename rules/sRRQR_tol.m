@@ -71,19 +71,21 @@ end
 %   algorithm which is based on the above pivoting QR. 
 %   Name of variables are from the reference paper. 
 %   Initialization of A^{-1}B ( A refers to R11, B refers to R12)
-AB = linsolve(R(1:k, 1:k), R(1:k, (k+1):end), struct('UT', true)); 
+AB = linsolve(R(1:k, 1:k), R(1:k, (k+1):end), struct('UT', true));
+##return ;
 %   Initialization of gamma, i.e., norm of C's columns (C refers to R22)
 gamma = zeros(n-k, 1);                                    
 if k ~= size(R,1)
   disp(["Hello"]) ;
   gamma = (sum(R((k+1):end, (k+1):end).^2, 1).^(1/2))';
-  return ;
+  ##return ;
 end
 
 %   Initialization of omega, i.e., reciprocal of inv(A)'s row norm 
 tmp = linsolve(R(1:k, 1:k), eye(k), struct('UT', true));
 omega = sum(tmp.^2, 2).^(-1/2);
-##R0 = omega ;
+R0 = gamma ;
+return ;
 %   KEY STEP in Strong RRQR: 
 %   "while" loop for interchanging the columns from first k columns and 
 %   the remaining (n-k) columns.
@@ -102,13 +104,15 @@ while 1
     %%   if no entry of tmp greater than f*f, no interchange needed and the
     %%   present Q, R, p is a strong RRQR.
     R0 = gamma ;
+    return
     if isempty(i)
       disp("Empty") ;
+      disp(["Iter " int2str(iter)]) ;
       break;
     end
 
     R0 = R ;
-    return ;
+    ##return ;
     
     %%   Interchange the i th and (k+j) th column of target matrix A and 
     %%   update QR decomposition (Q, R, p), AB, gamma, and omega.
