@@ -125,6 +125,7 @@ Makefile
 src/Makefile
 src/gqr-config
 tests/Makefile
+triangle/Makefile
 doc/Makefile
 doc/html/Makefile
 ])

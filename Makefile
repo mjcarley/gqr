@@ -219,7 +219,7 @@ AWK = gawk
 BLAS_LIBS = -lblas
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O0 -g -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+CFLAGS = -g -O2 -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -345,7 +345,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-SUBDIRS = src tests doc
+SUBDIRS = src tests doc triangle
 EXTRA_DIST = doc/latex
 ACLOCAL_AMFLAGS = -I m4
 all: config.h

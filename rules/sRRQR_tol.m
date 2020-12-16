@@ -1,4 +1,4 @@
-function [Q, R, p, AB, R0] = sRRQR_tol(A, f, tol)
+function [Q, R, p, AB, R0, iter] = sRRQR_tol(A, f, tol)
 %
 %   Strong Rank Revealing QR with an error threshold tol
 %       A(:, p) = Q * R = Q [R11, R12; 
@@ -36,6 +36,7 @@ end
 [m, n] = size(A);
 %   pivoting QR first (generally most time consuming step)
 [Q, R, p] = qr(A, 0);
+##return ;
 %   make diagonals of R positive.
 if (size(R,1) == 1 || size(R,2) == 1)
   ss = sign(R(1,1));
@@ -84,8 +85,8 @@ end
 %   Initialization of omega, i.e., reciprocal of inv(A)'s row norm 
 tmp = linsolve(R(1:k, 1:k), eye(k), struct('UT', true));
 omega = sum(tmp.^2, 2).^(-1/2);
-R0 = gamma ;
-return ;
+#R0 = gamma ;
+##return ;
 %   KEY STEP in Strong RRQR: 
 %   "while" loop for interchanging the columns from first k columns and 
 %   the remaining (n-k) columns.
@@ -99,19 +100,26 @@ while 1
     iter ++ ;
     ##disp(["Step " int2str(iter)]) ;
     %%   identify interchanging columns
+    if ( iter == -1 )
+      R0 = omega ;
+      return ;
+    endif
     tmp = (1./omega * gamma').^2 + AB.^2;
+    if ( iter == -1 )
+      R0 = omega ; return ;
+    endif
     [i,j] = find(tmp > f*f, 1, 'first');
     %%   if no entry of tmp greater than f*f, no interchange needed and the
     %%   present Q, R, p is a strong RRQR.
-    R0 = gamma ;
-    return
+    ##R0 = gamma ;
+    ##return
     if isempty(i)
       disp("Empty") ;
       disp(["Iter " int2str(iter)]) ;
       break;
     end
 
-    R0 = R ;
+    ##R0 = R ;
     ##return ;
     
     %%   Interchange the i th and (k+j) th column of target matrix A and 
@@ -199,9 +207,16 @@ while 1
     %%   update gamma
     gamma(1) = ga * nu / rho;
     gamma(2:end) = (gamma(2:end).^2 + (c2T_bar').^2 - (c2T').^2).^(1/2);
+    if ( iter == 2 )
+      R0 = gamma ; return ;
+    endif
     %%   update omega
     u_bar = u1 + mu * u;
     omega(k) = ga_bar;
+    if ( iter == 22 )
+      R0 = omega ;
+      return ;
+    endif
     omega(1:k-1) = (omega(1:k-1).^(-2) + u_bar.^2/(ga_bar*ga_bar) - u.^2/(ga*ga)).^(-1/2);
     %%   Eliminate new R(k+1, k) by orthgonal transformation         
     Gk = [mu/rho, nu/rho; nu/rho, -mu/rho];

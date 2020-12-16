@@ -11,12 +11,14 @@ d=1e-1
 d0=1e-7
 d1=1e-6
 nf=32
-nq=48
-nd=8
-nimax=2048
-rmax=128
+nq=40
+nd=16
+nimax=8192
+rmax=21
 func=scattering_radial_range
 analytic=-a
+
+rmax=${nf}
 
 #echo "-G -p ${func} -f ${x0} -f ${x1} -f ${tol} -f ${d} -i ${nf} -i ${nq} \
 #     -i ${nimax} -i ${rmax} -N 32 -e"

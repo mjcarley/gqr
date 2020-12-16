@@ -18361,7 +18361,7 @@ LDFLAGS="$LDFLAGS $GLIB_LIBS $GSL_LIBS"
 
 LIBS="$GLIB_LIBS $GSL_LIBS $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/gqr-config tests/Makefile doc/Makefile doc/html/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/gqr-config tests/Makefile triangle/Makefile doc/Makefile doc/html/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -19456,6 +19456,7 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/gqr-config") CONFIG_FILES="$CONFIG_FILES src/gqr-config" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "triangle/Makefile") CONFIG_FILES="$CONFIG_FILES triangle/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "doc/html/Makefile") CONFIG_FILES="$CONFIG_FILES doc/html/Makefile" ;;
 

@@ -2,7 +2,7 @@
 
 # AUTOMAKE_OPTIONS = readme-alpha
 
-SUBDIRS = src tests doc
+SUBDIRS = src tests doc triangle
 EXTRA_DIST = doc/latex
 
 ACLOCAL_AMFLAGS=-I m4

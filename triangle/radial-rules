@@ -1,0 +1,82 @@
+#!/bin/bash
+
+## generate full set of quadrature rules for radial integrations
+N=4
+nd=16
+
+cfile=radial-rules.c
+
+delta=(1e-8 1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 5e-2 1e-1 2e-1 3e-1 4e-1 \
+	    5e-1 6e-1 7e-1 9e-1 1.0)
+
+ndelta=${#delta[@]}
+((ndelta--))
+
+rm -f ${cfile}
+touch ${cfile}
+
+echo "/* automatically-generated file, do not edit */" >> ${cfile}
+echo "/* `date` */" >>${cfile}
+echo                    >> ${cfile}
+echo \#include \<glib.h\> >> ${cfile}
+echo                    >> ${cfile}
+echo \#define NDELTA ${ndelta} >> ${cfile}
+echo                    >> ${cfile}
+
+for ((N=4; N<=16; N=N+4)) ; do
+    echo N=${N}
+
+    for ((i=0;i<ndelta;i++)) ; do
+	dmin=${delta[i]}
+	dmax=${delta[i+1]}
+	opfile=rules/ruleN${N}i${i}.dat
+	logfile=rules/ruleN${N}i${i}.log
+	
+	./mkdelta -N ${N} -d ${dmin} -D ${dmax} -n ${nd} \
+		  -o ${opfile} -l ${logfile}
+    done
+
+    echo gdouble rules${N}[] = \{ >> ${cfile}
+
+    idx=(0)
+
+    for ((i=0;i<ndelta;i++)) ; do
+	opfile=rules/ruleN${N}i${i}.dat
+	logfile=rules/ruleN${N}i${i}.log
+	msg=`tail -n 1 ${logfile}`
+	echo "/* d=${delta[i]}--${delta[i+1]} ${msg} */" >> ${cfile}
+	##echo "/* ${msg} */" >> ${cfile}
+	sed -e 's/ /, /' -ne 's/$/,/p' ${opfile} >> ${cfile}
+	
+	## indexing into array of abscissa and weights
+	len=`wc -l ${opfile} | cut -d " " -f 1`
+	##echo ${len}
+	ni=${idx[i]}
+	((ni=ni+len))
+	idx+=("${ni}")
+    done
+    
+    echo 0.0\} \; >> ${cfile}
+    
+    echo -n gint indices${N}[] = \{ >> ${cfile}
+    for ((i=0;i<ndelta;i++)) ; do
+	echo -n "${idx[i]}, " >> ${cfile}
+    done
+    echo "${idx[ndelta]}} ;" >> ${cfile}
+    
+    echo -n gdouble delta${N}[] = \{ >> ${cfile}
+    for ((i=0;i<ndelta;i++)) ; do
+	echo -n "${delta[i]}, " >> ${cfile}
+    done
+    echo "${delta[ndelta]}} ;" >> ${cfile}
+    
+    ##echo indices: ${idx[@]}
+
+done
+
+echo >> ${cfile}
+echo >> ${cfile}
+
+cat radial-func.c.in >> ${cfile}
+
+

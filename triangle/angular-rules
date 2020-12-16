@@ -1,0 +1,114 @@
+#!/bin/bash
+
+## generate full set of quadrature rules for radial integrations
+N=4
+nr=16
+nt=16
+
+cfile=angular-rules.c
+
+drr=(1e-5 1e-4 1e-3 5e-3 1e-2 2e-2 4e-2 8e-2 1.6e-1 \
+	  3.2e-1 5e-1 6e-1 7e-1 9e-1 1.0)
+dth=(1e-5 1e-4 1e-3 1e-2 1e-1 2e-1 4e-1 6e-1 8e-1 \
+	  1.0 1.2 1.4 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.14 3.14159)
+
+nrr=${#drr[@]}
+((nrr--))
+
+nth=${#dth[@]}
+((nth--))
+
+rm -f ${cfile}
+touch ${cfile}
+
+echo "/* automatically-generated file, do not edit */" >> ${cfile}
+echo "/* `date` */" >>${cfile}
+echo                    >> ${cfile}
+echo \#include \<glib.h\> >> ${cfile}
+echo                    >> ${cfile}
+echo \#define NRADIUS ${nrr} >> ${cfile}
+echo \#define NTHETA  ${nth} >> ${cfile}
+echo                    >> ${cfile}
+
+for ((N=4; N<=16; N=N+4)) ; do
+    echo N=${N}
+
+    for ((i=0;i<nrr;i++)) ; do
+	rmin=${drr[i]}
+	rmax=${drr[i+1]}
+	for ((j=0;j<nth;j++)) ; do
+	    tmin=${dth[j]}
+	    tmax=${dth[j+1]}
+	    opfile=rules/ruleN${N}i${i}j${j}.dat
+	    logfile=rules/ruleN${N}i${i}j${j}.log
+
+	    echo ${i} ${j}
+	    ./mkangular -N ${N} -r ${rmin} -R ${rmax} -t ${tmin} -T ${tmax} \
+			-m ${nr} -n ${nt} -o ${opfile} -l ${logfile}
+	done
+    done
+    
+    echo gdouble rules_angular${N}[] = \{ >> ${cfile}
+
+    idx=(0)
+
+    for ((i=0;i<nrr;i++)) ; do
+	rmin=${drr[i]}
+	rmax=${drr[i+1]}
+	for ((j=0;j<nth;j++)) ; do
+	    tmin=${dth[j]}
+	    tmax=${dth[j+1]}
+	    opfile=rules/ruleN${N}i${i}j${j}.dat
+	    logfile=rules/ruleN${N}i${i}j${j}.log
+
+	    msg=`tail -n 1 ${logfile}`
+	    echo "/* i=${i}, j=${j} */" >> ${cfile}
+	    echo "/* r=${drr[i]}--${drr[i+1]} th=${dth[j]}--${dth[j+1]}*/" \
+		 >> ${cfile}
+	    echo "/* ${msg} */" >> ${cfile}
+	    sed -e 's/ /, /' -ne 's/$/,/p' ${opfile} >> ${cfile}
+
+	    len=`wc -l ${opfile} | cut -d " " -f 1`
+	    ni=${idx[i*nth+j]}
+	    ((ni=ni+len))
+	    idx+=("${ni}")
+	done
+    done
+    
+    echo 0.0\} \; >> ${cfile}
+    echo  >> ${cfile}
+
+    ##echo ${idx[@]}
+    
+    echo gint indices_angular${N}[] = >> ${cfile}
+    echo -n \{ >> ${cfile}
+    for ((i=0;i<nrr;i++)) ; do
+	for ((j=0;j<nth;j++)) ; do
+	    ((k=i*nth+j))
+	    echo -n "${idx[k]}, " >> ${cfile}
+	done
+	echo >> ${cfile}
+    done
+    echo "0} ;" >> ${cfile}
+    
+    echo  >> ${cfile}
+    echo -n gdouble drr_angular${N}[] = \{ >> ${cfile}
+    for ((i=0;i<nrr;i++)) ; do
+	echo -n "${drr[i]}, " >> ${cfile}
+    done
+    echo "${drr[nrr]}} ;" >> ${cfile}
+
+    echo -n gdouble dth_angular${N}[] = \{ >> ${cfile}
+    for ((i=0;i<nth;i++)) ; do
+	echo -n "${dth[i]}, " >> ${cfile}
+    done
+    echo "${dth[nth]}} ;" >> ${cfile}
+
+done
+
+echo >> ${cfile}
+echo >> ${cfile}
+
+cat angular-func.c.in >> ${cfile}
+
+

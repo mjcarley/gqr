@@ -1,0 +1,50 @@
+/*basic stub file for radial quadrature selection*/
+
+static gint index_find(gdouble *delta, gint nd, gdouble d)
+
+{
+  gint i ;
+
+  for ( i = 0 ; i < nd ; i ++ ) {
+    if ( delta[i+1] > d ) return i ;
+  }
+
+  g_assert_not_reached() ;
+}
+
+gint radial_quadrature_select(gint N, gdouble d, gdouble **q, gint *nq)
+
+{
+  gint i ;
+  
+  /*snap N to one of the available values*/
+  N = 4*(N/4) ;
+  if ( N < 4 ) N = 4 ;
+  if ( N > 16 ) N = 16 ;
+
+  switch ( N ) {
+  case  4:
+    i = index_find(delta4 , NDELTA, d) ;
+    *q = &(rules4[2*indices4[i]]) ;
+    *nq = indices4[i+1] - indices4[i] ;
+    break ;
+  case  8:
+    i = index_find(delta8 , NDELTA, d) ;
+    *q = &(rules8[2*indices8[i]]) ;
+    *nq = indices8[i+1] - indices8[i] ;
+    break ;
+  case  12:
+    i = index_find(delta12 , NDELTA, d) ;
+    *q = &(rules12[2*indices12[i]]) ;
+    *nq = indices12[i+1] - indices12[i] ;
+    break ;
+  case  16:
+    i = index_find(delta16 , NDELTA, d) ;
+    *q = &(rules16[2*indices16[i]]) ;
+    *nq = indices16[i+1] - indices16[i] ;
+    break ;
+  default: g_assert_not_reached() ; break ; 
+  }
+
+  return 0 ;
+}

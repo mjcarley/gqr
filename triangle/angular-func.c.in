@@ -1,0 +1,59 @@
+/*basic stub file for angular quadrature selection*/
+
+static gint index_find(gdouble *x, gint nx, gdouble t)
+
+{
+  gint i ;
+
+  for ( i = 0 ; i < nx ; i ++ ) {
+    if ( x[i+1] > t ) return i ;
+  }
+
+  g_assert_not_reached() ;
+}
+
+gint angular_quadrature_select(gint N, gdouble r0, gdouble th0,
+			       gdouble **q, gint *nq)
+
+{
+  gint i, j ;
+  
+  /*snap N to one of the available values*/
+  N = 4*(N/4) ;
+  if ( N < 4 ) N = 4 ;
+  if ( N > 16 ) N = 16 ;
+
+  switch ( N ) {
+  case  4:
+    i = index_find(drr_angular4 , NRADIUS, r0 ) ;
+    j = index_find(dth_angular4 , NTHETA,  th0) ;
+    i = i*NTHETA + j ;
+    *q = &(rules_angular4[2*indices_angular4[i]]) ;
+    *nq = indices_angular4[i+1] - indices_angular4[i] ;
+    break ;
+  case  8:
+    i = index_find(drr_angular8 , NRADIUS, r0 ) ;
+    j = index_find(dth_angular8 , NTHETA,  th0) ;
+    i = i*NTHETA + j ;
+    *q = &(rules_angular8[2*indices_angular8[i]]) ;
+    *nq = indices_angular8[i+1] - indices_angular8[i] ;
+    break ;
+  case  12:
+    i = index_find(drr_angular12 , NRADIUS, r0 ) ;
+    j = index_find(dth_angular12 , NTHETA,  th0) ;
+    i = i*NTHETA + j ;
+    *q = &(rules_angular12[2*indices_angular12[i]]) ;
+    *nq = indices_angular12[i+1] - indices_angular12[i] ;
+    break ;
+  case  16:
+    i = index_find(drr_angular16 , NRADIUS, r0 ) ;
+    j = index_find(dth_angular16 , NTHETA,  th0) ;
+    i = i*NTHETA + j ;
+    *q = &(rules_angular16[2*indices_angular16[i]]) ;
+    *nq = indices_angular16[i+1] - indices_angular16[i] ;
+    break ;
+  default: g_assert_not_reached() ; break ; 
+  }
+
+  return 0 ;
+}

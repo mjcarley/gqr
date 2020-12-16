@@ -1,0 +1,49 @@
+#!/bin/bash
+
+grule=../tests/gqr-rule
+
+## generate Legendre rules for radial integrations on inner disc
+N=4
+
+cfile=legendre-rules.c
+
+rm -f ${cfile}
+touch ${cfile}
+
+echo "/* automatically-generated file, do not edit */" >> ${cfile}
+echo "/* `date` */" >>${cfile}
+echo                    >> ${cfile}
+echo \#include \<glib.h\> >> ${cfile}
+echo                    >> ${cfile}
+
+i=0
+for ((N=4; N<=16; N=N+4)) ; do
+    echo N=${N}
+
+    opfile=rules/ruleN${N}.dat
+    logfile=rules/ruleN${N}.log
+
+    ((n=(N+1)/2+1))
+    
+    ${grule} -L -N ${n} > ${opfile} 2> ${logfile}
+
+    echo gdouble legendre_rule${N}[] = \{ >> ${cfile}
+    opfile=rules/ruleN${N}.dat
+    sed -e 's/ /, /' -ne 's/$/,/p' ${opfile} >> ${cfile}
+    len[i]=`wc -l ${opfile} | cut -d " " -f 1`
+
+    echo 0.0\} \; >> ${cfile}
+
+    ((i=i+1))
+done
+
+echo >> ${cfile}
+echo >> ${cfile}
+
+sed -e s/RULE_LENGTH4/${len[0]}/ -e s/RULE_LENGTH8/${len[1]}/  \
+    -e s/RULE_LENGTH12/${len[2]}/ -e s/RULE_LENGTH16/${len[3]}/  \
+    legendre-func.c.in >> ${cfile}
+
+##cat radial-func.c.in >> ${cfile}
+
+

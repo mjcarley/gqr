@@ -130,9 +130,52 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
   d0 = gqr_parameter_double(p, 3) ;
   d1 = gqr_parameter_double(p, 4) ;
 
-  g_assert(d0 > 0.0) ;
+  g_assert(d0 >= 0.0) ;
   g_assert(d1 > d0) ;
 
+  if ( idx >= 0 ) {
+    /*first nd functions are the singular ones*/
+
+    if ( idx < nd ) {
+      j = idx ;
+      d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, j) ;
+      f = (1.0-d)*t + d ;
+      f = 1.0/f ;
+      return f ;
+    }
+
+    /*powers of (1-d)*t + d are spanned by monomials so we only need
+      to include one of them*/
+    j = idx - nd ;
+    d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, 0) ;
+    f = (1.0-d)*t + d ;
+    f = pow(f, j) ;
+    /* f = pow(t, j) ; */
+
+    return f ;
+  }
+
+  /*calculate integral of f over specified range*/
+  x0  = gqr_parameter_double(p, 0) ;
+  x1  = gqr_parameter_double(p, 1) ;
+
+  idx = -(idx+1) ;
+
+  if ( idx < nd ) {
+    j = idx ;
+    d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, j) ;
+    return (log((1.0-d)*x1+d) - log((1.0-d)*x0+d))/(1.0-d) ;
+  }
+
+  j = idx - nd ;
+  d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, 0) ;
+  return (pow((1.0-d)*x1+d,j+1) -
+	  pow((1.0-d)*x0+d,j+1))/(gdouble)(j+1)/(1.0-d) ;
+  /* return (pow(x1,j+1) - pow(x0,j+1))/(j+1) ; */
+
+#if 0
+#endif
+    
   if ( idx >= 0 ) {
     /*select value of d in range*/
     i = idx/nd ;
@@ -192,6 +235,10 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
  * idx = 0, nj*(nj+3)*3/2 M_j(\theta_{0}u)\cos(i\theta_{0}u), i=0,3*(j+1)+2
  * idx -= nj*(nj+3)*3/2
  * idx = 0, nj*(3*nj+7)/2 M_j(\theta_{0}u)\sin(i\theta_{0}u), i=1,3*(j+1)+2
+ * idx -= nj*(3*nj+7)/2
+ * idx = 0, nk \cos(k\theta_{0}u), k=0, nk-1
+ * idx -= nk
+ * idx = 0, nk-1 \sin(k\theta_{0}u), k=1, nk-1
  * 
  */
   
@@ -212,6 +259,9 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
   thmin = gqr_parameter_double(p, 5) ;
   thmax = gqr_parameter_double(p, 6) ;
 
+  g_assert(rmax > rmin) ; 
+  g_assert(thmax > thmin) ; 
+  
   if ( rrule == NULL ) {
     rrule = gqr_rule_alloc(4*nr) ;
     trule = gqr_rule_alloc(4*nt) ;
@@ -225,12 +275,10 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
     gqr_rule_select(trule, GQR_GAUSS_LEGENDRE, nt, NULL) ;
   }
 
-  g_assert(gqr_parameter_nf(p) > 4) ;
-  
   /*total number of entries per (r_0,\theta_0) pair*/
   nrt = nj*(nj+3)*3/2 + nj*(3*nj+7)/2 + nk + nk - 1 ;
 
-  /*i = tr*ni + tt */
+  /*i = tr*nt + tt */
   i = idx/nrt ;
   tr = i/nt ;
   tt = i % nt ;
@@ -244,6 +292,7 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
   g_assert(r0 < 1.0) ;
 
   /*set idx in the range of values for a single (r_0,\theta_0) pair*/
+  /*idx = i*nrt + ...*/
   idx = idx % nrt ;
   
   off = 0 ; 
@@ -266,7 +315,7 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
 
     f = M*cos(i*th) ;
     
-    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
+    /* fprintf(stderr, "M^j\cos(i\theta)%d %d %d\n", idx+off, j, i) ; */
 
     g_assert(!isnan(f)) ;
     return f ;
@@ -291,7 +340,7 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
 
     f = M*cos(i*th) ;
     
-    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
+    /* fprintf(stderr, "M^j\sin(i\theta)%d %d %d\n", idx+off, j, i) ; */
     
     g_assert(!isnan(f)) ;
 
@@ -308,7 +357,7 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
 
     f = cos(k*th) ;
     
-    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
+    /* fprintf(stderr, "\cos(k\theta) %d %d\n", idx+off, k) ; */
     g_assert(!isnan(f)) ;
 
     return f ;
@@ -324,7 +373,7 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
     
     /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
 
-    f = cos(k*th) ;
+    f = sin(k*th) ;
 
     return f ;
   }
@@ -621,6 +670,7 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   }
 
   fprintf(stderr, "rank == %d\n", rank) ;
+  g_assert(rank < rankmax) ;
   
   /* fprintf(stdout, "A = [...\n") ; */
   /* print_matrix(A, rank, nfunc, stdout) ; */
@@ -769,7 +819,7 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
 
   ival[0] = x0 ; ival[1] = x1 ;
   Qi = (gdouble *)g_malloc(nq*nq*sizeof(gdouble)) ;
-  gqr_discretize_interp(rule, Qi) ;
+  gqr_discretize_interp(r, Qi) ;
 
   ni = 1 ;
 
@@ -777,7 +827,7 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
   for ( i = 0 ; i < nf ; i ++ ) {
     nn = 1 ;
     while ( nn != 0 && ni < nimax ) {
-      nn = gqr_discretize_adaptive(func, i, p, rule,
+      nn = gqr_discretize_adaptive(func, i, p, r,
 				   Qi, ival, &ni, nimax, tol) ;
     }
   }

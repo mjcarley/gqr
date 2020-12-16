@@ -1,0 +1,32 @@
+/*basic stub file for Legendre quadrature selection*/
+
+gint legendre_quadrature_select(gint N, gdouble **q, gint *nq)
+
+{
+  /*snap N to one of the available values*/
+  N = 4*(N/4) ;
+  if ( N < 4 ) N = 4 ;
+  if ( N > 16 ) N = 16 ;
+
+  switch ( N ) {
+  case  4:
+    *q = legendre_rule4 ;
+    *nq = RULE_LENGTH4 ;
+    break ;
+  case  8:
+    *q = legendre_rule8 ;
+    *nq = RULE_LENGTH8 ;
+    break ;
+  case  12:
+    *q = legendre_rule12 ;
+    *nq = RULE_LENGTH12 ;
+    break ;
+  case  16:
+    *q = legendre_rule16 ;
+    *nq = RULE_LENGTH16 ;
+    break ;
+  default: g_assert_not_reached() ; break ; 
+  }
+
+  return 0 ;
+}

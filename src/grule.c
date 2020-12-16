@@ -87,6 +87,27 @@ gchar *gqr_pointers[] =
    "           [tolerance for discretization]\n"
    "           [minimum ratio of radii]\n"
    "           [maximum ratio of radii]\n",
+   "scattering_angular_range",
+   "basis functions for the angular integrals in Bremer and Gimbutas,\n"
+   "\"On the numerical evaluation of the singular integrals of scattering\n"
+   "theory\", 2013, https://doi.org/10.1016/j.jcp.2013.05.048\n"
+   "(equation 27, with multiple values of r0 and theta_0)\n\n"
+   "parameter list:\n\n"
+   "  integer: [number of basis functions]\n"
+   "           [base quadrature length]\n"
+   "           [maximum number of discretization intervals]\n"
+   "           [maximum rank for orthogonalization (rule length)]\n"
+   "           [number of basis functions M(u)]\n"
+   "           [number of plain trigonometric functions cos, sin]\n"
+   "           [number of values of r_0]\n"
+   "           [number of values of \theta_0]\n"
+   "  float:   [start of quadrature interval]\n"
+   "           [end of quadrature interval]\n"
+   "           [tolerance for discretization]\n"
+   "           [minium radius r_0 (see Bremer and Gimbutas)]\n"
+   "           [maximum radius r_0 (see Bremer and Gimbutas)]\n"
+   "           [minimum angular range theta_0 (see Bremer and Gimbutas)]\n"
+   "           [maximum angular range theta_0 (see Bremer and Gimbutas)]\n",
    "scattering_angular",
    "basis functions for the angular integrals in Bremer and Gimbutas,\n"
    "\"On the numerical evaluation of the singular integrals of scattering\n"
@@ -317,6 +338,7 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
     break ;
   case GQR_GAUSS_GENERALIZED:
     g->n = grule_bgr(g->x, g->w, p) ;
+    g_assert(g->n < g->nmax) ;
     g->a = gqr_parameter_double(p, 0) ;
     g->b = gqr_parameter_double(p, 1) ;
     g->type = type ;    

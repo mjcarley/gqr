@@ -1,0 +1,83 @@
+#!/bin/bash
+
+
+## generate file of quadrature rules for Bremer and Gimbutas radial
+## integrals
+
+uniquify()
+{
+    echo $1 | awk '{
+	for (i = 1; i <= NF; i++) {
+	    unique = 1;
+	    for (j = i + 1; j <= NF && unique; j++)
+		if ($i == $j)
+		    unique = 0;
+            if (unique)
+		printf ("%s ", $i);
+	}
+    }'
+}
+
+grule=../tests/gqr-rule
+
+N=4
+dmin=1e-7
+dmax=1e-6
+nd=16
+tol=1e-12
+nimax=8192
+x0=0
+x1=1
+nq=48
+opfile=rule.dat
+logfile=rule.log
+func=scattering_radial_range
+
+while test $# -gt 0; do
+  case "$1" in
+  -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+  *) optarg= ;;
+  esac
+
+  case $1 in
+      -N)
+	  shift
+	  N=$1
+	  ;;
+      -d)
+	  shift
+	  dmin=$1
+	  ;;
+      -D)
+	  shift
+	  dmax=$1
+	  ;;
+      -l)
+	  shift
+	  logfile=$1
+	  ;;      
+      -n)
+	  shift
+	  nd=$1
+	  ;;
+      -o)
+	  shift
+	  opfile=$1
+	  ;;      
+  esac
+  shift
+done
+
+## number of functions to use in quadrature rule
+((nf=nd+N+2))
+##((nf=nd*(N+1)))
+rankmax=${nf}
+
+echo N:     ${N} > ${logfile}
+echo d:     ${dmin}--${dmax} >> ${logfile}
+echo n:     ${nd} >> ${logfile}
+
+${grule} -G -p ${func} \
+	 -f ${x0} -f ${x1} -f ${tol} -f ${dmin} -f ${dmax} \
+	 -i ${nf} -i ${nq} -i ${nimax} -i ${rankmax} -i ${nd}\
+	 -N 128 -e -a > ${opfile} 2>> ${logfile}
