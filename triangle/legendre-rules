@@ -29,7 +29,8 @@ for ((N=4; N<=16; N=N+4)) ; do
 
     echo gdouble legendre_rule${N}[] = \{ >> ${cfile}
     opfile=rules/ruleN${N}.dat
-    sed -e 's/ /, /' -ne 's/$/,/p' ${opfile} >> ${cfile}
+    #sed -e 's/ /, /' -ne 's/$/,/p' ${opfile} >> ${cfile}
+    ./shift-rule ${opfile} ${cfile}
     len[i]=`wc -l ${opfile} | cut -d " " -f 1`
 
     echo 0.0\} \; >> ${cfile}

@@ -49,9 +49,17 @@ gint element_point_3d(gdouble *xe, gint xstr, gint ne,
 		      gdouble s, gdouble t,
 		      gdouble *y, gdouble *n, gdouble *J) ;
 
+gint newman_tri_shape (gdouble p[], gdouble x1[], gdouble x2[], gdouble x3[],
+		       gdouble imn[], gint hmax,
+		       gdouble i[], gdouble j[]) ;
+
 gint dgesdd_(gchar *JOBZ, gint *M, gint *N, gdouble *A, gint *lda,
 	     gdouble *S, gdouble *U, gint *ldu, gdouble *VT, gint *ldvt,
 	     gdouble *work, gint *lwork, gint *iwork, gint *info) ;
+
+typedef gint (*tri_quad_func_t)(gdouble *x0, gdouble *x1, gdouble *n,
+				gdouble s, gdouble t, gpointer data,
+				gdouble *f, gint nf) ;
 
 gint invert2x2(gdouble *A, gdouble *Ai)
 
@@ -82,25 +90,26 @@ gdouble *wandzura_select(gint n)
   return NULL ;
 }
 
-gint wandzura_quad(gdouble *xt, gint xstr, gint nt)
+gint wandzura_quad(tri_quad_func_t func, gdouble *x0,
+		   gdouble *xt, gint xstr, gint nt, gdouble *Iq, gint nqi)
 
 {
-  gdouble x[3], n[3], J, *q, A, wt ;
-  gint nw, i ;
+  gdouble x[3], n[3], J, *q, A, wt, f[16], s, t ;
+  gint nw, i, iq ;
 
   nw = 175 ;
 
   q = wandzura_select(nw) ;
 
-  A = 0.0 ;
+  memset(Iq, 0, nqi*sizeof(gdouble)) ;
   for ( i = 0 ; i < nw ; i ++ ) {
-    element_point_3d(xt, xstr, nt, q[3*i+0], q[3*i+1], x, n, &J) ;
+    s = q[3*i+0] ; t = q[3*i+1] ;
+    element_point_3d(xt, xstr, nt, s, t, x, n, &J) ;
+    func(x0, x, n, s, t, NULL, f, nqi) ;
     wt = J*q[3*i+2] ;
-    /* A += wt*x[0] ; */
-    A += wt*x[0]*x[1] ;
+    for ( iq = 0 ; iq < nqi ; iq ++ )
+      Iq[iq] += wt*f[iq] ;
   }
-
-  fprintf(stderr, "A = %lg\n", A) ;
   
   return 0 ;
 }
@@ -199,8 +208,7 @@ gint triangle_decomp(gdouble *x0, gdouble *x1, gdouble *x2,
 }
 
 gint triangle_mapping(gdouble *xt, gint xstr, gint nt, gdouble s, gdouble t,
-		      gdouble *x0, gdouble *J0, gdouble *A, gdouble *Ai,
-		      gdouble *xti)
+		      gdouble *x0, gdouble *J0, gdouble *A, gdouble *xti)
 
 
 /*
@@ -214,7 +222,6 @@ gint triangle_mapping(gdouble *xt, gint xstr, gint nt, gdouble s, gdouble t,
   x0:    calculated physical location of singular point
   J0:    reference Jacobian at singularity
   A:     transformation matrix for Affine mapping
-  Ai:    inv(A)
   xti:   triangle for integration using singular quadrature rules
 
   integrate on xti and map xti to coordinates (s1,t1) on unit triangle
@@ -224,15 +231,15 @@ gint triangle_mapping(gdouble *xt, gint xstr, gint nt, gdouble s, gdouble t,
 
   map to physical triangle using shape functions as usual
 
-  x = L(s,t)*[xt]
+  x = L(s1,t1)*[xt]
 */
   
 {
   gdouble L[16], dLds[16], dLdt[16], n[3], U[16], S[16], V[16] ;
-  gdouble dr[6], work[138] ;
+  gdouble dr[6], work[138], Ai[4] ;
   gint i, one = 1, two = 2, three = 3, lwork, info, iwork ;
   
-  /*calculate physical location of singularity and reference Jacobian*/
+  /*physical location of singularity and reference Jacobian*/
   element_shape_3d(nt, s, t, L, dLds, dLdt) ;
   element_point_interp_3d(xt, xstr, nt, L, dLds, dLdt, x0, n, J0) ;
 
@@ -268,11 +275,35 @@ gint triangle_mapping(gdouble *xt, gint xstr, gint nt, gdouble s, gdouble t,
   return 0 ;
 }
 
-gint triangle_quad(gdouble *xti,
+gint triangle_quad_laplace(gdouble *x0, gdouble *x1, gdouble *n,
+			   gdouble s, gdouble t, gpointer data,
+			   gdouble *f, gint nf)
+
+{
+  gdouble R, r[3] ;
+
+  r[0] = x1[0] - x0[0] ;
+  r[1] = x1[1] - x0[1] ;
+  r[2] = x1[2] - x0[2] ;
+  
+  R = sqrt(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]) ;
+  
+  f[0] = 0.25*M_1_PI/R*(1-s-t) ;
+  f[1] = 0.25*M_1_PI/R*(  s  ) ;
+  f[2] = 0.25*M_1_PI/R*(    t) ;
+
+  /* f *= (r[0]*n[0] + r[1]*n[1] + r[2]*n[2])/R/R ; */
+  
+  return 0 ;
+}
+
+gint triangle_quad(tri_quad_func_t func,
+		   gdouble *xti,
 		   gdouble *xt, gint xstr, gint nt,
 		   gdouble *A, gdouble s, gdouble t,
 		   gdouble *x0, gdouble J0,
-		   gdouble d, gint N)
+		   gdouble d, gint N,
+		   gdouble *Iq, gint nqi)
 
 /*
   xti:  mapped plane triangle
@@ -285,15 +316,17 @@ gint triangle_quad(gdouble *xti,
   J0:   Jacobian at singularity
   d:    radius of central disc
   N:    order of integration
+  Iq:   integrals of func over triangle
+  nqi:  number of functions to integrate
 */
   
 {
   gdouble r0, th0, r, th, *qr, *qt, rr, ti, M, sgn ;
   gdouble x[3], s1, t1, J, n[3], wt, Aq, C, S, zero[2]={0,0} ;
-  gdouble Ac, As ;
-  gint i, j, k, idx[] = {0, 1, 2, 0}, nqr, nqt ;
+  gdouble Ac, As, f[16] ;
+  gint i, j, k, iq, idx[] = {0, 1, 2, 0}, nqr, nqt ;
 
-  Aq = 0.0 ;
+  memset(Iq, 0, nqi*sizeof(gdouble)) ;
   
   /*quadrature on inner disc*/
   nqt = 3*(N+2) + 2 ;
@@ -313,8 +346,9 @@ gint triangle_quad(gdouble *xti,
       element_point_3d(xt, xstr, nt, s1, t1, x, n, &J) ;
       /*quadrature weight*/
       wt = J/J0*rr*qr[2*j+1]*0.5*d*2.0*M_PI/nqt ;
-      /* Aq += wt*x[0] ; */
-      Aq += wt*x[0]*x[1] ;
+      func(x0, x, n, s1, t1, NULL, f, nqi) ;
+      for ( iq = 0 ; iq < nqi ; iq ++ )
+	Iq[iq] += wt*f[iq] ;
     }
   }
 
@@ -341,13 +375,12 @@ gint triangle_quad(gdouble *xti,
 	element_point_3d(xt, xstr, nt, s1, t1, x, n, &J) ;
 	/*quadrature weight*/
 	wt = (M*r-d)*qr[2*j+1]*qt[2*i+1]*rr*th0*J/J0 ;
-	/* Aq += wt ; */
-	Aq += wt*x[0]*x[1] ;
+	func(x0, x, n, s1, t1, NULL, f, nqi) ;
+	for ( iq = 0 ; iq < nqi ; iq ++ )
+	  Iq[iq] += wt*f[iq] ;	
       }
     }
   }
-
-  fprintf(stderr, "A = %lg\n", Aq) ;
   
   return 0 ;
 }
@@ -356,27 +389,52 @@ gint triangle_quad_test_3d(gdouble *xt, gint xstr, gint nt,
 			   gdouble s, gdouble t, gint N)
 
 {
-  gdouble x0[3], J0, xti[64], A[4], Ai[4], d ;
+  gdouble x0[3], J0, xti[64], A[4], Ai[4], d, G[3], dG[3], Iq[16], Iw[16] ;
+  tri_quad_func_t func ;
+
+  func = triangle_quad_laplace ;
   
-  triangle_mapping(xt, xstr, nt, s, t, x0, &J0, A, Ai, xti) ;
+  triangle_mapping(xt, xstr, nt, s, t, x0, &J0, A, xti) ;
 
   fprintf(stderr, "x0 = (%lg,%lg,%lg); J0 = %lg\n", x0[0], x0[1], x0[2], J0) ;
 
-  d = 0.05 ;
+  d = 0.1 ;
 
-  triangle_quad(xti, xt, xstr, nt, A, s, t, x0, J0, d, N) ;
+  triangle_quad(func, xti, xt, xstr, nt, A, s, t, x0, J0, d, N, Iq, 3) ;
+  fprintf(stderr, "single layer: %lg %lg %lg\n",
+	  Iq[0], Iq[1], Iq[2]) ;
 
-  wandzura_quad(xt, xstr, nt) ;
+  wandzura_quad(func, x0, xt, xstr, nt, Iw, 3) ;
+  fprintf(stderr, "Wandzura single layer: %lg %lg %lg\n",
+  	  Iw[0], Iw[1], Iw[2]) ;
+
+  if ( nt == 3 ) {
+    newman_tri_shape(x0, &(xt[0*xstr]), &(xt[1*xstr]), &(xt[2*xstr]),
+		     NULL, 0.0, G, dG) ;
+
+    G[0]  *= -0.25*M_1_PI ;  G[1] *= -0.25*M_1_PI ;  G[2] *= -0.25*M_1_PI ;
+    dG[0] *= -0.25*M_1_PI ; dG[1] *= -0.25*M_1_PI ; dG[2] *= -0.25*M_1_PI ;
+    
+    fprintf(stderr, "Newman single layer: %lg %lg %lg\n",
+	    G[0], G[1], G[2]) ;
+    fprintf(stderr, "error:               %e %e %e\n",
+    	    fabs(G[0]-Iq[0]), fabs(G[1]-Iq[1]), fabs(G[2]-Iq[2])) ;
+    fprintf(stderr, "Newman double layer: %lg %lg %lg\n",
+	    dG[0], dG[1], dG[2]) ;
+  }
   
   return 0 ;
 }
 
-gint triangle_quad_test(gdouble *xt, gdouble *x0, gdouble d, gint N)
+gint triangle_quad_test(gdouble *xt, gint xstr, gdouble s0, gdouble t0,
+			gdouble d, gint N)
 
 {
   gdouble r0, th0, r, th, *qr, *qt, rr, t, M, sgn, c, f ;
-  gdouble x, y, J, A[2048], Aw[2048] ;
+  gdouble x, y, J, A[2048], Aw[2048], x0[3], xti[64], J0 ;
   gint i, j, k, ip, n, m, Np, idx[] = {0, 1, 2, 0}, nqr, nqt, nw ;
+  
+  triangle_mapping(xt, xstr, 3, s0, t0, x0, &J0, A, xti) ;
   
   memset(A , 0, 2048*sizeof(gdouble)) ;
   memset(Aw, 0, 2048*sizeof(gdouble)) ;
@@ -404,7 +462,7 @@ gint triangle_quad_test(gdouble *xt, gdouble *x0, gdouble d, gint N)
   }
   
   for ( k = 0 ; k < 3 ; k ++ ) {
-    triangle_decomp(x0, &(xt[2*idx[k]]), &(xt[2*idx[k+1]]),
+    triangle_decomp(x0, &(xt[idx[k]*xstr]), &(xt[idx[k+1]*xstr]),
 		    &r0, &th0, &r, &th) ;
     sgn = SIGN(th0) ;
     th0 = fabs(th0) ;
@@ -435,16 +493,16 @@ gint triangle_quad_test(gdouble *xt, gdouble *x0, gdouble d, gint N)
   qt = wandzura_select(nw) ;
   /*Jacobian is constant on the plane triangle*/
   J =
-    (xt[2*0+0] - xt[2*2+0])*(xt[2*1+1] -  xt[2*2+1]) -
-    (xt[2*1+0] - xt[2*2+0])*(xt[2*0+1] -  xt[2*2+1]) ;    
+    (xt[xstr*0+0] - xt[xstr*2+0])*(xt[xstr*1+1] -  xt[xstr*2+1]) -
+    (xt[xstr*1+0] - xt[xstr*2+0])*(xt[xstr*0+1] -  xt[xstr*2+1]) ;    
   
   for ( i = 0 ; i < nw ; i ++ ) {
-    x = xt[2*0+0]*qt[3*i+0] +
-      xt[2*1+0]*qt[3*i+1] +
-      xt[2*2+0]*(1.0 - qt[3*i+0] - qt[3*i+1]) ;
-    y = xt[2*0+1]*qt[3*i+0] +
-      xt[2*1+1]*qt[3*i+1] +
-      xt[2*2+1]*(1.0 - qt[3*i+0] - qt[3*i+1]) ;
+    x = xt[xstr*0+0]*qt[3*i+0] +
+      xt[xstr*1+0]*qt[3*i+1] +
+      xt[xstr*2+0]*(1.0 - qt[3*i+0] - qt[3*i+1]) ;
+    y = xt[xstr*0+1]*qt[3*i+0] +
+      xt[xstr*1+1]*qt[3*i+1] +
+      xt[xstr*2+1]*(1.0 - qt[3*i+0] - qt[3*i+1]) ;
       for ( ip = 0, n = 0 ; n <= Np ; n ++ ) {
 	for ( m = 0 ; m <= n ; m ++, ip ++ ) {
 	  f = pow(x,m)*pow(y,n-m) ;
@@ -573,15 +631,15 @@ gint angular_quadrature_test(gint N)
   case 4:
     dth = dth_angular4 ;
     break ;
-  /* case 8: */
-  /*   dth = dth_angular8 ; */
-  /*   break ; */
-  /* case 12: */
-  /*   dth = dth_angular12 ; */
-  /*   break ; */
-  /* case 16: */
-  /*   dth = dth_angular16 ; */
-  /*   break ; */
+  case 8:
+    dth = dth_angular8 ;
+    break ;
+  case 12:
+    dth = dth_angular12 ;
+    break ;
+  case 16:
+    dth = dth_angular16 ;
+    break ;
   }
 
   r0 = 0.5 ;
@@ -637,7 +695,7 @@ gint main(gint argc, gchar **argv)
 
   /* return 0 ; */
 
-  xstr = 4 ; nt = 6 ;
+  xstr = 4 ; nt = 3 ;
   xt[0*xstr+0] = -0.3  ; xt[0*xstr+1] = 0.5  ; xt[0*xstr+2] =  0.4  ;
   xt[1*xstr+0] =  0.35 ; xt[1*xstr+1] = 0.55 ; xt[1*xstr+2] =  0.2  ;
   xt[2*xstr+0] =  0.0  ; xt[2*xstr+1] = 1.2  ; xt[2*xstr+2] =  0.3  ;
@@ -645,13 +703,16 @@ gint main(gint argc, gchar **argv)
   xt[4*xstr+0] =  0.2  ; xt[4*xstr+1] = 0.8  ; xt[4*xstr+2] =  0.25 ;
   xt[5*xstr+0] = -0.1  ; xt[5*xstr+1] = 0.8  ; xt[5*xstr+2] =  0.3  ;
 
-  s = 0.3 ; t = 0.3 ;
+  xt[0*xstr+2] = xt[1*xstr+2] = xt[2*xstr+2] = 0.0 ;
   
-  triangle_quad_test_3d(xt, xstr, nt, s, t, N) ;
+  s = 0.3 ; t = 0.2 ;
   
-  return 0 ;
+  /* triangle_quad_test_3d(xt, xstr, nt, s, t, N) ; */
   
-  triangle_quad_test(xt, x0, d, N) ;
+  /* return 0 ; */
+  
+  d = 0.0 ;
+  triangle_quad_test(xt, xstr, s, t, d, N) ;
 
   return 0 ;
   

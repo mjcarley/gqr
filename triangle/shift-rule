@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ipfile=$1
+opfile=$2
+
+while read -ra line
+do
+    y=${line[0]}
+    w=${line[1]}
+
+    y=`sed -E 's/([+-]?[0-9.]+)[eE]\+?(-?)([0-9]+)/(\1*10^\2\3)/g' <<<"$y"`
+    w=`sed -E 's/([+-]?[0-9.]+)[eE]\+?(-?)([0-9]+)/(\1*10^\2\3)/g' <<<"$w"`
+    y=`echo "0.5*(1.0+$y)" | bc -l`
+    w=`echo "0.5*$w*$y" | bc -l`
+    echo "    ${y}, ${w}," >> ${opfile}
+done < ${ipfile}
+      
+

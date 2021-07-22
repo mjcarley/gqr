@@ -6,10 +6,12 @@ static gint index_find(gdouble *delta, gint nd, gdouble d)
   gint i ;
 
   for ( i = 0 ; i < nd ; i ++ ) {
-    if ( delta[i+1] > d ) return i ;
-  }
+    if ( delta[i+1] >= d ) return i ;
+ }
 
-  g_assert_not_reached() ;
+  g_error("%s: d = %lg out of range", __FUNCTION__, d) ;
+
+  return 0 ;
 }
 
 gint radial_quadrature_select(gint N, gdouble d, gdouble **q, gint *nq)

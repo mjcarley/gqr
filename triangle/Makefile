@@ -108,7 +108,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_triangle_tests_OBJECTS = triangle-tests.$(OBJEXT) \
 	wandzura.$(OBJEXT) radial-rules.$(OBJEXT) \
 	angular-rules.$(OBJEXT) legendre-rules.$(OBJEXT) \
-	shape.$(OBJEXT)
+	shape.$(OBJEXT) newman.$(OBJEXT)
 triangle_tests_OBJECTS = $(am_triangle_tests_OBJECTS)
 triangle_tests_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_$(V))
@@ -332,7 +332,8 @@ triangle_tests_SOURCES = \
 	radial-rules.c \
 	angular-rules.c \
 	legendre-rules.c \
-	shape.c
+	shape.c \
+	newman.c
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -430,6 +431,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/angular-rules.Po
 include ./$(DEPDIR)/legendre-rules.Po
+include ./$(DEPDIR)/newman.Po
 include ./$(DEPDIR)/radial-rules.Po
 include ./$(DEPDIR)/shape.Po
 include ./$(DEPDIR)/triangle-tests.Po

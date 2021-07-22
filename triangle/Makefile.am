@@ -27,4 +27,5 @@ triangle_tests_SOURCES = \
 	radial-rules.c \
 	angular-rules.c \
 	legendre-rules.c \
-	shape.c
+	shape.c \
+	newman.c

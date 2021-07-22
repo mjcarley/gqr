@@ -1,0 +1,19 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+## don't include emacs backups
+*~
+
+## scratch directory
+scratch
+
+## generated files
+*.dat
+*.log
+radial-rules.c

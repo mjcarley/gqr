@@ -6,10 +6,12 @@ static gint index_find(gdouble *x, gint nx, gdouble t)
   gint i ;
 
   for ( i = 0 ; i < nx ; i ++ ) {
-    if ( x[i+1] > t ) return i ;
+    if ( x[i+1] >= t ) return i ;
   }
 
-  g_assert_not_reached() ;
+  g_error("%s: t = %lg out of range", __FUNCTION__, t) ;
+
+  return 0 ;
 }
 
 gint angular_quadrature_select(gint N, gdouble r0, gdouble th0,
