@@ -77,7 +77,7 @@ static void jacobi_root(gint n, gdouble al, gdouble bt,
   gdouble tol, f ;
   gint i ;
   
-  tol = 1e-14 ;
+  tol = 1e-12 ;
   grule_diff_jpoly(n, *x, al, bt, &f, df) ;
 
   for ( i = 0 ; i < 16 ; i ++ ) {
