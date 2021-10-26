@@ -23,8 +23,6 @@
 #include <math.h>
 
 #include <glib.h>
-#include <gsl/gsl_sf.h>
-#include <gsl/gsl_math.h>
 
 #include "gqr.h"
 #include "gqr-private.h"
@@ -46,7 +44,6 @@ static inline void grule_diff_jpoly(gint n, gdouble x,
 
   i = 0 ;
   A = 0.5*(2.0*i+al+bt+1.0)*(2.0*i+al+bt+2.0)/(1.0+i)/(1.0+i+al+bt) ;
-  /* B = 0.5*(al - bt)*(2.0*i+al+bt+1.0)/(1.0+i)/(1.0+al+bt+i) ; */
   B = 0.5*(bt - al)*(2.0*i+al+bt+1.0)/(1.0+i)/(1.0+al+bt+i) ;
   if ( n == 1 ) {
     *f = A*x + B ; *df = A ;
@@ -57,8 +54,6 @@ static inline void grule_diff_jpoly(gint n, gdouble x,
     
   for ( i = 1 ; i < n ; i ++ ) {
     A = 0.5*(2.0*i+al+bt+1.0)*(2.0*i+al+bt+2.0)/(1.0+i)/(1.0+i+al+bt) ;
-    /* B = 0.5*(al*al - bt*bt)*(2.0*i+al+bt+1.0)/(1.0+i)/(1.0+al+bt+i)/ */
-    /*   (al+bt+2.0*i) ; */
     B = 0.5*(bt*bt - al*al)*(2.0*i+al+bt+1.0)/(1.0+i)/(1.0+al+bt+i)/
       (al+bt+2.0*i) ;
     C = (al+i)*(bt+i)*(2.0*i+al+bt+2.0)/(1.0+i)/(1.0+al+bt+i)/(2.0*i+al+bt) ;
@@ -96,7 +91,7 @@ static void jacobi_root(gint n, gdouble al, gdouble bt,
   return ;
 }
 
-/*from Hale and Townsend, 2013*/
+/*from Hale and Townsend, 2013, https://dx.doi.org/10.1137/120889873*/
 
 static gdouble root_interior(gint n, gdouble al, gdouble bt, gint k)
 
@@ -124,8 +119,6 @@ gint grule_jacobi(gint n, gdouble *x, gdouble *w, gqr_parameter_t *pm)
     
 {
   gdouble al, bt, A ;
-  /* du, x0 ; */
-  /* gdouble p[] = {1, 0, -1}, q[] = {0, -2, 0}, r[] = {0, 0, 0} ; */
   gint i ;
   
   if ( gqr_parameter_nf(pm) < 2 )
@@ -133,17 +126,6 @@ gint grule_jacobi(gint n, gdouble *x, gdouble *w, gqr_parameter_t *pm)
 	    __FUNCTION__) ;
   al = gqr_parameter_double(pm, 0) ;
   bt = gqr_parameter_double(pm, 1) ;
-
-  /* fprintf(stderr, "%lg %lg\n", al, bt) ; */
-  
-  /* q[0] = bt - al ; */
-  /* q[1] = -(al+bt+2.0) ; */
-
-  /* r[0] = (al+bt+n+1.0)*(gdouble)n ; */
-
-  /* x0 = 0 ; */
-  /* jacobi_root(n, al, bt, &x0, &du) ; */
-  /* gqr_function_roots(p, q, r, x0, du, n/2, x, w) ; */
 
   /*
    * bit crude but works: use asymptotic estimate of root (Hale and
