@@ -48,7 +48,7 @@
  */
 
 gint grule_kolm_rokhlin_new(gint n, gint m, gdouble y,
-			     gdouble *x, gdouble *w)
+			    gdouble *x, gdouble *w)
 			 
 {
   gdouble *fp2 ;

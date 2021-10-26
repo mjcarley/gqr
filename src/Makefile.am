@@ -32,7 +32,8 @@ libgqr_la_SOURCES = \
 	gqr-private.h \
 	discret.c \
 	bgr.c \
-	rrqr.c
+	rrqr.c \
+	gjacobi.c
 
 include_HEADERS = \
 	gqr.h 

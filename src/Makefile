@@ -139,7 +139,7 @@ libgqr_la_LIBADD =
 am_libgqr_la_OBJECTS = ghermite.lo grule.lo fpart.lo glegendre.lo \
 	korsunsky.lo smith.lo gchebyshev.lo kolrokh.lo lsqr.lo \
 	msingular.lo nsingular.lo integrals.lo roots.lo gqr-logging.lo \
-	discret.lo bgr.lo rrqr.lo
+	discret.lo bgr.lo rrqr.lo gjacobi.lo
 libgqr_la_OBJECTS = $(am_libgqr_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -290,7 +290,7 @@ PACKAGE_VERSION = 0.1.3
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /usr/local/lib64/pkgconfig:/usr/local/share/pkgconfig:/usr/lib64/pkgconfig:/usr/share/pkgconfig:/usr/local/lib64/pkgconfig:/usr/local/share/pkgconfig
+PKG_CONFIG_PATH = /usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:/usr/local/share/pkgconfig:/usr/lib64/pkgconfig:/usr/share/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:/usr/local/share/pkgconfig
 RANLIB = ranlib
 SED = /usr/bin/sed
 SET_MAKE = 
@@ -377,7 +377,8 @@ libgqr_la_SOURCES = \
 	gqr-private.h \
 	discret.c \
 	bgr.c \
-	rrqr.c
+	rrqr.c \
+	gjacobi.c
 
 include_HEADERS = \
 	gqr.h 
@@ -504,6 +505,7 @@ include ./$(DEPDIR)/discret.Plo
 include ./$(DEPDIR)/fpart.Plo
 include ./$(DEPDIR)/gchebyshev.Plo
 include ./$(DEPDIR)/ghermite.Plo
+include ./$(DEPDIR)/gjacobi.Plo
 include ./$(DEPDIR)/glegendre.Plo
 include ./$(DEPDIR)/gqr-logging.Plo
 include ./$(DEPDIR)/grule.Plo

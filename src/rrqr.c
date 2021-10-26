@@ -43,9 +43,9 @@ gint dgeqp3_(gint *m, gint *n, gdouble *A, gint *lda, gint *jpvt,
 gint dlarf_(gchar *side, gint *m, gint *n, gdouble *v, gint *incv,
 	    gdouble *tau, gdouble *C, gint *ldc, gdouble *work) ;
 
-gint dtrtrs_(gchar *uplo, gchar *trans, gchar *diag,
-	     gint *n, gint *nrhs, gdouble *a, gint *lda, gdouble *b,
-	     gint *ldb, gint *info) ;
+/* gint dtrtrs_(gchar *uplo, gchar *trans, gchar *diag, */
+/* 	     gint *n, gint *nrhs, gdouble *a, gint *lda, gdouble *b, */
+/* 	     gint *ldb, gint *info) ; */
 gint dtrtri_(gchar *uplo, gchar *diag, gint *n, gdouble *a,
 	     gint *lda, gint *info) ;
 void drotg_(gdouble *da, gdouble *db, gdouble *c, gdouble *s) ;

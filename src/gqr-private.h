@@ -78,6 +78,7 @@ gint grule_multi_nsingular(gint n, gint m, gdouble x, gdouble y,
 			   gint ns, gint *s, 
 			   gdouble *xk, gdouble *wt) ;
 gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p) ;
+gint grule_jacobi(gint n, gdouble *x, gdouble *w, gqr_parameter_t *p) ;
 
 gint rrqr(gdouble *A, gint m, gint n, gdouble *tau, gint *jpvt,
 	  gdouble *work, gint lwork) ;

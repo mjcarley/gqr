@@ -46,7 +46,7 @@ gint main(gint argc, gchar **argv)
 
   gqr_parameter_clear(&p) ;
 
-  while ( (ch = getopt(argc, argv, "haCef:GHi:LM:N:p:Ps:Tx:y:")) != EOF ) {
+  while ( (ch = getopt(argc, argv, "haCef:GHi:JLM:N:p:Ps:Tx:y:")) != EOF ) {
     switch(ch) {
     case 'h':
     default: 
@@ -59,6 +59,7 @@ gint main(gint argc, gchar **argv)
     case 'G': baserule = GQR_GAUSS_GENERALIZED ; break ;
     case 'H': baserule = GQR_GAUSS_HERMITE ; break ;
     case 'i': gqr_parameter_set_int(&p, atoi(optarg)) ; break ;
+    case 'J': baserule = GQR_GAUSS_JACOBI ; break ;
     case 'L': baserule = GQR_GAUSS_LEGENDRE ; break ;
     case 'M': M = atoi(optarg) ; break ;
     case 'N': N = atoi(optarg) ; break ;
@@ -86,6 +87,7 @@ gint main(gint argc, gchar **argv)
 	    "        -G generalized Gaussian quadrature\n"
 	    "        -H Gauss-Hermite quadrature\n"
 	    "        -i # set integer in parameter list\n"
+	    "        -J Gauss-Jacobi quadrature\n"
 	    "        -L Gauss-Legendre quadrature (default)\n"
 	    "        -M <order of polynomials to handle>\n"
 	    "        -N <number of points in rule>\n"

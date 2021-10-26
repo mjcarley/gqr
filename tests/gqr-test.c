@@ -58,173 +58,173 @@ gdouble func_exp(gdouble x, gint n, gpointer data)
   return exp(x) ;
 }
 
-gdouble func_one(gdouble x, gint n, gpointer data)
+/* static gdouble func_one(gdouble x, gint n, gpointer data) */
 
-{
-  if ( n == 0 ) return 1.0 ;
-  return 0.0 ;
-}
+/* { */
+/*   if ( n == 0 ) return 1.0 ; */
+/*   return 0.0 ; */
+/* } */
 
-gdouble func_Pn(gdouble x, gint q, gpointer data)
+/* static gdouble func_Pn(gdouble x, gint q, gpointer data) */
 
-{
-  gdouble P, t1, t2 ;
-  gint n, k ;
+/* { */
+/*   gdouble P, t1, t2 ; */
+/*   gint n, k ; */
 
-  n = 5 ;
+/*   n = 5 ; */
 
-  t1 = 1-x ; t2 = 1+x ;
-  for ( (P = 0.0), (k = q) ; k <= n ; k ++ ) {
-    P += (gsl_pow_int(-1,q)*gsl_pow_int(t1,k-q) +
-	  gsl_pow_int(-1,n)*gsl_pow_int(t2,k-q))*
-      gsl_pow_int(-1,k)/gsl_sf_fact(k)*gsl_sf_fact(n+k)/gsl_sf_fact(n-k)/
-      gsl_pow_int(2,k+1)/gsl_sf_fact(k-q) ;
-  }
+/*   t1 = 1-x ; t2 = 1+x ; */
+/*   for ( (P = 0.0), (k = q) ; k <= n ; k ++ ) { */
+/*     P += (gsl_pow_int(-1,q)*gsl_pow_int(t1,k-q) + */
+/* 	  gsl_pow_int(-1,n)*gsl_pow_int(t2,k-q))* */
+/*       gsl_pow_int(-1,k)/gsl_sf_fact(k)*gsl_sf_fact(n+k)/gsl_sf_fact(n-k)/ */
+/*       gsl_pow_int(2,k+1)/gsl_sf_fact(k-q) ; */
+/*   } */
 
-  return P ;
-}
+/*   return P ; */
+/* } */
 
-gdouble func_1mt(gdouble x, gint n, gpointer data)
+/* static gdouble func_1mt(gdouble x, gint n, gpointer data) */
 
-{
-  gdouble m, pm, y ;
+/* { */
+/*   gdouble m, pm, y ; */
 
-  m = 4.0 ; pm = -1.0 ;
-  y = 1.0+pm*x ;
-  switch (n) {
-  case 0: return pow(y,m) ; break ;
-  case 1: return pm*m*pow(y,m-1) ; break ;
-  case 2: return m*(m-1)*pow(y,m-2) ; break ;
-  default: g_assert_not_reached() ; break ;
-  }
+/*   m = 4.0 ; pm = -1.0 ; */
+/*   y = 1.0+pm*x ; */
+/*   switch (n) { */
+/*   case 0: return pow(y,m) ; break ; */
+/*   case 1: return pm*m*pow(y,m-1) ; break ; */
+/*   case 2: return m*(m-1)*pow(y,m-2) ; break ; */
+/*   default: g_assert_not_reached() ; break ; */
+/*   } */
   
-  return 0.0 ;
-}
+/*   return 0.0 ; */
+/* } */
 
-gdouble func_power(gdouble x, gint m, gint *n)
+/* static gdouble func_power(gdouble x, gint m, gint *n) */
 
-{
-  switch (m) {
-  default: g_assert_not_reached() ; break ;
-  case 0: return gsl_pow_int(x,(*n)) ; break ;
-  case 1: if ( *n == 0) return 0.0 ;
-    return (*n)*gsl_pow_int(x,(*n)-1) ;
-    break ;
-  case 2: if ( *n <= 1 ) return 0.0 ;
-    return (*n)*(*n-1)*gsl_pow_int(x,(*n)-2) ;
-    break ;
-  }
+/* { */
+/*   switch (m) { */
+/*   default: g_assert_not_reached() ; break ; */
+/*   case 0: return gsl_pow_int(x,(*n)) ; break ; */
+/*   case 1: if ( *n == 0) return 0.0 ; */
+/*     return (*n)*gsl_pow_int(x,(*n)-1) ; */
+/*     break ; */
+/*   case 2: if ( *n <= 1 ) return 0.0 ; */
+/*     return (*n)*(*n-1)*gsl_pow_int(x,(*n)-2) ; */
+/*     break ; */
+/*   } */
 
-  return 0.0 ;
-}
+/*   return 0.0 ; */
+/* } */
 
-gdouble func_krsin(gdouble x, gint m, gpointer data)
+/* static gdouble func_krsin(gdouble x, gint m, gpointer data) */
 
-{
-  switch (m) {
-  default: g_assert_not_reached() ; break ;
-  case 0: return (sin(2*x)+cos(3*x)) ; break ;
-  case 1: return (2*cos(2*x)-3*sin(3*x)) ; break ;
-  }
+/* { */
+/*   switch (m) { */
+/*   default: g_assert_not_reached() ; break ; */
+/*   case 0: return (sin(2*x)+cos(3*x)) ; break ; */
+/*   case 1: return (2*cos(2*x)-3*sin(3*x)) ; break ; */
+/*   } */
 
-  return 0.0 ;
-}
+/*   return 0.0 ; */
+/* } */
 
-gdouble func_log_test(gdouble t, gint m, gpointer *data)
+/* static gdouble func_log_test(gdouble t, gint m, gpointer *data) */
 
-{
-  gdouble x = *(gdouble *)data[0] ;
-  gint n = *(gint *)data[1] ;
-  gdouble f ;
+/* { */
+/*   gdouble x = *(gdouble *)data[0] ; */
+/*   gint n = *(gint *)data[1] ; */
+/*   gdouble f ; */
 
-  f = 0.0 ;
-  switch (m) {
-  case 0:
-    if ( x == t ) f = 0.0 ;
-    else f = gsl_pow_int(t, n)*log(fabs(x-t)) ;
-    break ;
-  case 1:
-    f = gsl_pow_int(t, n)/(x-t) ;
-    break ;
-  case 2:
-    f = gsl_pow_int(t, n)/(x-t)/(x-t) ;
-    break ;
-  default: g_assert_not_reached() ; break ;
-  }
-  return f ;
-}
+/*   f = 0.0 ; */
+/*   switch (m) { */
+/*   case 0: */
+/*     if ( x == t ) f = 0.0 ; */
+/*     else f = gsl_pow_int(t, n)*log(fabs(x-t)) ; */
+/*     break ; */
+/*   case 1: */
+/*     f = gsl_pow_int(t, n)/(x-t) ; */
+/*     break ; */
+/*   case 2: */
+/*     f = gsl_pow_int(t, n)/(x-t)/(x-t) ; */
+/*     break ; */
+/*   default: g_assert_not_reached() ; break ; */
+/*   } */
+/*   return f ; */
+/* } */
 
-gdouble log_test(gdouble x, gint q, gint n)
+/* static gdouble log_test(gdouble x, gint q, gint n) */
 
-{
-  gint m, k ;
-  gdouble I, t, xn, xn1 ;
-  static gqr_rule_t *g = NULL ;
+/* { */
+/*   gint m, k ; */
+/*   gdouble I, t, xn, xn1 ; */
+/*   static gqr_rule_t *g = NULL ; */
 
-  m = n/2 ; I = 0.0 ;
+/*   m = n/2 ; I = 0.0 ; */
 
-  if ( g == NULL ) {
-    g = gqr_rule_alloc(1024) ;
-    gqr_rule_select(g, GQR_GAUSS_LEGENDRE, 1024, NULL) ;
-  }
+/*   if ( g == NULL ) { */
+/*     g = gqr_rule_alloc(1024) ; */
+/*     gqr_rule_select(g, GQR_GAUSS_LEGENDRE, 1024, NULL) ; */
+/*   } */
 
-  switch (q) {
-  default: g_assert_not_reached() ; break ;
-  case 0:
-    if ( x == -1.0 ) I = (1-gsl_pow_int(-1,n+1))*M_LN2 ;
-    if ( x == 1.0 ) I = (1+gsl_pow_int(-1,n))*M_LN2 ;
+/*   switch (q) { */
+/*   default: g_assert_not_reached() ; break ; */
+/*   case 0: */
+/*     if ( x == -1.0 ) I = (1-gsl_pow_int(-1,n+1))*M_LN2 ; */
+/*     if ( x == 1.0 ) I = (1+gsl_pow_int(-1,n))*M_LN2 ; */
 
-    if ( (x != -1.0) && (x != 1.0) ) {
-      xn = gsl_pow_int(x,n+1) ;
-      I = (1-xn)*log(fabs(1-x)) + (gsl_pow_int(-1,n)+xn)*log(fabs(1+x)) ;
-    }
+/*     if ( (x != -1.0) && (x != 1.0) ) { */
+/*       xn = gsl_pow_int(x,n+1) ; */
+/*       I = (1-xn)*log(fabs(1-x)) + (gsl_pow_int(-1,n)+xn)*log(fabs(1+x)) ; */
+/*     } */
 
-    if ( (n) == 2*m ) { /*even n*/
-      for ( (k = 0), (t = 2.0) ; k <= m ; k ++ ) {
-	I -= t/(gdouble)(2*m-2*k+1) ;
-	t *= x*x ;
-      }
-      I /= (gdouble)(2*m+1) ;
-    } else {
-      for ( (k = 0), (t = 2.0*x) ; k <= m ; k ++ ) {
-	I -= t/(gdouble)(2*m-2*k+1) ;
-	t *= x*x ;
-      }
-      I /= (gdouble)(2*m+2) ;
-    }
-    break ;
-  case 1:
-    if ( (x == 1.0) || (x == -1.0) ) {
-      return gqr_finite_part_integral(func_power, &n, x, 1.0, -1, 1, g) ;
-    }
+/*     if ( (n) == 2*m ) { /\*even n*\/ */
+/*       for ( (k = 0), (t = 2.0) ; k <= m ; k ++ ) { */
+/* 	I -= t/(gdouble)(2*m-2*k+1) ; */
+/* 	t *= x*x ; */
+/*       } */
+/*       I /= (gdouble)(2*m+1) ; */
+/*     } else { */
+/*       for ( (k = 0), (t = 2.0*x) ; k <= m ; k ++ ) { */
+/* 	I -= t/(gdouble)(2*m-2*k+1) ; */
+/* 	t *= x*x ; */
+/*       } */
+/*       I /= (gdouble)(2*m+2) ; */
+/*     } */
+/*     break ; */
+/*   case 1: */
+/*     if ( (x == 1.0) || (x == -1.0) ) { */
+/*       return gqr_finite_part_integral(func_power, &n, x, 1.0, -1, 1, g) ; */
+/*     } */
 
-    if ( (x != -1.0) && (x != 1.0) ) {
-      xn = gsl_pow_int(x,n) ; xn1 = gsl_pow_int(x,n+1) ;
-      I = -(1-xn1)/(1-x) - (n+1)*xn*log(fabs(1-x))
-	+ (gsl_pow_int(-1,n)+xn1)/(1+x) + (n+1)*xn*log(fabs(1+x)) ;
-    }
+/*     if ( (x != -1.0) && (x != 1.0) ) { */
+/*       xn = gsl_pow_int(x,n) ; xn1 = gsl_pow_int(x,n+1) ; */
+/*       I = -(1-xn1)/(1-x) - (n+1)*xn*log(fabs(1-x)) */
+/* 	+ (gsl_pow_int(-1,n)+xn1)/(1+x) + (n+1)*xn*log(fabs(1+x)) ; */
+/*     } */
 
-    if ( (n) == 2*m ) { /*even n*/
-      for ( (k = 1), (t = 2.0*x) ; k <= m ; k ++ ) {
-	I -= 2*k*t/(gdouble)(2*m-2*k+1) ;
-	t *= x*x ;
-      }
-      I /= (gdouble)(2*m+1) ;
-    } else {
-      for ( (k = 0), (t = 2.0) ; k <= m ; k ++ ) {
-	I -= (2*k+1)*t/(gdouble)(2*m-2*k+1) ;
-	t *= x*x ;
-      }
-      I /= (gdouble)(2*m+2) ;
-    }
-    break ;
-  case 2:
-    return gqr_finite_part_integral(func_power, &n, x, 2.0, -1, 1, g) ;
-    break ;
-  }
+/*     if ( (n) == 2*m ) { /\*even n*\/ */
+/*       for ( (k = 1), (t = 2.0*x) ; k <= m ; k ++ ) { */
+/* 	I -= 2*k*t/(gdouble)(2*m-2*k+1) ; */
+/* 	t *= x*x ; */
+/*       } */
+/*       I /= (gdouble)(2*m+1) ; */
+/*     } else { */
+/*       for ( (k = 0), (t = 2.0) ; k <= m ; k ++ ) { */
+/* 	I -= (2*k+1)*t/(gdouble)(2*m-2*k+1) ; */
+/* 	t *= x*x ; */
+/*       } */
+/*       I /= (gdouble)(2*m+2) ; */
+/*     } */
+/*     break ; */
+/*   case 2: */
+/*     return gqr_finite_part_integral(func_power, &n, x, 2.0, -1, 1, g) ; */
+/*     break ; */
+/*   } */
 
-  return I ;
-}
+/*   return I ; */
+/* } */
 
 gint legendre_interp_matrix_test(gint n, gdouble x0, gdouble x1)
 
@@ -498,7 +498,7 @@ gint adaptive_function_check(void)
   gqr_parameter_t p ;
   gqr_adapt_func_t func = grule_bgr_func_scattering_th ;
   
-  nj = 4 ; nk = 5 ; nq = 16 ;
+  nj = 4 ; nk = 5 ; nq = 16 ; rmax = 32 ; nimax = 8 ;
 
   nf = nj*(nj+3)*3/2 + nj*(3*nj+7)/2 + nk + nk-1 ;
   

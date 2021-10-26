@@ -1,4 +1,4 @@
-/* Copyright (C) 2007, 2008, 2010 by  Michael Carley */
+/* Copyright (C) 2007, 2008, 2010, 2021 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -256,6 +256,10 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
     break ;
   case GQR_GAUSS_LEGENDRE:
     grule_legendre(n, g->x, g->w) ; g->n = n ;
+    g->a = -1 ; g->b = 1 ; g->type = type ;
+    break ;
+  case GQR_GAUSS_JACOBI:
+    grule_jacobi(n, g->x, g->w, p) ; g->n = n ;
     g->a = -1 ; g->b = 1 ; g->type = type ;
     break ;
   case GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR:

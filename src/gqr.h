@@ -50,8 +50,9 @@ enum {
  * singularity. For example GQR_GAUSS_LEGENDRE |
  * GQR_GAUSS_HYPERSINGULAR specifies a Gauss-Legendre rule which
  * handles singularities up to and including second order. Note that
- * not all of these rules are implemented yet. GQR will return an
- * error message if you try to use an unimplemented rule.
+ * not all of these rules are implemented or going to be
+ * implemented. GQR will return an error message if you try to use an
+ * unimplemented rule.
  * 
  */
 
@@ -61,7 +62,11 @@ typedef enum {
   GQR_GAUSS_CHEBYSHEV_2 = 3,	/**< Gauss-Chebyshev of the second kind */
   GQR_GAUSS_HERMITE = 4,	/**< Hermite */
   GQR_GAUSS_LAGUERRE = 5,	/**< Laguerre */
-  GQR_GAUSS_JACOBI = 6,		/**< Jacobi */
+  GQR_GAUSS_JACOBI = 6,		/**< Jacobi with weight function
+				   \f$(1+x)^\alpha (1-x)^\beta\f$,
+				   with \f$(\alpha,\beta)\f$ supplied
+				   as the first two floating point
+				   parameters */
   GQR_GAUSS_LOGARITHMIC = 1 << 8, /**< logarithmic singularities */
   GQR_GAUSS_SINGULAR = 1 << 9,	/**< first order and logarithmic
 				   singularities */

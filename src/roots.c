@@ -53,7 +53,7 @@
 
 /*this is recommended for double precision*/
 #ifndef GQR_TAYLOR_LENGTH
-#define GQR_TAYLOR_LENGTH 33
+#define GQR_TAYLOR_LENGTH 30
 #endif /*GQR_TAYLOR_LENGTH*/
 
 const gdouble GQR_INVERSE_FACTORIALS[] = 
@@ -148,7 +148,7 @@ static void gqr_newton_solve(gdouble *U, gint n, gdouble x0,
   gint j ;
   gdouble f ;
 
-  for ( (j = 0), (f = 1.0) ; (f > 0.0 ? f : -f) > tol && j < 16 ; 
+  for ( (j = 0), (f = 1.0) ; (f > 0.0 ? f : -f) > tol && j < 32 ; 
 	(gqr_polyval(U, n, *x-x0, &f, df)), (*x -= f/(*df)), (j ++) ) ;
 
   return ;
