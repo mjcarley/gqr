@@ -228,7 +228,14 @@ gint gqr_rule_write(gqr_rule_t *g, FILE *f)
 
 /** 
  * Fill a Gaussian quadrature rule with abscissae and weights of a
- * chosen type.
+ * chosen type. 
+ *
+ * You should exercise some caution in the Jacobi quadrature rules,
+ * since there are some issues with calculating the nodes especially
+ * for weight function exponenents less than -1/2. You are advised to
+ * check the rule against a known solution, for example by checking
+ * that the sum of the weights correctly integrates the weighting
+ * function.
  * 
  * @param g rule to fill;
  * @param type a gqr_t for the rule;

@@ -70,25 +70,27 @@ static inline void grule_diff_jpoly(gint n, gdouble x,
   return ;
 }
 
-static void jacobi_root(gint n, gdouble al, gdouble bt,
-			gdouble *x, gdouble *df)
+static gint jacobi_root(gint n, gdouble al, gdouble bt,
+			gdouble *x, gdouble *df, gdouble dxmax)
 
 {
-  gdouble tol, f ;
+  gdouble tol, f, dx ;
   gint i ;
   
   tol = 1e-12 ;
   grule_diff_jpoly(n, *x, al, bt, &f, df) ;
 
-  for ( i = 0 ; i < 16 ; i ++ ) {
-    *x -= f/(*df) ;
+  for ( i = 0 ; i < 128 ; i ++ ) {
+    dx = f/(*df) ;
+    if ( dx < -dxmax ) dx = -dxmax ;
+    else if ( dx > dxmax ) dx = dxmax ;
+    *x -= dx ;
     grule_diff_jpoly(n, *x, al, bt, &f, df) ;
-    if ( fabs(f) < tol ) return ;
+    if ( fabs(f) < tol ) return 0 ;
   }
 
-  g_assert_not_reached() ;
-  
-  return ;
+  /*if root does not converge let the calling function know*/
+  return -1 ;
 }
 
 /*from Hale and Townsend, 2013, https://dx.doi.org/10.1137/120889873*/
@@ -118,7 +120,7 @@ gint grule_jacobi(gint n, gdouble *x, gdouble *w, gqr_parameter_t *pm)
  */
     
 {
-  gdouble al, bt, A ;
+  gdouble al, bt, A, dxmax ;
   gint i ;
   
   if ( gqr_parameter_nf(pm) < 2 )
@@ -137,9 +139,15 @@ gint grule_jacobi(gint n, gdouble *x, gdouble *w, gqr_parameter_t *pm)
   A = lgamma(n+al+1) + lgamma(n+bt+1) - lgamma(n+al+bt+1) - lgamma(n+1)
     + (al+bt+1)*M_LN2 ;
   A = exp(A) ;
+
+  /*maximum step in Newton solver*/
+  dxmax = 2.0/(n+1)/16 ;
   for ( i = 0 ; i < n ; i ++ ) {
     x[i] = root_interior(n, al, bt, n-i) ;
-    jacobi_root(n, al, bt, &(x[i]), &(w[i])) ;
+    if ( jacobi_root(n, al, bt, &(x[i]), &(w[i]), dxmax) != 0 ) {
+      g_error("%s: %dth root does not converge for n=%d",
+	      __FUNCTION__, i, n) ;
+    }
 
     w[i] = A/(1-x[i]*x[i])/w[i]/w[i] ;    
   }
