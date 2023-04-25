@@ -123,5 +123,5 @@ if test "$echo_libs" = "yes"; then
 	fi
 	glib_libs="-L${exec_prefix}/lib -lgqr  -lglib-2.0 -lgsl -lgslcblas -lm  $glib_libs -lm"
 	glib_libs=`uniquify "$glib_libs"`
-	echo -L${exec_prefix}/lib -lgqr -lglib-2.0 -lgsl -lgslcblas -lm  -lblas -lm   -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../../../x86_64-slackware-linux/lib -L/usr/lib64/gcc/x86_64-slackware-linux/5.5.0/../../.. -lgfortran -lm -lquadmath
+	echo -L${exec_prefix}/lib -lgqr -lglib-2.0 -lgsl -lgslcblas -lm  -lblas -lm   -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../.. -lgfortran -lm -lquadmath
 fi

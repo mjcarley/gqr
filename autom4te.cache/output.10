@@ -18016,8 +18016,7 @@ else
         
 fi
 
-
-
+##AC_CHECK_LIB(rrqr, dgeqpx_,[],[],[-llapack -lblas])
 
 #PKG_CHECK_MODULES(gsl, gsl, [gsl_cflags=`pkg-config --cflags-only-I gsl`
 #		        gsl_libs=`pkg-config --libs gsl`],			
@@ -18362,7 +18361,7 @@ LDFLAGS="$LDFLAGS $GLIB_LIBS $GSL_LIBS"
 
 LIBS="$GLIB_LIBS $GSL_LIBS $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/gqr-config tests/Makefile doc/Makefile doc/html/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/gqr-config tests/Makefile triangle/Makefile doc/Makefile doc/html/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -19457,6 +19456,7 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/gqr-config") CONFIG_FILES="$CONFIG_FILES src/gqr-config" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "triangle/Makefile") CONFIG_FILES="$CONFIG_FILES triangle/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "doc/html/Makefile") CONFIG_FILES="$CONFIG_FILES doc/html/Makefile" ;;
 
@@ -20818,7 +20818,9 @@ $as_echo X/"$am_mf" |
     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "Something went wrong bootstrapping makefile fragments
-    for automatic dependency tracking.  Try re-running configure with the
+    for automatic dependency tracking.  If GNU make was not used, consider
+    re-running the configure script with MAKE=\"gmake\" (or whatever is
+    necessary).  You can also try re-running configure with the
     '--disable-dependency-tracking' option to at least be able to build
     the package (albeit without support for automatic dependency tracking).
 See \`config.log' for more details" "$LINENO" 5; }
