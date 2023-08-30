@@ -1,65 +1,68 @@
-\section{G\+Q\+R quadrature rules}
-\label{group__gqr}\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsection*{Typedefs}
+\doxysection{GQR quadrature rules}
+\label{group__gqr}\index{GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsection*{Typedefs}
 \begin{DoxyCompactItemize}
 \item 
-typedef struct \+\_\+gqr\+\_\+parameter\+\_\+t {\bf gqr\+\_\+parameter\+\_\+t}
+typedef struct \+\_\+gqr\+\_\+parameter\+\_\+t \textbf{ gqr\+\_\+parameter\+\_\+t}
 \item 
-typedef struct \+\_\+gqr\+\_\+rule\+\_\+t {\bf gqr\+\_\+rule\+\_\+t}
+typedef struct \+\_\+gqr\+\_\+rule\+\_\+t \textbf{ gqr\+\_\+rule\+\_\+t}
 \item 
-typedef gdouble($\ast$ {\bf gqr\+\_\+func\+\_\+t}) (gdouble t, gint i, gpointer data)
+typedef gdouble($\ast$ \textbf{ gqr\+\_\+func\+\_\+t}) (gdouble t, gint i, gpointer data)
 \item 
-typedef gdouble($\ast$ {\bf gqr\+\_\+adapt\+\_\+func\+\_\+t}) (gdouble t, gint i, {\bf gqr\+\_\+parameter\+\_\+t} $\ast$p)
+typedef gdouble($\ast$ \textbf{ gqr\+\_\+adapt\+\_\+func\+\_\+t}) (gdouble t, gint i, \textbf{ gqr\+\_\+parameter\+\_\+t} $\ast$p)
 \end{DoxyCompactItemize}
-\subsection*{Enumerations}
+\doxysubsection*{Enumerations}
 \begin{DoxyCompactItemize}
 \item 
-enum {\bf gqr\+\_\+t} \{ \\*
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+L\+E\+G\+E\+N\+D\+R\+E} = 1, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+C\+H\+E\+B\+Y\+S\+H\+E\+V\+\_\+1} = 2, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+C\+H\+E\+B\+Y\+S\+H\+E\+V\+\_\+2} = 3, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+H\+E\+R\+M\+I\+T\+E} = 4, 
-\\*
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+L\+A\+G\+U\+E\+R\+R\+E} = 5, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+J\+A\+C\+O\+B\+I} = 6, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+L\+O\+G\+A\+R\+I\+T\+H\+M\+I\+C} = 1 $<$$<$ 8, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+S\+I\+N\+G\+U\+L\+A\+R} = 1 $<$$<$ 9, 
-\\*
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+H\+Y\+P\+E\+R\+S\+I\+N\+G\+U\+L\+A\+R} = 1 $<$$<$ 10, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+M\+U\+L\+T\+I\+S\+I\+N\+G\+U\+L\+A\+R} = 1 $<$$<$ 11, 
-{\bfseries G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+G\+E\+N\+E\+R\+A\+L\+I\+Z\+E\+D} = 1 $<$$<$ 12
+enum \textbf{ gqr\+\_\+t} \{ \newline
+\textbf{ GQR\+\_\+\+GAUSS\+\_\+\+LEGENDRE} = 1
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+CHEBYSHEV\+\_\+1} = 2
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+CHEBYSHEV\+\_\+2} = 3
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+HERMITE} = 4
+, \newline
+\textbf{ GQR\+\_\+\+GAUSS\+\_\+\+LAGUERRE} = 5
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+JACOBI} = 6
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+LOGARITHMIC} = 1 $<$$<$ 8
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+SINGULAR} = 1 $<$$<$ 9
+, \newline
+\textbf{ GQR\+\_\+\+GAUSS\+\_\+\+HYPERSINGULAR} = 1 $<$$<$ 10
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+MULTISINGULAR} = 1 $<$$<$ 11
+, \textbf{ GQR\+\_\+\+GAUSS\+\_\+\+GENERALIZED} = 1 $<$$<$ 12
  \}
 \end{DoxyCompactItemize}
-\subsection*{Functions}
+\doxysubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-{\bf gqr\+\_\+rule\+\_\+t} $\ast$ {\bf gqr\+\_\+rule\+\_\+alloc} (gint n)
+\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$ \textbf{ gqr\+\_\+rule\+\_\+alloc} (gint n)
 \item 
-{\bf gqr\+\_\+rule\+\_\+t} $\ast$ {\bf gqr\+\_\+rule\+\_\+realloc} ({\bf gqr\+\_\+rule\+\_\+t} $\ast$g, gint n)
+\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$ \textbf{ gqr\+\_\+rule\+\_\+realloc} (\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$g, gint n)
 \item 
-gint {\bf gqr\+\_\+rule\+\_\+free} ({\bf gqr\+\_\+rule\+\_\+t} $\ast$g)
+gint \textbf{ gqr\+\_\+rule\+\_\+free} (\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$g)
 \item 
-gint {\bf gqr\+\_\+rule\+\_\+write} ({\bf gqr\+\_\+rule\+\_\+t} $\ast$g, F\+I\+L\+E $\ast$f)
+gint \textbf{ gqr\+\_\+rule\+\_\+write} (\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$g, FILE $\ast$f)
 \item 
-gint {\bf gqr\+\_\+rule\+\_\+select} ({\bf gqr\+\_\+rule\+\_\+t} $\ast$g, {\bf gqr\+\_\+t} type, gint n, {\bf gqr\+\_\+parameter\+\_\+t} $\ast$p)
+gint \textbf{ gqr\+\_\+rule\+\_\+select} (\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$g, \textbf{ gqr\+\_\+t} type, gint n, \textbf{ gqr\+\_\+parameter\+\_\+t} $\ast$p)
 \item 
-gint {\bf gqr\+\_\+rule\+\_\+scale} ({\bf gqr\+\_\+rule\+\_\+t} $\ast$g, gdouble a, gdouble b, gdouble $\ast$xbar, gdouble $\ast$dx)
+gint \textbf{ gqr\+\_\+rule\+\_\+scale} (\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$g, gdouble a, gdouble b, gdouble $\ast$xbar, gdouble $\ast$dx)
 \item 
-gchar $\ast$ {\bf gqr\+\_\+rule\+\_\+name} ({\bf gqr\+\_\+t} type)
+gchar $\ast$ \textbf{ gqr\+\_\+rule\+\_\+name} (\textbf{ gqr\+\_\+t} type)
 \item 
-{\bf gqr\+\_\+t} {\bf gqr\+\_\+rule\+\_\+from\+\_\+name} (gchar $\ast$str, {\bf gqr\+\_\+parameter\+\_\+t} $\ast$p)
+\textbf{ gqr\+\_\+t} \textbf{ gqr\+\_\+rule\+\_\+from\+\_\+name} (gchar $\ast$str, \textbf{ gqr\+\_\+parameter\+\_\+t} $\ast$p)
 \end{DoxyCompactItemize}
 
 
-\subsection{Detailed Description}
-The G\+Q\+R library computes Gaussian and Gaussian-\/type quadrature rules including some which handle singular integrands. A simple example of its use to integrate a function is\+: {\tt example.\+c}.
+\doxysubsection{Detailed Description}
+The GQR library computes Gaussian and Gaussian-\/type quadrature rules including some which handle singular integrands. A simple example of its use to integrate a function is\+: {\texttt{ example.\+c}}.
 
 The functions described here are used to generate the quadrature rules and do basic operations such as reading them from and writing them to a file. 
 
-\subsection{Typedef Documentation}
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+adapt\+\_\+func\+\_\+t@{gqr\+\_\+adapt\+\_\+func\+\_\+t}}
-\index{gqr\+\_\+adapt\+\_\+func\+\_\+t@{gqr\+\_\+adapt\+\_\+func\+\_\+t}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+adapt\+\_\+func\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}gqr\+\_\+adapt\+\_\+func\+\_\+t}\label{group__gqr_ga3382cb8a6927c4cd5f31092237478186}
+\doxysubsection{Typedef Documentation}
+\mbox{\label{group__gqr_ga3382cb8a6927c4cd5f31092237478186}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_adapt\_func\_t@{gqr\_adapt\_func\_t}}
+\index{gqr\_adapt\_func\_t@{gqr\_adapt\_func\_t}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_adapt\_func\_t}
+{\footnotesize\ttfamily gqr\+\_\+adapt\+\_\+func\+\_\+t}
+
 A type for evaluating functions to be used in adaptive discretizations. Optionally, if {\itshape i} is negative, the function call should be interpreted as a request for the integral of the function between limits defined in the first two floating point entries in the parameter list {\itshape p}, with the function index taken as -\/(i+1).
 
 
@@ -74,9 +77,12 @@ A type for evaluating functions to be used in adaptive discretizations. Optional
 \begin{DoxyReturn}{Returns}
 value of the function $f_i(t)$, or the integral of $f_{-i-1}(t)$ if $i<0$. 
 \end{DoxyReturn}
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+func\+\_\+t@{gqr\+\_\+func\+\_\+t}}
-\index{gqr\+\_\+func\+\_\+t@{gqr\+\_\+func\+\_\+t}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+func\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}gqr\+\_\+func\+\_\+t}\label{group__gqr_gae551353ed1a19dfab3090af9b28baad2}
+\mbox{\label{group__gqr_gae551353ed1a19dfab3090af9b28baad2}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_func\_t@{gqr\_func\_t}}
+\index{gqr\_func\_t@{gqr\_func\_t}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_func\_t}
+{\footnotesize\ttfamily gqr\+\_\+func\+\_\+t}
+
 A type for evaluating integrands and their derivatives. 
 \begin{DoxyParams}{Parameters}
 {\em t} & evaluation point; \\
@@ -89,28 +95,36 @@ A type for evaluating integrands and their derivatives.
 \begin{DoxyReturn}{Returns}
 value of the $i$th derivative of the function at $t$. 
 \end{DoxyReturn}
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+parameter\+\_\+t@{gqr\+\_\+parameter\+\_\+t}}
-\index{gqr\+\_\+parameter\+\_\+t@{gqr\+\_\+parameter\+\_\+t}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+parameter\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gqr\+\_\+parameter\+\_\+t}}\label{group__gqr_ga4512314849c794f1b2840a7135d663de}
-A data structure containing parameters for quadrature rules which require them. \index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+t@{gqr\+\_\+rule\+\_\+t}}
-\index{gqr\+\_\+rule\+\_\+t@{gqr\+\_\+rule\+\_\+t}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gqr\+\_\+rule\+\_\+t}}\label{group__gqr_ga89dca966e4378ceb2d146ffdbea4e272}
-Data structure containing the nodes and weights of a quadrature rule. The rule is allocated using \doxyref{gqr\+\_\+rule\+\_\+alloc}{p.}{group__gqr_ga5a4e8fcfcd127a4bcb5436206ffdea5e} and initialized using \doxyref{gqr\+\_\+rule\+\_\+select}{p.}{group__gqr_ga9373a848b449bc2718f010e3edd831e3}. To transform the range of integration use \doxyref{gqr\+\_\+rule\+\_\+scale}{p.}{group__gqr_gabc8177171e6ba159904a20cb7e07be85}. 
+\mbox{\label{group__gqr_ga4512314849c794f1b2840a7135d663de}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_parameter\_t@{gqr\_parameter\_t}}
+\index{gqr\_parameter\_t@{gqr\_parameter\_t}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_parameter\_t}
+{\footnotesize\ttfamily \textbf{ gqr\+\_\+parameter\+\_\+t}}
 
-\subsection{Enumeration Type Documentation}
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+t@{gqr\+\_\+t}}
-\index{gqr\+\_\+t@{gqr\+\_\+t}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+t}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf gqr\+\_\+t}}\label{group__gqr_ga1f7bc8ccb4913fd0f8a5008c13069143}
-A type defining the quadrature rules available. A quadrature rule is defined as a basic type possibly combined with a singularity. For example G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+L\+E\+G\+E\+N\+D\+R\+E $\vert$ G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+H\+Y\+P\+E\+R\+S\+I\+N\+G\+U\+L\+A\+R specifies a Gauss-\/\+Legendre rule which handles singularities up to and including second order. Note that not all of these rules are implemented or going to be implemented. G\+Q\+R will return an error message if you try to use an unimplemented rule. 
+A data structure containing parameters for quadrature rules which require them. \mbox{\label{group__gqr_ga89dca966e4378ceb2d146ffdbea4e272}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_t@{gqr\_rule\_t}}
+\index{gqr\_rule\_t@{gqr\_rule\_t}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_t}
+{\footnotesize\ttfamily \textbf{ gqr\+\_\+rule\+\_\+t}}
 
-\subsection{Function Documentation}
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+alloc@{gqr\+\_\+rule\+\_\+alloc}}
-\index{gqr\+\_\+rule\+\_\+alloc@{gqr\+\_\+rule\+\_\+alloc}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+alloc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gqr\+\_\+rule\+\_\+t}$\ast$ gqr\+\_\+rule\+\_\+alloc (
-\begin{DoxyParamCaption}
-\item[{gint}]{n}
-\end{DoxyParamCaption}
-)}\label{group__gqr_ga5a4e8fcfcd127a4bcb5436206ffdea5e}
+Data structure containing the nodes and weights of a quadrature rule. The rule is allocated using \doxyref{gqr\+\_\+rule\+\_\+alloc}{p.}{group__gqr_gad01b7fd22a2ad31b053c51783820613c} and initialized using \doxyref{gqr\+\_\+rule\+\_\+select}{p.}{group__gqr_ga9373a848b449bc2718f010e3edd831e3}. To transform the range of integration use \doxyref{gqr\+\_\+rule\+\_\+scale}{p.}{group__gqr_gabc8177171e6ba159904a20cb7e07be85}. 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\label{group__gqr_ga1f7bc8ccb4913fd0f8a5008c13069143}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_t@{gqr\_t}}
+\index{gqr\_t@{gqr\_t}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_t}
+{\footnotesize\ttfamily enum \textbf{ gqr\+\_\+t}}
+
+A type defining the quadrature rules available. A quadrature rule is defined as a basic type possibly combined with a singularity. For example GQR\+\_\+\+GAUSS\+\_\+\+LEGENDRE $\vert$ GQR\+\_\+\+GAUSS\+\_\+\+HYPERSINGULAR specifies a Gauss-\/\+Legendre rule which handles singularities up to and including second order. Note that not all of these rules are implemented or going to be implemented. GQR will return an error message if you try to use an unimplemented rule. 
+
+\doxysubsection{Function Documentation}
+\mbox{\label{group__gqr_gad01b7fd22a2ad31b053c51783820613c}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_alloc@{gqr\_rule\_alloc}}
+\index{gqr\_rule\_alloc@{gqr\_rule\_alloc}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_alloc()}
+{\footnotesize\ttfamily \textbf{ gqr\+\_\+rule\+\_\+t} $\ast$ gqr\+\_\+rule\+\_\+alloc (\begin{DoxyParamCaption}\item[{gint}]{n }\end{DoxyParamCaption})}
+
 Allocate a Gaussian quadrature rule.
 
 
@@ -123,15 +137,14 @@ newly allocated rule.
 \end{DoxyReturn}
 
 
-Referenced by gqr\+\_\+rule\+\_\+realloc().
+Referenced by \textbf{ gqr\+\_\+rule\+\_\+realloc()}.
 
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+free@{gqr\+\_\+rule\+\_\+free}}
-\index{gqr\+\_\+rule\+\_\+free@{gqr\+\_\+rule\+\_\+free}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+free}]{\setlength{\rightskip}{0pt plus 5cm}gint gqr\+\_\+rule\+\_\+free (
-\begin{DoxyParamCaption}
-\item[{{\bf gqr\+\_\+rule\+\_\+t} $\ast$}]{g}
-\end{DoxyParamCaption}
-)}\label{group__gqr_gadc1a4139ccf724fb1a145501f817410d}
+\mbox{\label{group__gqr_gadc1a4139ccf724fb1a145501f817410d}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_free@{gqr\_rule\_free}}
+\index{gqr\_rule\_free@{gqr\_rule\_free}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_free()}
+{\footnotesize\ttfamily gint gqr\+\_\+rule\+\_\+free (\begin{DoxyParamCaption}\item[{\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$}]{g }\end{DoxyParamCaption})}
+
 Free all memory associated with a Gaussian quadrature rule.
 
 
@@ -142,33 +155,30 @@ Free all memory associated with a Gaussian quadrature rule.
 \begin{DoxyReturn}{Returns}
 0 on success. 
 \end{DoxyReturn}
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+from\+\_\+name@{gqr\+\_\+rule\+\_\+from\+\_\+name}}
-\index{gqr\+\_\+rule\+\_\+from\+\_\+name@{gqr\+\_\+rule\+\_\+from\+\_\+name}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+from\+\_\+name}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gqr\+\_\+t} gqr\+\_\+rule\+\_\+from\+\_\+name (
-\begin{DoxyParamCaption}
-\item[{gchar $\ast$}]{str, }
-\item[{{\bf gqr\+\_\+parameter\+\_\+t} $\ast$}]{p}
-\end{DoxyParamCaption}
-)}\label{group__gqr_ga4cf14c3801907dcf066aa354524434ed}
-Parse a string description of a G\+Q\+R rule, returning a \doxyref{gqr\+\_\+t}{p.}{group__gqr_ga1f7bc8ccb4913fd0f8a5008c13069143} description, intended for use in parsing command line options.
+\mbox{\label{group__gqr_ga4cf14c3801907dcf066aa354524434ed}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_from\_name@{gqr\_rule\_from\_name}}
+\index{gqr\_rule\_from\_name@{gqr\_rule\_from\_name}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_from\_name()}
+{\footnotesize\ttfamily \textbf{ gqr\+\_\+t} gqr\+\_\+rule\+\_\+from\+\_\+name (\begin{DoxyParamCaption}\item[{gchar $\ast$}]{str,  }\item[{\textbf{ gqr\+\_\+parameter\+\_\+t} $\ast$}]{p }\end{DoxyParamCaption})}
+
+Parse a string description of a GQR rule, returning a \doxyref{gqr\+\_\+t}{p.}{group__gqr_ga1f7bc8ccb4913fd0f8a5008c13069143} description, intended for use in parsing command line options.
 
 
 \begin{DoxyParams}{Parameters}
-{\em str} & a string containing a description of a G\+Q\+R rule, e.\+g. \char`\"{}\+G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+L\+E\+G\+E\+N\+D\+R\+E $\vert$ G\+Q\+R\+\_\+\+G\+A\+U\+S\+S\+\_\+\+L\+O\+G\+A\+R\+I\+T\+H\+M\+I\+C\char`\"{}; \\
+{\em str} & a string containing a description of a GQR rule, e.\+g. \char`\"{}\+GQR\+\_\+\+GAUSS\+\_\+\+LEGENDRE $\vert$ GQR\+\_\+\+GAUSS\+\_\+\+LOGARITHMIC\char`\"{}; \\
 \hline
-{\em p} & N\+U\+L\+L or a \doxyref{gqr\+\_\+parameter\+\_\+t}{p.}{group__gqr_ga4512314849c794f1b2840a7135d663de} which will be filled with the data relevant to the selected rule type.\\
+{\em p} & NULL or a \doxyref{gqr\+\_\+parameter\+\_\+t}{p.}{group__gqr_ga4512314849c794f1b2840a7135d663de} which will be filled with the data relevant to the selected rule type.\\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 a \doxyref{gqr\+\_\+t}{p.}{group__gqr_ga1f7bc8ccb4913fd0f8a5008c13069143} description of the rule in {\itshape str}, or an error code. 
 \end{DoxyReturn}
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+name@{gqr\+\_\+rule\+\_\+name}}
-\index{gqr\+\_\+rule\+\_\+name@{gqr\+\_\+rule\+\_\+name}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+name}]{\setlength{\rightskip}{0pt plus 5cm}gchar$\ast$ gqr\+\_\+rule\+\_\+name (
-\begin{DoxyParamCaption}
-\item[{{\bf gqr\+\_\+t}}]{type}
-\end{DoxyParamCaption}
-)}\label{group__gqr_gafabbd61ddc3686a130e04621db7f06a3}
+\mbox{\label{group__gqr_ga8ebe215bbb435805c74fb0d6734f6081}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_name@{gqr\_rule\_name}}
+\index{gqr\_rule\_name@{gqr\_rule\_name}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_name()}
+{\footnotesize\ttfamily gchar $\ast$ gqr\+\_\+rule\+\_\+name (\begin{DoxyParamCaption}\item[{\textbf{ gqr\+\_\+t}}]{type }\end{DoxyParamCaption})}
+
 Generate a string giving the name of the quadrature rule (Legendre, Hermite, etc.) and any singularities built into it.
 
 
@@ -181,16 +191,14 @@ a string giving the name of rule {\itshape type}.
 \end{DoxyReturn}
 
 
-Referenced by gqr\+\_\+rule\+\_\+select().
+Referenced by \textbf{ gqr\+\_\+rule\+\_\+select()}.
 
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+realloc@{gqr\+\_\+rule\+\_\+realloc}}
-\index{gqr\+\_\+rule\+\_\+realloc@{gqr\+\_\+rule\+\_\+realloc}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+realloc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf gqr\+\_\+rule\+\_\+t}$\ast$ gqr\+\_\+rule\+\_\+realloc (
-\begin{DoxyParamCaption}
-\item[{{\bf gqr\+\_\+rule\+\_\+t} $\ast$}]{g, }
-\item[{gint}]{n}
-\end{DoxyParamCaption}
-)}\label{group__gqr_gadd1a99176fdf652027863d6e72acfcb3}
+\mbox{\label{group__gqr_ga1ec121e1f0435bdc3fd99eca67e6bbea}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_realloc@{gqr\_rule\_realloc}}
+\index{gqr\_rule\_realloc@{gqr\_rule\_realloc}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_realloc()}
+{\footnotesize\ttfamily \textbf{ gqr\+\_\+rule\+\_\+t} $\ast$ gqr\+\_\+rule\+\_\+realloc (\begin{DoxyParamCaption}\item[{\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$}]{g,  }\item[{gint}]{n }\end{DoxyParamCaption})}
+
 Reallocate memory for a Gaussian quadrature rule to allow for a change in rule length.
 
 
@@ -205,19 +213,14 @@ newly allocated rule.
 \end{DoxyReturn}
 
 
-References gqr\+\_\+rule\+\_\+alloc().
+References \textbf{ gqr\+\_\+rule\+\_\+alloc()}.
 
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+scale@{gqr\+\_\+rule\+\_\+scale}}
-\index{gqr\+\_\+rule\+\_\+scale@{gqr\+\_\+rule\+\_\+scale}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+scale}]{\setlength{\rightskip}{0pt plus 5cm}gint gqr\+\_\+rule\+\_\+scale (
-\begin{DoxyParamCaption}
-\item[{{\bf gqr\+\_\+rule\+\_\+t} $\ast$}]{g, }
-\item[{gdouble}]{a, }
-\item[{gdouble}]{b, }
-\item[{gdouble $\ast$}]{xbar, }
-\item[{gdouble $\ast$}]{dx}
-\end{DoxyParamCaption}
-)}\label{group__gqr_gabc8177171e6ba159904a20cb7e07be85}
+\mbox{\label{group__gqr_gabc8177171e6ba159904a20cb7e07be85}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_scale@{gqr\_rule\_scale}}
+\index{gqr\_rule\_scale@{gqr\_rule\_scale}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_scale()}
+{\footnotesize\ttfamily gint gqr\+\_\+rule\+\_\+scale (\begin{DoxyParamCaption}\item[{\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$}]{g,  }\item[{gdouble}]{a,  }\item[{gdouble}]{b,  }\item[{gdouble $\ast$}]{xbar,  }\item[{gdouble $\ast$}]{dx }\end{DoxyParamCaption})}
+
 Set the scaling for a rule so that the integral is approximated by\+: $I\approx\Delta x \sum_{j=0}^{n}w_{j}f(x_{j})$ where $x=\bar{x}+\Delta x t_{j}$.
 
 
@@ -238,19 +241,17 @@ Set the scaling for a rule so that the integral is approximated by\+: $I\approx\
 \end{DoxyReturn}
 
 
-Referenced by gqr\+\_\+finite\+\_\+part\+\_\+integral().
+Referenced by \textbf{ gqr\+\_\+finite\+\_\+part\+\_\+integral()}.
 
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+select@{gqr\+\_\+rule\+\_\+select}}
-\index{gqr\+\_\+rule\+\_\+select@{gqr\+\_\+rule\+\_\+select}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+select}]{\setlength{\rightskip}{0pt plus 5cm}gint gqr\+\_\+rule\+\_\+select (
-\begin{DoxyParamCaption}
-\item[{{\bf gqr\+\_\+rule\+\_\+t} $\ast$}]{g, }
-\item[{{\bf gqr\+\_\+t}}]{type, }
-\item[{gint}]{n, }
-\item[{{\bf gqr\+\_\+parameter\+\_\+t} $\ast$}]{p}
-\end{DoxyParamCaption}
-)}\label{group__gqr_ga9373a848b449bc2718f010e3edd831e3}
+\mbox{\label{group__gqr_ga9373a848b449bc2718f010e3edd831e3}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_select@{gqr\_rule\_select}}
+\index{gqr\_rule\_select@{gqr\_rule\_select}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_select()}
+{\footnotesize\ttfamily gint gqr\+\_\+rule\+\_\+select (\begin{DoxyParamCaption}\item[{\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$}]{g,  }\item[{\textbf{ gqr\+\_\+t}}]{type,  }\item[{gint}]{n,  }\item[{\textbf{ gqr\+\_\+parameter\+\_\+t} $\ast$}]{p }\end{DoxyParamCaption})}
+
 Fill a Gaussian quadrature rule with abscissae and weights of a chosen type.
+
+You should exercise some caution in the Jacobi quadrature rules, since there are issues with calculating the nodes especially for weight function exponenents less than -\/1/2. You are advised to check the rule against a known solution, for example by checking that the sum of the weights correctly integrates the weighting function.
 
 
 \begin{DoxyParams}{Parameters}
@@ -260,7 +261,7 @@ Fill a Gaussian quadrature rule with abscissae and weights of a chosen type.
 \hline
 {\em n} & number of points in rule; \\
 \hline
-{\em p} & gqr\+\_\+parameter\+\_\+t of parameters for rule, or N\+U\+L\+L for rules with no parameter (e.\+g. standard Legendre quadrature).\\
+{\em p} & gqr\+\_\+parameter\+\_\+t of parameters for rule, or NULL for rules with no parameter (e.\+g. standard Legendre quadrature).\\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -268,16 +269,14 @@ Fill a Gaussian quadrature rule with abscissae and weights of a chosen type.
 \end{DoxyReturn}
 
 
-References gqr\+\_\+rule\+\_\+name().
+References \textbf{ gqr\+\_\+rule\+\_\+name()}.
 
-\index{G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}!gqr\+\_\+rule\+\_\+write@{gqr\+\_\+rule\+\_\+write}}
-\index{gqr\+\_\+rule\+\_\+write@{gqr\+\_\+rule\+\_\+write}!G\+Q\+R quadrature rules@{G\+Q\+R quadrature rules}}
-\subsubsection[{gqr\+\_\+rule\+\_\+write}]{\setlength{\rightskip}{0pt plus 5cm}gint gqr\+\_\+rule\+\_\+write (
-\begin{DoxyParamCaption}
-\item[{{\bf gqr\+\_\+rule\+\_\+t} $\ast$}]{g, }
-\item[{F\+I\+L\+E $\ast$}]{f}
-\end{DoxyParamCaption}
-)}\label{group__gqr_ga6a873d839cd487511f137d7926f33007}
+\mbox{\label{group__gqr_ga6a873d839cd487511f137d7926f33007}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_write@{gqr\_rule\_write}}
+\index{gqr\_rule\_write@{gqr\_rule\_write}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_rule\_write()}
+{\footnotesize\ttfamily gint gqr\+\_\+rule\+\_\+write (\begin{DoxyParamCaption}\item[{\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$}]{g,  }\item[{FILE $\ast$}]{f }\end{DoxyParamCaption})}
+
 Write the abscissae and weights of a Gaussian quadrature rule to a file.
 
 

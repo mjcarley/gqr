@@ -2,3 +2,4 @@ Brief notes on installation requirements
 
 You need a working BLAS and LAPACK installed and visible to the linker.
 
+To generate the 

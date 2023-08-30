@@ -1,8 +1,6 @@
 \documentclass[a4paper]{book}
 \usepackage{a4wide}
-
 \newcommand{\J}{\mathrm{j}}
-
 \usepackage{makeidx}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
@@ -26,10 +24,8 @@
 \makeindex
 \setcounter{tocdepth}{1}
 \setcounter{secnumdepth}{2}
-
 \rfoot[]{}
 \lfoot[]{}
-
 \begin{document}
 \begin{titlepage}
 \vspace*{7cm}
@@ -47,7 +43,6 @@
 \tableofcontents
 \clearemptydoublepage
 \pagenumbering{arabic}
-
 %This is just any aul shite put in to make a change.
 \chapter{Generation of Gaussian (type) Quadrature Rules}
 \label{index}\input{index}
@@ -55,20 +50,19 @@
 \input{modules}
 \chapter{Module Documentation}
 \input{group__finite}
-\include{group__logging}
-\include{group__gqr}
-\include{group__legendre}
-\include{group__roots}
+\input{group__logging}
+\input{group__gqr}
+\input{group__legendre}
+\input{group__roots}
 \chapter{Example Documentation}
 \input{example_8c-example}
 %--- End generated contents ---
-
 % Index
-\backmatter
-\newpage
-\phantomsection
-\clearemptydoublepage
-\addcontentsline{toc}{chapter}{Index}
-\printindex
-
+  \backmatter
+  \newpage
+  \phantomsection
+  \clearemptydoublepage
+  \addcontentsline{toc}{chapter}{\indexname}
+  \printindex
+% Required for some languages (in combination with latexdocumentpre from the header)
 \end{document}

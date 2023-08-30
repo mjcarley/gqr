@@ -124,7 +124,7 @@ AC_CONFIG_FILES([
 Makefile
 src/Makefile
 src/gqr-config
-tests/Makefile
+tools/Makefile
 triangle/Makefile
 doc/Makefile
 doc/html/Makefile
