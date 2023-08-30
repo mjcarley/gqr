@@ -17,3 +17,4 @@ scratch
 *.dat
 *.log
 radial-rules.c
+angular-rules.c

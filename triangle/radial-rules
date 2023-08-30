@@ -8,9 +8,8 @@ cfile=radial-rules.c
 
 delta=(1e-8 1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 5e-2 1e-1 2e-1 3e-1 4e-1 \
 	    5e-1 6e-1 7e-1 9e-1 1.0)
-
-delta=(1e-2 5e-2)
-#delta=(1e-8 1e-7)
+dtols=(1e-6 1e-6 1e-6 1e-7 1e-8 1e-8 1e-12 1e-12 \
+	  1e-12 1e-12 1e-12 1e-12 1e-12 1e-12 1e-12 1e-12)
 
 ndelta=${#delta[@]}
 ((ndelta--))
@@ -25,6 +24,9 @@ echo \#include \<glib.h\> >> ${cfile}
 echo                    >> ${cfile}
 echo \#define NDELTA ${ndelta} >> ${cfile}
 echo                    >> ${cfile}
+echo gint radial_quadrature_select\(gint N, gdouble d, gdouble **q, \
+     gint *nq\) \; >> ${cfile}
+echo                    >> ${cfile}
 
 for ((N=4; N<=16; N=N+4)) ; do
 ##for ((N=4; N<=4; N=N+4)) ; do
@@ -35,9 +37,10 @@ for ((N=4; N<=16; N=N+4)) ; do
 	dmax=${delta[i+1]}
 	opfile=rules/ruleN${N}i${i}.dat
 	logfile=rules/ruleN${N}i${i}.log
+	tol=${dtols[i]}
 	
 	./mkdelta -N ${N} -d ${dmin} -D ${dmax} -n ${nd} \
-		  -o ${opfile} -l ${logfile}
+		  -o ${opfile} -l ${logfile} -t ${tol}
     done
 
     echo gdouble rules${N}[] = \{ >> ${cfile}

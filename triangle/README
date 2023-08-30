@@ -2,4 +2,26 @@ Generation of radial and angular quadrature rules for integration of
 singular functions on triangles, as in Bremer and Gimbutas, 2013,
 http://dx.doi.org/10.1016/j.jcp.2013.05.048
 
+The functions in this directory use gqr-rule to generate quadrature
+rules which integrate the functions which arise in boundary integral
+problems, as described by Bremer and Gimbutas. The main scripts are
+radial-rules and angular-rules, which generate rules for functions of
+the form of equations 22 and 23 respectively of Bremer and Gimbutas.
 
+The makefile will generate a full set of quadrature rules and
+incorporate them into two C files, radial-rules.c and angular-rules.c
+respectively. Each has a simple function which selects a precomputed
+quadrature rule matching the required parameters. For example,
+
+radial_quadrature_select(gint N, gdouble d, gdouble **q, gint *nq)
+
+selects a rule of order N (a multiple of 4), with parameter d (Bremer
+and Gimbutas's \delta). The rule is returned as a pointer q to an
+array of length 2*nq, containing the nodes and weights with
+
+  x_i = q[2*i+0], w_i = q[2*i+1], 0<= i < nq,
+
+where x_i and w_i are the nodes and weights respectively.
+
+The test program triangle-tests checks the rules against analytical
+evaluation of the corresponding integrals.

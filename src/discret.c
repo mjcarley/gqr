@@ -105,10 +105,13 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
   ldc = k ;
   
   *ldr = ldc ;
+
+  fprintf(stderr, "(m,n) = (%d,%d); k = %d; lda = %d; ldc = %d\n",
+	  ma, na, k, lda, ldc) ;
   
   info = 0 ; ircond = tol ;
-  memset(Q, 0, ldc*ldc*sizeof(gdouble)) ;
-  for ( i = 0 ; i < ldc ; i ++ ) Q[i*ldc+i] = 1.0 ;
+  memset(Q, 0, ldc*k*sizeof(gdouble)) ;
+  for ( i = 0 ; i < k ; i ++ ) Q[i*ldc+i] = 1.0 ;
   dgeqpx_(&job, &ma, &na, &k, R11, &lda, Q, &ldc, pvt, &ircond, &orcond,
 	  rank, svlues, work, &lwork, &info) ;  
 

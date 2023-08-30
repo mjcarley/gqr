@@ -15,6 +15,9 @@ echo "/* `date` */" >>${cfile}
 echo                    >> ${cfile}
 echo \#include \<glib.h\> >> ${cfile}
 echo                    >> ${cfile}
+echo gint legendre_quadrature_select\(gint N, gdouble **q, gint *nq\) \; \
+     >> ${cfile}
+echo                    >> ${cfile}
 
 i=0
 for ((N=4; N<=16; N=N+4)) ; do

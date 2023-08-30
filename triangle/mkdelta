@@ -64,6 +64,10 @@ while test $# -gt 0; do
 	  shift
 	  opfile=$1
 	  ;;      
+      -t)
+	  shift
+	  tol=$1
+	  ;;      
   esac
   shift
 done

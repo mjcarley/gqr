@@ -53,15 +53,15 @@ gint newman_tri_shape (gdouble p[], gdouble x1[], gdouble x2[], gdouble x3[],
 		       gdouble imn[], gint hmax,
 		       gdouble i[], gdouble j[]) ;
 
-gint dgesdd_(gchar *JOBZ, gint *M, gint *N, gdouble *A, gint *lda,
-	     gdouble *S, gdouble *U, gint *ldu, gdouble *VT, gint *ldvt,
-	     gdouble *work, gint *lwork, gint *iwork, gint *info) ;
+extern void dgesdd_(gchar *JOBZ, gint *M, gint *N, gdouble *A, gint *lda,
+		    gdouble *S, gdouble *U, gint *ldu, gdouble *VT, gint *ldvt,
+		    gdouble *work, gint *lwork, gint *iwork, gint *info) ;
 
 typedef gint (*tri_quad_func_t)(gdouble *x0, gdouble *x1, gdouble *n,
 				gdouble s, gdouble t, gpointer data,
 				gdouble *f, gint nf) ;
 
-gint invert2x2(gdouble *A, gdouble *Ai)
+static void invert2x2(gdouble *A, gdouble *Ai)
 
 {
   gdouble det ;
@@ -71,10 +71,10 @@ gint invert2x2(gdouble *A, gdouble *Ai)
   Ai[0] =  A[3]/det ; Ai[1] = -A[1]/det ;
   Ai[2] = -A[2]/det ; Ai[3] =  A[0]/det ;
 
-  return 0 ;
+  return ;
 }
 
-gdouble *wandzura_select(gint n)
+static gdouble *wandzura_select(gint n)
 
 {
   switch (n) {
@@ -90,31 +90,7 @@ gdouble *wandzura_select(gint n)
   return NULL ;
 }
 
-gint wandzura_quad(tri_quad_func_t func, gdouble *x0,
-		   gdouble *xt, gint xstr, gint nt, gdouble *Iq, gint nqi)
-
-{
-  gdouble x[3], n[3], J, *q, A, wt, f[16], s, t ;
-  gint nw, i, iq ;
-
-  nw = 175 ;
-
-  q = wandzura_select(nw) ;
-
-  memset(Iq, 0, nqi*sizeof(gdouble)) ;
-  for ( i = 0 ; i < nw ; i ++ ) {
-    s = q[3*i+0] ; t = q[3*i+1] ;
-    element_point_3d(xt, xstr, nt, s, t, x, n, &J) ;
-    func(x0, x, n, s, t, NULL, f, nqi) ;
-    wt = J*q[3*i+2] ;
-    for ( iq = 0 ; iq < nqi ; iq ++ )
-      Iq[iq] += wt*f[iq] ;
-  }
-  
-  return 0 ;
-}
-
-gdouble quad_radial_func(gdouble d, gint i, gdouble *q, gint nq)
+static gdouble quad_radial_func(gdouble d, gint i, gdouble *q, gint nq)
 
 {
   gdouble f, df, t, w ;
@@ -130,7 +106,8 @@ gdouble quad_radial_func(gdouble d, gint i, gdouble *q, gint nq)
   return f ;
 }
 
-gdouble radial_check(gdouble d, gint N, gdouble *q, gint nq, gboolean print)
+static gdouble radial_check(gdouble d, gint N, gdouble *q, gint nq,
+			    gboolean print)
 
 {
   gdouble emax = 0.0, Iq, Ia, x0, x1 ;
@@ -157,7 +134,7 @@ gdouble radial_check(gdouble d, gint N, gdouble *q, gint nq, gboolean print)
   return emax ;
 }
 
-gdouble atan2_uw(gdouble y, gdouble x)
+static gdouble atan2_uw(gdouble y, gdouble x)
 
 {
   gdouble th ;
@@ -169,11 +146,11 @@ gdouble atan2_uw(gdouble y, gdouble x)
   return 2.0*M_PI + th ;
 }
 
-gint triangle_decomp(gdouble *x0, gdouble *x1, gdouble *x2,
-		     gdouble *r0, gdouble *th0, gdouble *r, gdouble *th)
+static gint triangle_decomp(gdouble *x0, gdouble *x1, gdouble *x2,
+			    gdouble *r0, gdouble *th0, gdouble *r, gdouble *th)
 
 {
-  gdouble r1, th1, r2, th2 ;
+  gdouble r1, r2 ;
 
   r1 = sqrt((x0[0] - x1[0])*(x0[0] - x1[0]) +
 	    (x0[1] - x1[1])*(x0[1] - x1[1])) ;
@@ -189,12 +166,8 @@ gint triangle_decomp(gdouble *x0, gdouble *x1, gdouble *x2,
 
     if ( *th0 < -M_PI ) *th0 += 2.0*M_PI ;
     
-    /* fprintf(stderr, "r1 > r2") ; */
-    
     return 0 ;
   }
-  
-  /* fprintf(stderr, "r1 < r2") ; */
 
   *r = r2 ; *r0 = r1/r2 ;
   
@@ -207,8 +180,9 @@ gint triangle_decomp(gdouble *x0, gdouble *x1, gdouble *x2,
   return 0 ;
 }
 
-gint triangle_mapping(gdouble *xt, gint xstr, gint nt, gdouble s, gdouble t,
-		      gdouble *x0, gdouble *J0, gdouble *A, gdouble *xti)
+static gint triangle_mapping(gdouble *xt, gint xstr, gint nt,
+			     gdouble s, gdouble t,
+			     gdouble *x0, gdouble *J0, gdouble *A, gdouble *xti)
 
 
 /*
@@ -237,7 +211,7 @@ gint triangle_mapping(gdouble *xt, gint xstr, gint nt, gdouble s, gdouble t,
 {
   gdouble L[16], dLds[16], dLdt[16], n[3], U[16], S[16], V[16] ;
   gdouble dr[6], work[138], Ai[4] ;
-  gint i, one = 1, two = 2, three = 3, lwork, info, iwork ;
+  gint i, two = 2, three = 3, lwork, info, iwork ;
   
   /*physical location of singularity and reference Jacobian*/
   element_shape_3d(nt, s, t, L, dLds, dLdt) ;
@@ -275,159 +249,51 @@ gint triangle_mapping(gdouble *xt, gint xstr, gint nt, gdouble s, gdouble t,
   return 0 ;
 }
 
-gint triangle_quad_laplace(gdouble *x0, gdouble *x1, gdouble *n,
-			   gdouble s, gdouble t, gpointer data,
-			   gdouble *f, gint nf)
 
-{
-  gdouble R, r[3] ;
 
-  r[0] = x1[0] - x0[0] ;
-  r[1] = x1[1] - x0[1] ;
-  r[2] = x1[2] - x0[2] ;
+/* static gint triangle_quad_test_3d(gdouble *xt, gint xstr, gint nt, */
+/* 			   gdouble s, gdouble t, gint N) */
+
+/* { */
+/*   gdouble x0[3], J0, xti[64], A[4], d, G[3], dG[3], Iq[16], Iw[16] ; */
+/*   tri_quad_func_t func ; */
+
+/*   func = triangle_quad_laplace ; */
   
-  R = sqrt(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]) ;
-  
-  f[0] = 0.25*M_1_PI/R*(1-s-t) ;
-  f[1] = 0.25*M_1_PI/R*(  s  ) ;
-  f[2] = 0.25*M_1_PI/R*(    t) ;
+/*   triangle_mapping(xt, xstr, nt, s, t, x0, &J0, A, xti) ; */
 
-  /* f *= (r[0]*n[0] + r[1]*n[1] + r[2]*n[2])/R/R ; */
-  
-  return 0 ;
-}
+/*   fprintf(stderr, "x0 = (%lg,%lg,%lg); J0 = %lg\n", x0[0], x0[1], x0[2], J0) ; */
 
-gint triangle_quad(tri_quad_func_t func,
-		   gdouble *xti,
-		   gdouble *xt, gint xstr, gint nt,
-		   gdouble *A, gdouble s, gdouble t,
-		   gdouble *x0, gdouble J0,
-		   gdouble d, gint N,
-		   gdouble *Iq, gint nqi)
+/*   d = 0.1 ; */
 
-/*
-  xti:  mapped plane triangle
-  xt:   physical space triangle
-  xstr: stride in xt
-  nt:   number of nodes on xt (3 or 6)
-  A:    mapping matrix
-  s,t:  singularity coordinates on unit triangle
-  x0:   physical location of singularity
-  J0:   Jacobian at singularity
-  d:    radius of central disc
-  N:    order of integration
-  Iq:   integrals of func over triangle
-  nqi:  number of functions to integrate
-*/
-  
-{
-  gdouble r0, th0, r, th, *qr, *qt, rr, ti, M, sgn ;
-  gdouble x[3], s1, t1, J, n[3], wt, Aq, C, S, zero[2]={0,0} ;
-  gdouble Ac, As, f[16] ;
-  gint i, j, k, iq, idx[] = {0, 1, 2, 0}, nqr, nqt ;
+/*   triangle_quad(func, xti, xt, xstr, nt, A, s, t, x0, J0, d, N, Iq, 3) ; */
+/*   fprintf(stderr, "single layer: %lg %lg %lg\n", */
+/* 	  Iq[0], Iq[1], Iq[2]) ; */
 
-  memset(Iq, 0, nqi*sizeof(gdouble)) ;
-  
-  /*quadrature on inner disc*/
-  nqt = 3*(N+2) + 2 ;
-  nqr = (N+1)/2 + 1 ;
+/*   wandzura_quad(func, x0, xt, xstr, nt, Iw, 3) ; */
+/*   fprintf(stderr, "Wandzura single layer: %lg %lg %lg\n", */
+/*   	  Iw[0], Iw[1], Iw[2]) ; */
 
-  legendre_quadrature_select(N, &qr, &nqr) ;
-  for ( i = 0 ; i < nqt ; i ++ ) {
-    ti = 2.0*M_PI*i/nqt ;
-    C = cos(ti) ; S = sin(ti) ;
-    Ac = A[0]*C + A[1]*S ;
-    As = A[2]*C + A[3]*S ;
-    for ( j = 0 ; j < nqr ; j ++ ) {
-      rr = 0.5*d*(1.0 + qr[2*j+0]) ;
-      /*coordinates on unit triangle*/
-      s1 = s + rr*Ac ; t1 = t + rr*As ;
-      /*map to physical triangle*/
-      element_point_3d(xt, xstr, nt, s1, t1, x, n, &J) ;
-      /*quadrature weight*/
-      wt = J/J0*rr*qr[2*j+1]*0.5*d*2.0*M_PI/nqt ;
-      func(x0, x, n, s1, t1, NULL, f, nqi) ;
-      for ( iq = 0 ; iq < nqi ; iq ++ )
-	Iq[iq] += wt*f[iq] ;
-    }
-  }
+/*   if ( nt == 3 ) { */
+/*     newman_tri_shape(x0, &(xt[0*xstr]), &(xt[1*xstr]), &(xt[2*xstr]), */
+/* 		     NULL, 0.0, G, dG) ; */
 
-  for ( k = 0 ; k < 3 ; k ++ ) {
-    /*singularity is at origin on remapped triangle*/
-    triangle_decomp(zero, &(xti[2*idx[k]]), &(xti[2*idx[k+1]]),
-		    &r0, &th0, &r, &th) ;
-    sgn = SIGN(th0) ; th0 = fabs(th0) ;
-    /*select th quadrature*/
-    angular_quadrature_select(N, r0, th0, &qt, &nqt) ;
-    for ( i = 0 ; i < nqt ; i ++ ) {
-      ti = th0*qt[i*2+0] ;
-      C = cos(sgn*ti+th) ; S = sin(sgn*ti+th) ;
-      Ac = A[0]*C + A[1]*S ;
-      As = A[2]*C + A[3]*S ;
-      /*radial limit and quadrature selection*/
-      M = r0*sin(th0)/(r0*sin(th0-ti) + sin(ti)) ;
-      radial_quadrature_select(N, d/M/r, &qr, &nqr) ;
-      for ( j = 0 ; j < nqr ; j ++ ) {
-      	rr = d + (M*r-d)*qr[2*j+0] ;
-	/*coordinates on unit triangle*/
-	s1 = s + rr*Ac ; t1 = t + rr*As ;
-	/*map to physical triangle*/
-	element_point_3d(xt, xstr, nt, s1, t1, x, n, &J) ;
-	/*quadrature weight*/
-	wt = (M*r-d)*qr[2*j+1]*qt[2*i+1]*rr*th0*J/J0 ;
-	func(x0, x, n, s1, t1, NULL, f, nqi) ;
-	for ( iq = 0 ; iq < nqi ; iq ++ )
-	  Iq[iq] += wt*f[iq] ;	
-      }
-    }
-  }
-  
-  return 0 ;
-}
-
-gint triangle_quad_test_3d(gdouble *xt, gint xstr, gint nt,
-			   gdouble s, gdouble t, gint N)
-
-{
-  gdouble x0[3], J0, xti[64], A[4], Ai[4], d, G[3], dG[3], Iq[16], Iw[16] ;
-  tri_quad_func_t func ;
-
-  func = triangle_quad_laplace ;
-  
-  triangle_mapping(xt, xstr, nt, s, t, x0, &J0, A, xti) ;
-
-  fprintf(stderr, "x0 = (%lg,%lg,%lg); J0 = %lg\n", x0[0], x0[1], x0[2], J0) ;
-
-  d = 0.1 ;
-
-  triangle_quad(func, xti, xt, xstr, nt, A, s, t, x0, J0, d, N, Iq, 3) ;
-  fprintf(stderr, "single layer: %lg %lg %lg\n",
-	  Iq[0], Iq[1], Iq[2]) ;
-
-  wandzura_quad(func, x0, xt, xstr, nt, Iw, 3) ;
-  fprintf(stderr, "Wandzura single layer: %lg %lg %lg\n",
-  	  Iw[0], Iw[1], Iw[2]) ;
-
-  if ( nt == 3 ) {
-    newman_tri_shape(x0, &(xt[0*xstr]), &(xt[1*xstr]), &(xt[2*xstr]),
-		     NULL, 0.0, G, dG) ;
-
-    G[0]  *= -0.25*M_1_PI ;  G[1] *= -0.25*M_1_PI ;  G[2] *= -0.25*M_1_PI ;
-    dG[0] *= -0.25*M_1_PI ; dG[1] *= -0.25*M_1_PI ; dG[2] *= -0.25*M_1_PI ;
+/*     G[0]  *= -0.25*M_1_PI ;  G[1] *= -0.25*M_1_PI ;  G[2] *= -0.25*M_1_PI ; */
+/*     dG[0] *= -0.25*M_1_PI ; dG[1] *= -0.25*M_1_PI ; dG[2] *= -0.25*M_1_PI ; */
     
-    fprintf(stderr, "Newman single layer: %lg %lg %lg\n",
-	    G[0], G[1], G[2]) ;
-    fprintf(stderr, "error:               %e %e %e\n",
-    	    fabs(G[0]-Iq[0]), fabs(G[1]-Iq[1]), fabs(G[2]-Iq[2])) ;
-    fprintf(stderr, "Newman double layer: %lg %lg %lg\n",
-	    dG[0], dG[1], dG[2]) ;
-  }
+/*     fprintf(stderr, "Newman single layer: %lg %lg %lg\n", */
+/* 	    G[0], G[1], G[2]) ; */
+/*     fprintf(stderr, "error:               %e %e %e\n", */
+/*     	    fabs(G[0]-Iq[0]), fabs(G[1]-Iq[1]), fabs(G[2]-Iq[2])) ; */
+/*     fprintf(stderr, "Newman double layer: %lg %lg %lg\n", */
+/* 	    dG[0], dG[1], dG[2]) ; */
+/*   } */
   
-  return 0 ;
-}
+/*   return 0 ; */
+/* } */
 
-gint triangle_quad_test(gdouble *xt, gint xstr, gdouble s0, gdouble t0,
-			gdouble d, gint N)
+static gint triangle_quad_test(gdouble *xt, gint xstr, gdouble s0, gdouble t0,
+			       gdouble d, gint N)
 
 {
   gdouble r0, th0, r, th, *qr, *qt, rr, t, M, sgn, c, f ;
@@ -521,33 +387,11 @@ gint triangle_quad_test(gdouble *xt, gint xstr, gdouble s0, gdouble t0,
   return 0 ;
 }
 
-gint triangle_decomp_test(gdouble *xt, gdouble *x0)
+
+static gint radial_quadrature_test(gint N)
 
 {
-  gdouble r0, th0, r, th ;
-  gint i, idx[] = {0, 1, 2, 0} ;
-
-  for ( i = 0 ; i < 3 ; i ++ ) {
-    fprintf(stdout, "%lg %lg 0 0\n", xt[i*2+0], xt[i*2+1]) ;
-  }
-  
-  fprintf(stdout, "%lg %lg 0 0\n", x0[0], x0[1]) ;
-
-  for ( i = 0 ; i < 3 ; i ++ ) {
-    fprintf(stderr, "%d: ", i) ;
-    triangle_decomp(x0, &(xt[2*idx[i]]), &(xt[2*idx[i+1]]),
-		    &r0, &th0, &r, &th) ;
-    fprintf(stderr, "\n") ;
-    fprintf(stdout, "%lg %lg %lg %lg\n", r, th, r0, th0) ;
-  }
-  
-  return 0 ;
-}
-
-gint radial_quadrature_test(gint N)
-
-{
-  gdouble *delta, eint, emax, d, *q ;
+  gdouble *delta, eint, emax, emin, d, *q ;
   gint i, j, nj, nq ;
   
   switch ( N ) {
@@ -561,24 +405,25 @@ gint radial_quadrature_test(gint N)
   nj = 15 ;
   for ( i = 0 ; delta[i] != 1.0 ; i ++ ) {
     fprintf(stderr, "d = (%lg,%lg)\n", delta[i], delta[i+1]) ;
-    eint = 0.0 ;
+    emax = 0.0 ; emin = G_MAXDOUBLE ;
     for ( j = 0 ; j < nj ; j ++ ) {
       d = delta[i] + (delta[i+1] - delta[i])/(nj+1)*(j+1) ;
       
       radial_quadrature_select(N, d, &q, &nq) ;
       
-      emax = radial_check(d, N, q, nq, FALSE) ;
+      eint = radial_check(d, N, q, nq, FALSE) ;
       
-      /* fprintf(stderr, "N=%d; d=%lg; emax=%lg\n", N, d, emax) ; */
-      eint = MAX(eint, emax) ;
+      emax = MAX(eint, emax) ;
+      emin = MIN(eint, emin) ;
     }
-    fprintf(stderr, "eint = %lg\n", eint) ;
+    fprintf(stderr, "  error(min, max) = (%lg, %lg)\n", emin, emax) ;
   }
 
   return 0 ;
 }
 
-gdouble angular_check(gdouble d, gint N, gdouble *q, gint nq, gboolean print)
+static gdouble angular_check(gdouble d, gint N, gdouble *q, gint nq,
+			     gboolean print)
 
 {
   gdouble emax = 0.0, Ic, Is, Ia, t0, t1, t ;
@@ -620,10 +465,10 @@ gdouble angular_check(gdouble d, gint N, gdouble *q, gint nq, gboolean print)
   return emax ;
 }
 
-gint angular_quadrature_test(gint N)
+static gint angular_quadrature_test(gint N)
 
 {
-  gdouble *dth, eint, emax, d, *q, r0 ;
+  gdouble *dth, eint, emax, emin, d, *q, r0 ;
   gint i, j, nj, nq ;
   
   switch ( N ) {
@@ -645,57 +490,96 @@ gint angular_quadrature_test(gint N)
   r0 = 0.5 ;
   
   nj = 9 ;
-  /* for ( i = 0 ; dth[i] != 3.14159 ; i ++ ) { */
-  for ( i = 10 ; i < 11 ; i ++ ) {
+  for ( i = 0 ; dth[i] != 3.14159 ; i ++ ) {
+  /* for ( i = 10 ; i < 11 ; i ++ ) { */
     fprintf(stderr, "d = (%lg,%lg)\n", dth[i], dth[i+1]) ;
-    eint = 0.0 ;
+    emax = 0.0 ; emin = G_MAXDOUBLE ;
     for ( j = 0 ; j < nj ; j ++ ) {
       d = dth[i] + (dth[i+1] - dth[i])/(nj+1)*(j+1) ;
       
       angular_quadrature_select(N, r0, d, &q, &nq) ;
       
       /* emax = angular_check(d, N, q, nq, FALSE) ; */
-      emax = angular_check(d, N, q, nq, TRUE) ;
+      eint = angular_check(d, N, q, nq, FALSE) ;
       
       /* fprintf(stderr, "N=%d; d=%lg; emax=%lg\n", N, d, emax) ; */
-      eint = MAX(eint, emax) ;
+      emax = MAX(eint, emax) ;
+      emin = MIN(eint, emin) ;
     }
-    fprintf(stderr, "eint = %lg\n", eint) ;
+    fprintf(stderr, "  error(min, max) = (%lg, %lg)\n", emin, emax) ;
   }
 
   return 0 ;
 }
 
+static void print_help_message(FILE *f, gchar *progname, gint N)
+
+{
+  fprintf(f, "%s: testing quadrature rules generated for boundary integral\n\n",
+	  progname) ;
+
+  fprintf(f,
+	  "Usage: %s [options]\n\n"
+	  "Options:\n\n"
+	  "  -h print this message and exit\n"
+	  "  -A check angular quadrature rules\n"
+	  "  -N # order of quadrature rule (%d)\n"
+	  "  -R check radial quadrature rules\n\n",
+	  progname, N) ;
+
+  fprintf(f,
+	  "If neither -A nor -R is selected, the test is performed on an\n"
+	  "arbitrary triangle, using Wandzura and Xu's high order rules\n"
+	  "for comparison\n\n") ;
+
+  fprintf(f,
+	  "Angular and radial rule checks are performed by comparing\n"
+	  "numerically evaluated and analytical results for integrals.\n"
+	  "Results are output as\n\n"
+	  "  i Ia Ic err\n\n"
+	  "with Ia and Ic analytical and numerical results and"
+	  "  err=abs(Ia-Ic).\n\n"
+	  "Functions used for evaluation are\n\n"
+	  "  [(1-d)*t + d]^i (radial)\n\n"
+	  "and\n\n"
+	  "  cos(i*t), sin(i*t) (angular)\n\n"
+	  "over the appropriate integration range.\n") ;
+  
+  return ;
+}
+
 gint main(gint argc, gchar **argv)
 
 {
-  gint N, xstr, nt ;
-  gdouble d, xt[64], x0[2], s, t ;
+  gint N, xstr ;
+  gdouble d, xt[64], s, t ;
   gchar ch ;
   
   xt[2*0+0] = -1.0 ; xt[2*0+1] = -0.5 ; 
   xt[2*1+0] =  1.0 ; xt[2*1+1] = -0.5 ; 
   xt[2*2+0] =  0.0 ; xt[2*2+1] =  0.75 ; 
 
-  x0[0] = 0.1 ; x0[1] = -0.4 ;
-
   N = 4 ;  d = 0.1 ;
 
-  while ( (ch = getopt(argc, argv, "N:")) != EOF ) {
+  while ( (ch = getopt(argc, argv, "hAN:R")) != EOF ) {
     switch(ch) {
+    case 'h':
+      print_help_message(stderr, argv[0], N) ;
+      return 0 ;
+      break ;
+    case 'A':
+      angular_quadrature_test(N) ;
+      return 0 ;
+      break ;
     case 'N': N = atoi(optarg) ; break ;
+    case 'R':
+      radial_quadrature_test(N) ;
+      return 0 ;
+      break ;
     }
   }
 
-  /* angular_quadrature_test(N) ; */
-
-  /* return 0 ; */
-  
-  /* radial_quadrature_test(N) ; */
-
-  /* return 0 ; */
-
-  xstr = 4 ; nt = 3 ;
+  xstr = 4 ;
   xt[0*xstr+0] = -0.3  ; xt[0*xstr+1] = 0.5  ; xt[0*xstr+2] =  0.4  ;
   xt[1*xstr+0] =  0.35 ; xt[1*xstr+1] = 0.55 ; xt[1*xstr+2] =  0.2  ;
   xt[2*xstr+0] =  0.0  ; xt[2*xstr+1] = 1.2  ; xt[2*xstr+2] =  0.3  ;
@@ -707,16 +591,8 @@ gint main(gint argc, gchar **argv)
   
   s = 0.3 ; t = 0.2 ;
   
-  /* triangle_quad_test_3d(xt, xstr, nt, s, t, N) ; */
-  
-  /* return 0 ; */
-  
   d = 0.0 ;
   triangle_quad_test(xt, xstr, s, t, d, N) ;
-
-  return 0 ;
-  
-  triangle_decomp_test(xt, x0) ;
 
   return 0 ;
 }

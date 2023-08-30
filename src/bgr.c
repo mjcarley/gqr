@@ -481,7 +481,7 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
  * pointer 0: adapt_func for basis functions
  *
  * double  0: a, start of integration range
- * double  1: b,  of integration range
+ * double  1: b, end of integration range
  * double  2: tol, discretization tolerance
  * double  3 onwards, parameters to be supplied to adapt_func
  *
@@ -560,7 +560,10 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   /*use FORTRAN indexing from here*/
   /*fill function array*/
   nu = MAX(nfunc, nf) ;
+  fprintf(stderr, "nfunc = %d; nf = %d\n", nfunc, nf) ;
   u = (gdouble *)g_malloc0(nu*nu*sizeof(gdouble)) ;
+  g_assert(u != NULL) ;
+  /* u = (gdouble *)g_malloc0(nfunc*nf*sizeof(gdouble)) ; */
   A = (gdouble *)g_malloc0(nfunc*(MAX(rankmax,nf)+1)*sizeof(gdouble)) ;
   /*fill columns of matrix A with functions*/
   for ( i = 0 ; i < nf ; i ++ ) {

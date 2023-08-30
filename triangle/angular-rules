@@ -1,14 +1,14 @@
 #!/bin/bash
 
-## generate full set of quadrature rules for radial integrations
+## generate full set of quadrature rules for angular integrations
 N=4
 nr=16
 nt=16
 
 cfile=angular-rules.c
 
-drr=(1e-5 1e-4 1e-3 5e-3 1e-2 2e-2 4e-2 8e-2 1.6e-1 \
-	  3.2e-1 5e-1 6e-1 7e-1 9e-1 1.0)
+drr=(1e-8 1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 5e-2 1e-1 2e-1 3e-1 4e-1 \
+	    5e-1 6e-1 7e-1 9e-1 1.0)
 dth=(1e-5 1e-4 1e-3 1e-2 1e-1 2e-1 4e-1 6e-1 8e-1 \
 	  1.0 1.2 1.4 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.14 3.14159)
 
@@ -28,6 +28,9 @@ echo \#include \<glib.h\> >> ${cfile}
 echo                    >> ${cfile}
 echo \#define NRADIUS ${nrr} >> ${cfile}
 echo \#define NTHETA  ${nth} >> ${cfile}
+echo                    >> ${cfile}
+echo gint angular_quadrature_select\(gint N, gdouble r0, gdouble th0, \
+				    gdouble **q, gint *nq\) \; >> ${cfile}
 echo                    >> ${cfile}
 
 for ((N=4; N<=16; N=N+4)) ; do
