@@ -1,8 +1,8 @@
-kolrokh.lo: kolrokh.c /usr/include/stdc-predef.h /usr/include/stdio.h \
- /usr/include/bits/libc-header-start.h /usr/include/features.h \
- /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
- /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
- /usr/include/gnu/stubs-64.h \
+kolrokh.lo: kolrokh.c /usr/include/stdc-predef.h ../config.h \
+ /usr/include/stdio.h /usr/include/bits/libc-header-start.h \
+ /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/bits/long-double.h \
+ /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
  /usr/lib64/gcc/x86_64-slackware-linux/11.2.0/include/stddef.h \
  /usr/lib64/gcc/x86_64-slackware-linux/11.2.0/include/stdarg.h \
  /usr/include/bits/types.h /usr/include/bits/timesize.h \
@@ -186,8 +186,9 @@ kolrokh.lo: kolrokh.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/gsl/gsl_sf_zeta.h /usr/include/gsl/gsl_math.h \
  /usr/include/gsl/gsl_sys.h /usr/include/gsl/gsl_machine.h \
  /usr/include/gsl/gsl_nan.h /usr/include/gsl/gsl_pow_int.h \
- /usr/include/gsl/gsl_minmax.h gqr.h gqr-private.h ../config.h
+ /usr/include/gsl/gsl_minmax.h gqr.h gqr-private.h
 /usr/include/stdc-predef.h:
+../config.h:
 /usr/include/stdio.h:
 /usr/include/bits/libc-header-start.h:
 /usr/include/features.h:
@@ -481,4 +482,3 @@ kolrokh.lo: kolrokh.c /usr/include/stdc-predef.h /usr/include/stdio.h \
 /usr/include/gsl/gsl_minmax.h:
 gqr.h:
 gqr-private.h:
-../config.h:

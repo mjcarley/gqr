@@ -1,4 +1,4 @@
-/* Copyright (C) 2007, 2010, 2020 by  Michael Carley */
+/* Copyright (C) 2007, 2010, 2020, 2023 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -95,14 +95,35 @@ typedef enum {
  * require them. 
  */
 
+#define GQR_PARAMETER_POINTER_NUMBER_MAX 32
+#define GQR_PARAMETER_INTEGER_NUMBER_MAX 32
+#define GQR_PARAMETER_FLOAT_NUMBER_MAX   32
+
 typedef  struct _gqr_parameter_t gqr_parameter_t ;
 
 struct _gqr_parameter_t {
   gqr_t type ;
-  gint i[32], ni, nf, np ;
-  gdouble f[32] ;
-  gpointer p[32] ;
+  gint i[GQR_PARAMETER_INTEGER_NUMBER_MAX], ni, nf, np ;
+  gdouble f[GQR_PARAMETER_FLOAT_NUMBER_MAX] ;
+  gpointer p[GQR_PARAMETER_POINTER_NUMBER_MAX], rules[2] ;
 } ;
+
+#define gqr_parameter_int(_p,_i) ((_p)->i[(_i)])
+#define gqr_parameter_double(_p,_i) ((_p)->f[(_i)])
+#define gqr_parameter_pointer(_p,_i) ((_p)->p[(_i)])
+#define gqr_parameter_clear(_p)			\
+  do {						\
+  (_p)->ni=(_p)->nf=(_p)->np=0 ;		\
+  (_p)->rules[0] = (_p)->rules[1] = NULL ;	\
+  } while ( 0 )
+#define gqr_parameter_clear_int(_p) ((_p)->ni=0)
+#define gqr_parameter_clear_float(_p) ((_p)->nf=0)
+#define gqr_parameter_set_double(_p,_f) ((_p)->f[((_p)->nf)++] = (_f))
+#define gqr_parameter_set_pointer(_p,_f) ((_p)->p[((_p)->np)++] = (_f))
+#define gqr_parameter_set_int(_p,_i) ((_p)->i[((_p)->ni)++] = (_i))
+#define gqr_parameter_ni(_p) (((_p)->ni))
+#define gqr_parameter_nf(_p) (((_p)->nf))
+#define gqr_parameter_np(_p) (((_p)->np))
 
 /**
  * @typedef gqr_rule_t
@@ -127,18 +148,6 @@ struct _gqr_rule_t {
 #define gqr_rule_abscissa(_g,_i) ((_g)->x[(_i)])
 #define gqr_rule_weight(_g,_i) ((_g)->w[(_i)])
 #define gqr_rule_type(_g) ((_g)->type)
-#define gqr_parameter_int(_p,_i) ((_p)->i[(_i)])
-#define gqr_parameter_double(_p,_i) ((_p)->f[(_i)])
-#define gqr_parameter_pointer(_p,_i) ((_p)->p[(_i)])
-#define gqr_parameter_clear(_p) ((_p)->ni=(_p)->nf=(_p)->np=0)
-#define gqr_parameter_clear_int(_p) ((_p)->ni=0)
-#define gqr_parameter_clear_float(_p) ((_p)->nf=0)
-#define gqr_parameter_set_double(_p,_f) ((_p)->f[((_p)->nf)++] = (_f))
-#define gqr_parameter_set_pointer(_p,_f) ((_p)->p[((_p)->np)++] = (_f))
-#define gqr_parameter_set_int(_p,_i) ((_p)->i[((_p)->ni)++] = (_i))
-#define gqr_parameter_ni(_p) (((_p)->ni))
-#define gqr_parameter_nf(_p) (((_p)->nf))
-#define gqr_parameter_np(_p) (((_p)->np))
 #define gqr_rule_base_type(_t) ((_t) & GQR_RULE_MASK)
 #define gqr_rule_singularity_type(_t) ((_t) & GQR_SINGULARITY_MASK)
 

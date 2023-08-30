@@ -1,8 +1,8 @@
-ghermite.lo: ghermite.c /usr/include/stdc-predef.h /usr/include/stdio.h \
- /usr/include/bits/libc-header-start.h /usr/include/features.h \
- /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
- /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
- /usr/include/gnu/stubs-64.h \
+ghermite.lo: ghermite.c /usr/include/stdc-predef.h ../config.h \
+ /usr/include/stdio.h /usr/include/bits/libc-header-start.h \
+ /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/bits/long-double.h \
+ /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
  /usr/lib64/gcc/x86_64-slackware-linux/11.2.0/include/stddef.h \
  /usr/lib64/gcc/x86_64-slackware-linux/11.2.0/include/stdarg.h \
  /usr/include/bits/types.h /usr/include/bits/timesize.h \
@@ -130,8 +130,9 @@ ghermite.lo: ghermite.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
  /usr/include/bits/fp-fast.h \
  /usr/include/bits/mathcalls-helper-functions.h \
- /usr/include/bits/mathcalls.h ../config.h gqr.h gqr-private.h
+ /usr/include/bits/mathcalls.h gqr.h gqr-private.h
 /usr/include/stdc-predef.h:
+../config.h:
 /usr/include/stdio.h:
 /usr/include/bits/libc-header-start.h:
 /usr/include/features.h:
@@ -329,6 +330,5 @@ ghermite.lo: ghermite.c /usr/include/stdc-predef.h /usr/include/stdio.h \
 /usr/include/bits/fp-fast.h:
 /usr/include/bits/mathcalls-helper-functions.h:
 /usr/include/bits/mathcalls.h:
-../config.h:
 gqr.h:
 gqr-private.h:

@@ -1,4 +1,4 @@
-/* Copyright (C) 2007, 2020 by  Michael Carley */
+/* Copyright (C) 2007, 2020, 2023 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -23,6 +23,10 @@
   Adaptive discretization of arbitrary functions
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /*HAVE_CONFIG_H*/
+
 #include <stdio.h>
 #include <math.h>
 
@@ -36,17 +40,13 @@
 #include "gqr.h"
 #include "gqr-private.h"
 
-gint dgeqp3_(gint *m, gint *n, gdouble *A, gint *lda, gint *jpvt,
-	     gdouble *tau, gdouble *work, gint *lwork, gint *info) ;
-
-gint dlarf_(gchar *side, gint *m, gint *n, gdouble *v, gint *incv,
-	    gdouble *tau, gdouble *C, gint *ldc, gdouble *work) ;
-gint dlarfb_(gchar *side, gchar *trans, gchar *direct, gchar *storev,
-	     gint *m, gint *n, gint *k, gdouble *v, gint *ldv,
-	     gdouble *t, gint *ldt, gdouble *c, gint *ldc,
-	     gdouble *work, gint *ldwork) ;
-gint dlarft_(gchar *direct, gchar *storev, gint *n, gint *k,
-	     gdouble *v, gint *ldv, gdouble *tau, gdouble *t, gint *ldt) ;
+#ifdef HAVE_LIBRRQR
+extern void dgeqpx_(gint *job, gint *m, gint *n, gint *k,
+		    gdouble *A, gint *lda, gdouble *C, gint *ldc,
+		    gint *jpvt, gdouble *ircond, gdouble *orcond,
+		    gint *rank, gdouble *svlues, gdouble *work,
+		    gint *lwork, gint *info) ;
+#endif /*HAVE_LIBRRQR*/
 
 /*FORTRAN matrix indexing*/
 #define matrix_index(_m,_n,_i,_j) ((_i) + (_j)*(_m))
@@ -60,7 +60,7 @@ static gint compare_double(const void *a, const void *b)
   return 0 ;
 }
 
-static gint legendre_fill(gint n, gdouble x, gdouble *P)
+static void legendre_fill(gint n, gdouble x, gdouble *P)
 
 {
   gint i ;
@@ -71,7 +71,7 @@ static gint legendre_fill(gint n, gdouble x, gdouble *P)
     P[i+1] = (x*P[i]*(2*i+1) - P[i-1]*i)/(i+1) ;
   }
   
-  return 0 ;
+  return ;
 }
 
 gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
@@ -82,13 +82,39 @@ gint gqr_discretize_orthogonalize(gdouble *A, gint m, gint n,
 				  gdouble *work, gint lwork)
 
 {
+  gint k, lda, ldc, ma, na, info, job, i ;
+  gdouble ircond, orcond, svlues[4] ;
+
   if ( lwork < (3*n+1) + rankmax )
     g_error("%s: workspace too small (%d < %d)",
 	    __FUNCTION__, lwork, 3*n+1 + rankmax) ;
-
-
+#ifndef HAVE_LIBRRQR
   gqr_srrqr(A, m, n, 1.0, tol, Q, R11, pvt, rank, ldr, work, lwork) ;
 
+  return 0 ;
+#else /*HAVE_LIBRRQR*/
+
+  ma = m ; na = n ;
+  lda = MAX(1, ma) ;
+  ldc = ma ;
+  memcpy(R11, A, ma*na*sizeof(gdouble)) ;
+
+  job = 3 ;
+  lda = ma ;
+  k = ma ;
+  ldc = k ;
+  
+  *ldr = ldc ;
+  
+  info = 0 ; ircond = tol ;
+  memset(Q, 0, ldc*ldc*sizeof(gdouble)) ;
+  for ( i = 0 ; i < ldc ; i ++ ) Q[i*ldc+i] = 1.0 ;
+  dgeqpx_(&job, &ma, &na, &k, R11, &lda, Q, &ldc, pvt, &ircond, &orcond,
+	  rank, svlues, work, &lwork, &info) ;  
+
+  for ( i = 0 ; i < na ; i ++ ) pvt[i] -= 1 ;
+#endif /*HAVE_LIBRRQR*/
+  
   return 0 ;
 }
 

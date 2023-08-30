@@ -46,13 +46,13 @@ gint main(gint argc, gchar **argv)
 
   gqr_parameter_clear(&p) ;
 
-  while ( (ch = getopt(argc, argv, "haCef:GHi:JLM:N:p:Ps:Tx:y:")) != EOF ) {
+  while ( (ch = getopt(argc, argv, "hCef:GHi:JLM:N:p:Ps:Tx:y:")) != EOF ) {
     switch(ch) {
     case 'h':
     default: 
       print_help = TRUE ;
       break ;
-    case 'a': analytic_check = TRUE ; break ;
+    /* case 'a': analytic_check = TRUE ; break ; */
     case 'C': baserule = GQR_GAUSS_CHEBYSHEV_1 ; break ;
     case 'e': error_check = TRUE ; break ;
     case 'f': gqr_parameter_set_double(&p, atof(optarg)) ; break ;

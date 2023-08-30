@@ -1,4 +1,4 @@
-/* Copyright (C) 2020 by Michael Carley */
+/* Copyright (C) 2020, 2023 by Michael Carley */
 
 /**********************************************************************
  *
@@ -18,6 +18,10 @@
  * along with gqr.  If not, see <http://www.gnu.org/licenses/>.
  *
  **********************************************************************/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /*HAVE_CONFIG_H*/
 
 #include <stdio.h>
 #include <math.h>
@@ -44,19 +48,19 @@ static gint compare_double2(const void *a, const void *b)
   return 0 ;
 }
 
-gint print_matrix(gdouble *A, gint m, gint n, FILE *out)
+/* static gint print_matrix(gdouble *A, gint m, gint n, FILE *out) */
 
-{
-  gint i, j ;
+/* { */
+/*   gint i, j ; */
 
-  for ( i = 0 ; i < m ; i ++ ) {
-    for ( j = 0 ; j < n ; j ++ )
-      fprintf(out, "%1.16e ", A[matrix_index(m,n,i,j)]) ;
-    fprintf(out, "\n") ;
-  }
+/*   for ( i = 0 ; i < m ; i ++ ) { */
+/*     for ( j = 0 ; j < n ; j ++ ) */
+/*       fprintf(out, "%1.16e ", A[matrix_index(m,n,i,j)]) ; */
+/*     fprintf(out, "\n") ; */
+/*   } */
   
-  return 0 ;
-}
+/*   return 0 ; */
+/* } */
 
 gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p)
 
@@ -113,14 +117,13 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
 {
   gdouble d0, d1, d, f, x0, x1 ;
   gint nd, i, j ;
-  static gqr_rule_t *rule = NULL ;
-
+  gqr_rule_t *rule ;
+  
   g_assert(gqr_parameter_ni(p) > 4) ;
   nd = gqr_parameter_int(p, 4) ;
-  
-  if ( rule == NULL ) {
-    rule = gqr_rule_alloc(4*nd) ;
-  }
+
+  if ( p->rules[0] == NULL ) p->rules[0] = gqr_rule_alloc(4*nd) ;
+  rule = p->rules[0] ;
 
   if ( gqr_rule_length(rule) != nd ) {
     gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, nd, NULL) ;
@@ -141,6 +144,7 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
       d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, j) ;
       f = (1.0-d)*t + d ;
       f = 1.0/f ;
+
       return f ;
     }
 
@@ -150,7 +154,6 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
     d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, 0) ;
     f = (1.0-d)*t + d ;
     f = pow(f, j) ;
-    /* f = pow(t, j) ; */
 
     return f ;
   }
@@ -171,10 +174,6 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
   d = 0.5*(d1 + d0) + 0.5*(d1 - d0)*gqr_rule_abscissa(rule, 0) ;
   return (pow((1.0-d)*x1+d,j+1) -
 	  pow((1.0-d)*x0+d,j+1))/(gdouble)(j+1)/(1.0-d) ;
-  /* return (pow(x1,j+1) - pow(x0,j+1))/(j+1) ; */
-
-#if 0
-#endif
     
   if ( idx >= 0 ) {
     /*select value of d in range*/
@@ -211,16 +210,7 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
   i -= 1 ;
   return (pow((1.0-d)*x1+d,i+1) -
 	  pow((1.0-d)*x0+d,i+1))/(gdouble)(i+1)/(1.0-d) ;
-  
-  return 0.0 ;
 }
-
-/*
- * implementation of Bremer, Gimbutas, Rokhlin, `A nonlinear
- * optimization procedure for generalized Gaussian quadratures', 
- * https://dx.doi.org/10.1137/080737046
- *
- */
 
 gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
 					   gqr_parameter_t *p)
@@ -243,9 +233,9 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
  */
   
 {
-  gdouble r0, th0, th, f, x0, x1, M, thmin, thmax, rmin, rmax ;
+  gdouble r0, th0, th, f, M, thmin, thmax, rmin, rmax ;
   gint nj, nk, i, j, k, off, nr, nt, nrt, tr, tt ;
-  static gqr_rule_t *rrule = NULL, *trule = NULL ;
+  gqr_rule_t *rrule, *trule ;
   
   g_assert(gqr_parameter_ni(p) > 7) ;
   nj = gqr_parameter_int(p, 4) ;
@@ -262,10 +252,11 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
   g_assert(rmax > rmin) ; 
   g_assert(thmax > thmin) ; 
   
-  if ( rrule == NULL ) {
-    rrule = gqr_rule_alloc(4*nr) ;
-    trule = gqr_rule_alloc(4*nt) ;
-  }
+  if ( p->rules[0] == NULL ) p->rules[0] = gqr_rule_alloc(4*nr) ;
+  if ( p->rules[1] == NULL ) p->rules[1] = gqr_rule_alloc(4*nt) ;
+
+  rrule = p->rules[0] ;
+  trule = p->rules[1] ;
 
   if ( gqr_rule_length(rrule) != nr ) {
     gqr_rule_select(rrule, GQR_GAUSS_LEGENDRE, nr, NULL) ;
@@ -278,7 +269,6 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
   /*total number of entries per (r_0,\theta_0) pair*/
   nrt = nj*(nj+3)*3/2 + nj*(3*nj+7)/2 + nk + nk - 1 ;
 
-  /*i = tr*nt + tt */
   i = idx/nrt ;
   tr = i/nt ;
   tt = i % nt ;
@@ -292,7 +282,6 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
   g_assert(r0 < 1.0) ;
 
   /*set idx in the range of values for a single (r_0,\theta_0) pair*/
-  /*idx = i*nrt + ...*/
   idx = idx % nrt ;
   
   off = 0 ; 
@@ -314,9 +303,6 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
     else M = pow(M, j) ;
 
     f = M*cos(i*th) ;
-    
-    /* fprintf(stderr, "M^j\cos(i\theta)%d %d %d\n", idx+off, j, i) ; */
-
     g_assert(!isnan(f)) ;
     return f ;
   }
@@ -339,9 +325,6 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
     else M = pow(M, j) ;
 
     f = M*cos(i*th) ;
-    
-    /* fprintf(stderr, "M^j\sin(i\theta)%d %d %d\n", idx+off, j, i) ; */
-    
     g_assert(!isnan(f)) ;
 
     return f ;
@@ -356,8 +339,6 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
     k = idx ;
 
     f = cos(k*th) ;
-    
-    /* fprintf(stderr, "\cos(k\theta) %d %d\n", idx+off, k) ; */
     g_assert(!isnan(f)) ;
 
     return f ;
@@ -370,9 +351,6 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
     /*sin k\theta*/
 
     k = idx + 1 ;
-    
-    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
-
     f = sin(k*th) ;
 
     return f ;
@@ -380,11 +358,6 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
 
   g_error("%s: function index (%d) out of range (nj=%d, nk=%d)",
 	  __FUNCTION__, idx+off, nj, nk) ;
-
-  /*calculate integral of f over specified range*/
-  /* x0  = gqr_parameter_double(p, 0) ; */
-  /* x1  = gqr_parameter_double(p, 1) ; */
-
 
   return 0.0 ;
 }
@@ -405,8 +378,8 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
  */
   
 {
-  gdouble r0, th0, th, f, x0, x1, M ;
-  gint ni, nj, nk, i, j, k, off ;
+  gdouble r0, th0, th, f, M ;
+  gint nj, nk, i, j, k, off ;
   
   g_assert(gqr_parameter_ni(p) > 5) ;
   nj = gqr_parameter_int(p, 4) ;
@@ -438,9 +411,6 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
     else M = pow(M, j) ;
 
     f = M*cos(i*th) ;
-    
-    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
-    
     return f ;
   }
 
@@ -462,9 +432,6 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
     else M = pow(M, j) ;
 
     f = M*cos(i*th) ;
-    
-    /* fprintf(stderr, "%d %d %d\n", idx+off, j, i) ; */
-    
     return f ;
   }
 
@@ -477,8 +444,6 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
     k = idx ;
 
     f = cos(k*th) ;
-    
-    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
     return f ;
   }
 
@@ -489,9 +454,6 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
     /*sin k\theta*/
 
     k = idx + 1 ;
-    
-    /* fprintf(stderr, "%d %d\n", idx+off, k) ; */
-
     f = cos(k*th) ;
 
     return f ;
@@ -500,13 +462,16 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
   g_error("%s: function index (%d) out of range (nj=%d, nk=%d)",
 	  __FUNCTION__, idx+off, nj, nk) ;
 
-  /*calculate integral of f over specified range*/
-  /* x0  = gqr_parameter_double(p, 0) ; */
-  /* x1  = gqr_parameter_double(p, 1) ; */
-
-
   return 0.0 ;
 }
+
+
+/*
+ * implementation of Bremer, Gimbutas, Rokhlin, `A nonlinear
+ * optimization procedure for generalized Gaussian quadratures', 
+ * https://dx.doi.org/10.1137/080737046
+ *
+ */
 
 gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
 
@@ -529,9 +494,9 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
  */
   
 {
-  gdouble x0, x1, tol, *ival, *Q, *Qi, *R11, *u, *A, *work, *r, *z, xi, wi ;
+  gdouble x0, x1, tol, *ival, *Qi, *R11, *u, *A, *work, *r, *z, xi, wi ;
   gint i, j, k, nf, nq, ni, nimax, rank, rankmax, *pvt, lwork, nn, nfunc ;
-  gint ldr ;
+  gint ldr, nu ;
   gqr_rule_t *rule ;
   gqr_adapt_func_t func ;
   gdouble test0 ;
@@ -588,22 +553,19 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   lwork = 3*nimax*nq+1 + 8*rankmax*nfunc ;
   work = (gdouble *)g_malloc(lwork*sizeof(gdouble)) ;
 
-  R11 = (gdouble *)g_malloc0(nfunc*(nf+2)*sizeof(gdouble)) ;
+  R11 = (gdouble *)g_malloc0(nfunc*(MAX(rankmax,nf)+1)*sizeof(gdouble)) ;
   r   = (gdouble *)g_malloc0(nf*sizeof(gdouble)) ;
   z   = (gdouble *)g_malloc0(rankmax*sizeof(gdouble)) ;
 
   /*use FORTRAN indexing from here*/
   /*fill function array*/
-  u = (gdouble *)g_malloc0(nfunc*(MAX(rankmax,nf)+1)*sizeof(gdouble)) ;
+  nu = MAX(nfunc, nf) ;
+  u = (gdouble *)g_malloc0(nu*nu*sizeof(gdouble)) ;
   A = (gdouble *)g_malloc0(nfunc*(MAX(rankmax,nf)+1)*sizeof(gdouble)) ;
   /*fill columns of matrix A with functions*/
   for ( i = 0 ; i < nf ; i ++ ) {
     gqr_discretize_fill(func, i, p, rule, ival, ni, &(A[i*nfunc]), 1) ;
   }
-
-  /* fprintf(stdout, "f = [...\n") ; */
-  /* print_matrix(A, nfunc, nf, stdout) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
 
   /*need to weight columns of A by quadrature weights in long rule*/
   test0 = 0.0 ;
@@ -620,46 +582,18 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
     }
   }
 
-  /* fprintf(stderr, "sum of weights: %lg\n", test0) ; */
-
-  /* fprintf(stdout, "A = [...\n") ; */
-  /* print_matrix(A, nfunc, nf, stdout) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
-
-  /* exit(0) ; */
-  
   gqr_discretize_orthogonalize(A, nfunc, nf, tol, &rank, rankmax,
   			       u, R11, pvt, &ldr, work, lwork) ;
 
-
-  /* fprintf(stdout, "pvt = [...\n") ; */
-  /* for ( i = 0 ; i < nf ; i ++ ) fprintf(stdout, "%d\n", pvt[i]+1) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
-
-  /* fprintf(stdout, "u = [...\n") ; */
-  /* print_matrix(u, nfunc, rank, stdout) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
-  
-  /* fprintf(stdout, "R = [...\n") ; */
-  /* print_matrix(R11, ldr, nf, stdout) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
-
-  /* exit(0) ; */
-  
   /*generate a quadrature rule*/
-  /* fprintf(stdout, "x = [...\n") ; */
   for ( i = 0 ; i < ni ; i ++ ) {
     for ( j = 0 ; j < nq ; j ++ ) {
       gqr_discretize_quadrature(rule, ival, ni, i, j, &xi, &wi) ;
-      /* fprintf(stdout, "%e\n", xi) ; */
       for ( k = 0 ; k < nf ; k ++ ) {
-	/* r[k] += u[k*nfunc+i*nq+j]*sqrt(wi) ; */
 	r[k] += u[matrix_index(nfunc,nf,i*nq+j,k)]*sqrt(wi) ;
       }
     }
   }
-  /* fprintf(stdout, "] ;\n\n") ; */
-  /* exit(0) ; */
 
   /*there should be some way to do the RRQR on the transpose without
     explicitly transposing, but I haven't found it yet*/
@@ -669,12 +603,8 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
     }
   }
 
-  fprintf(stderr, "rank == %d\n", rank) ;
-  g_assert(rank < rankmax) ;
-  
-  /* fprintf(stdout, "A = [...\n") ; */
-  /* print_matrix(A, rank, nfunc, stdout) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
+  fprintf(stderr, "rank == %d (max = %d)\n", rank, rankmax) ;
+  g_assert(rank <= rankmax) ;
 
   memset(pvt, 0, nfunc*sizeof(gint)) ;
   memset(u, 0, nfunc*nf*sizeof(gdouble)) ;
@@ -683,27 +613,13 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   gqr_discretize_orthogonalize(A, rank, nfunc, tol, &rank, rankmax,
   			       u, R11, pvt, &ldr, work, lwork) ;
 
-  fprintf(stderr, "rank == %d\n", rank) ;
-  /* fprintf(stdout, "pvt = [...\n") ; */
-  /* for ( i = 0 ; i < nfunc ; i ++ ) fprintf(stdout, "%d\n", pvt[i]+1) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
-
-  /* fprintf(stdout, "u = [...\n") ; */
-  /* print_matrix(u, rank, rank, stdout) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
-  
-  /* fprintf(stdout, "R = [...\n") ; */
-  /* print_matrix(R11, rank+1, nfunc, stdout) ; */
-  /* fprintf(stdout, "] ;\n\n") ; */
-
-  /* exit(0) ; */
+  /* fprintf(stderr, "rank == %d\n", rank) ; */
   
   for ( i = 0 ; i < rank ; i ++ ) {
     z[i] = 0.0 ;
     for ( j = 0 ; j < rank ; j ++ ) {
       /*this is the transpose multiplication in FORTRAN indexing*/
       z[i] += u[i*rank+j]*r[j] ;
-      /* z[i] += u[i*(ldr-1)+j]*r[j] ; */
     }
   }
 
@@ -716,15 +632,6 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
     z[i] /= R11[i*ldr+i] ;
   }
 
-  /* i = rank-1 ; */
-  /* z[rank-1] = z[rank-1]/R11[i*nfunc+i] ; */
-  /* for ( i = rank-2 ; i >= 0 ; i -- ) { */
-  /*   for ( j = i+1 ; j < rank ; j ++ ) { */
-  /*     z[i] -= R11[j*nfunc+i]*z[j] ; */
-  /*   } */
-  /*   z[i] /= R11[i*nfunc+i] ; */
-  /* } */
-
   for ( i = 0 ; i < rank ; i ++ ) {
     gqr_discretize_quadrature(rule, ival, ni, pvt[i], -1, &xi, &wi) ;
     work[2*i+0] = xi ; work[2*i+1] = sqrt(wi)*z[i] ;
@@ -734,15 +641,6 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   for ( i = 0 ; i < rank ; i ++ ) {
     x[i] = work[2*i+0] ; w[i] = work[2*i+1] ;
   }
-  
-  /* g_free(R11) ; */
-  /* g_free(Q) ; */
-  /* g_free(u) ; */
-  /* g_free(r) ; */
-  /* g_free(z) ; */
-  /* g_free(A) ; */
-  /* g_free(ival) ; */
-  /* g_free(pvt) ; */
   
   return rank ;
 }

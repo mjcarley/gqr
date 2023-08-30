@@ -2,12 +2,15 @@
 
 ## generate full set of quadrature rules for radial integrations
 N=4
-nd=16
+nd=4
 
 cfile=radial-rules.c
 
 delta=(1e-8 1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 5e-2 1e-1 2e-1 3e-1 4e-1 \
 	    5e-1 6e-1 7e-1 9e-1 1.0)
+
+delta=(1e-2 5e-2)
+#delta=(1e-8 1e-7)
 
 ndelta=${#delta[@]}
 ((ndelta--))
@@ -24,6 +27,7 @@ echo \#define NDELTA ${ndelta} >> ${cfile}
 echo                    >> ${cfile}
 
 for ((N=4; N<=16; N=N+4)) ; do
+##for ((N=4; N<=4; N=N+4)) ; do
     echo N=${N}
 
     for ((i=0;i<ndelta;i++)) ; do

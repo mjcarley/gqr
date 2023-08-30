@@ -19,12 +19,14 @@
  *
  **********************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /*HAVE_CONFIG_H*/
+
 #include <stdio.h>
 #include <math.h>
 
 #include <glib.h>
-
-#include <config.h>
 
 #include "gqr.h"
 #include "gqr-private.h"

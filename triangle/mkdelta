@@ -69,7 +69,7 @@ while test $# -gt 0; do
 done
 
 ## number of functions to use in quadrature rule
-((nf=nd+N+2))
+((nf=nd+N+8))
 ##((nf=nd*(N+1)))
 rankmax=${nf}
 
@@ -77,7 +77,10 @@ echo N:     ${N} > ${logfile}
 echo d:     ${dmin}--${dmax} >> ${logfile}
 echo n:     ${nd} >> ${logfile}
 
-${grule} -G -p ${func} \
+args="-G -p ${func} \
 	 -f ${x0} -f ${x1} -f ${tol} -f ${dmin} -f ${dmax} \
 	 -i ${nf} -i ${nq} -i ${nimax} -i ${rankmax} -i ${nd}\
-	 -N 128 -e -a > ${opfile} 2>> ${logfile}
+	 -N 128 -e"
+echo ${args} >> ${logfile}
+
+${grule} ${args} > ${opfile} 2>> ${logfile}

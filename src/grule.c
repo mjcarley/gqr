@@ -231,8 +231,8 @@ gint gqr_rule_write(gqr_rule_t *g, FILE *f)
  * chosen type. 
  *
  * You should exercise some caution in the Jacobi quadrature rules,
- * since there are some issues with calculating the nodes especially
- * for weight function exponenents less than -1/2. You are advised to
+ * since there are issues with calculating the nodes especially for
+ * weight function exponenents less than -1/2. You are advised to
  * check the rule against a known solution, for example by checking
  * that the sum of the weights correctly integrates the weighting
  * function.
@@ -269,7 +269,10 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
     grule_jacobi(n, g->x, g->w, p) ; g->n = n ;
     g->a = -1 ; g->b = 1 ; g->type = type ;
     break ;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
   case GQR_GAUSS_LEGENDRE | GQR_GAUSS_HYPERSINGULAR:
+#pragma GCC diagnostic pop
     if ( p->ni <= 0 ) {
       g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, 
 	    "%s: integration order M not set for hypersingular "
@@ -289,10 +292,10 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
 			      g->x, g->w) ;
     else 
       grule_near_singular(n, 
-			      gqr_parameter_int(p,0), 
-			      gqr_parameter_double(p,0),
-			      gqr_parameter_double(p,1),
-			      g->x, g->w) ;      
+			  gqr_parameter_int(p,0), 
+			  gqr_parameter_double(p,0),
+			  gqr_parameter_double(p,1),
+			  g->x, g->w) ;      
     g->a = -1 ; g->b = 1 ; g->n = n ; g->type = type ;
 #else /*HAVE_LAPACK*/
     g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, 
@@ -300,8 +303,11 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
 	  type, gqr_rule_name(type)) ;
 #endif /*HAVE_LAPACK*/
     break ;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
   case GQR_GAUSS_LEGENDRE | GQR_GAUSS_MULTISINGULAR:
     g_assert(p->ni > 1) ; g_assert(p->nf > 0) ;
+#pragma GCC diagnostic pop
 #if HAVE_LAPACK
     if ( p->nf == 1 ) 
       grule_multi_singular(n, 
@@ -325,7 +331,10 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
 	  type, gqr_rule_name(type)) ;
 #endif /*HAVE_LAPACK*/
     break ;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
   case GQR_GAUSS_LEGENDRE | GQR_GAUSS_LOGARITHMIC:
+#pragma GCC diagnostic pop    
     if ( (p == NULL) || ((p->ni == 0) && (p->nf == 0)) ) {
       /*if no parameters are specified, default to Smith 
 	quadrature rule*/

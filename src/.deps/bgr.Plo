@@ -1,4 +1,4 @@
-bgr.lo: bgr.c /usr/include/stdc-predef.h /usr/include/stdio.h \
+bgr.lo: bgr.c /usr/include/stdc-predef.h ../config.h /usr/include/stdio.h \
  /usr/include/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
@@ -187,8 +187,9 @@ bgr.lo: bgr.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/gsl/gsl_sf_synchrotron.h \
  /usr/include/gsl/gsl_sf_transport.h /usr/include/gsl/gsl_sf_trig.h \
  /usr/include/gsl/gsl_sf_zeta.h /home/michael/Codes/include/blaswrap.h \
- gqr.h gqr-private.h ../config.h
+ gqr.h gqr-private.h
 /usr/include/stdc-predef.h:
+../config.h:
 /usr/include/stdio.h:
 /usr/include/bits/libc-header-start.h:
 /usr/include/features.h:
@@ -483,4 +484,3 @@ bgr.lo: bgr.c /usr/include/stdc-predef.h /usr/include/stdio.h \
 /home/michael/Codes/include/blaswrap.h:
 gqr.h:
 gqr-private.h:
-../config.h:

@@ -186,7 +186,7 @@ fpart.lo: fpart.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/gsl/gsl_sf_zeta.h /usr/include/gsl/gsl_math.h \
  /usr/include/gsl/gsl_sys.h /usr/include/gsl/gsl_machine.h \
  /usr/include/gsl/gsl_nan.h /usr/include/gsl/gsl_pow_int.h \
- /usr/include/gsl/gsl_minmax.h gqr.h
+ /usr/include/gsl/gsl_minmax.h ../config.h gqr.h
 /usr/include/stdc-predef.h:
 /usr/include/stdio.h:
 /usr/include/bits/libc-header-start.h:
@@ -479,4 +479,5 @@ fpart.lo: fpart.c /usr/include/stdc-predef.h /usr/include/stdio.h \
 /usr/include/gsl/gsl_nan.h:
 /usr/include/gsl/gsl_pow_int.h:
 /usr/include/gsl/gsl_minmax.h:
+../config.h:
 gqr.h:

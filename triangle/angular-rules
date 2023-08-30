@@ -42,7 +42,7 @@ for ((N=4; N<=16; N=N+4)) ; do
 	    opfile=rules/ruleN${N}i${i}j${j}.dat
 	    logfile=rules/ruleN${N}i${i}j${j}.log
 
-	    echo ${i} ${j}
+	    echo ${i} ${j} ${logfile}
 	    ./mkangular -N ${N} -r ${rmin} -R ${rmax} -t ${tmin} -T ${tmax} \
 			-m ${nr} -n ${nt} -o ${opfile} -l ${logfile}
 	done

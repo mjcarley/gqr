@@ -23,6 +23,10 @@
   rank revealing QR factorizations
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /*HAVE_CONFIG_H*/
+
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -36,21 +40,6 @@
 
 #include "gqr.h"
 #include "gqr-private.h"
-
-gint dgeqp3_(gint *m, gint *n, gdouble *A, gint *lda, gint *jpvt,
-	     gdouble *tau, gdouble *work, gint *lwork, gint *info) ;
-
-gint dlarf_(gchar *side, gint *m, gint *n, gdouble *v, gint *incv,
-	    gdouble *tau, gdouble *C, gint *ldc, gdouble *work) ;
-
-/* gint dtrtrs_(gchar *uplo, gchar *trans, gchar *diag, */
-/* 	     gint *n, gint *nrhs, gdouble *a, gint *lda, gdouble *b, */
-/* 	     gint *ldb, gint *info) ; */
-gint dtrtri_(gchar *uplo, gchar *diag, gint *n, gdouble *a,
-	     gint *lda, gint *info) ;
-void drotg_(gdouble *da, gdouble *db, gdouble *c, gdouble *s) ;
-void drot_(gint *N, gdouble *dx, gint *incx, gdouble *dy, gint *incy,
-	   gdouble *C, gdouble *S) ;
 
 #define matrix_index(_m,_n,_i,_j) ((_i) + (_j)*(_m))
 
@@ -152,7 +141,7 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
   tau = &(work[lw]) ; 
   dgeqp3_(&m, &n, A, &m, pvt, tau, work, &lw, &info) ;
 
-  /* gamma = &(work[0]) ;  
+  /* gamma = &(work[0]) ;  */
   
   /*subtract one from pvt to convert to C indexing*/
   for ( i = 0 ; i < n ; i ++ ) pvt[i] -= 1 ;
@@ -269,6 +258,7 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 	  tmp = gamma[j]/omega[i] ;
 	  tmp *= tmp ;
 	  tmp += AB[matrix_index(mab,nab,i,j)]*AB[matrix_index(mab,nab,i,j)] ;
+	  /* fprintf(stderr, "%d %d\n", i, k) ; */
 	  g_assert(!isnan(tmp)) ;
 	  if ( tmp > f*f ) { break ; }
 	}
@@ -505,7 +495,7 @@ gint gqr_srrqr(gdouble *A, gint m, gint n, gdouble f, gdouble tol,
 	1.0/blaswrap_dnrm2((k), &(work[matrix_index(k,k,i,0)]),
 			   (k)) ;
     }
-    fprintf(stderr, "loop end\n") ;
+    /* fprintf(stderr, "loop end\n") ; */
   }
 
   *rank = k ;
