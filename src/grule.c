@@ -266,6 +266,8 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
   case GQR_GAUSS_JACOBI:
     grule_jacobi(n, g->x, g->w, p) ; g->n = n ;
     g->a = -1 ; g->b = 1 ; g->type = type ;
+    g->data[0] = gqr_parameter_double(p, 0) ;
+    g->data[1] = gqr_parameter_double(p, 1) ;    
     break ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch"
@@ -393,7 +395,12 @@ gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b,
 
   *W = *dx ;
 
-  g_assert((gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_LEGENDRE) ;
+  if ( (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_JACOBI ) {
+    *W = pow(*dx, 1.0 + g->data[0] + g->data[1]) ;
+  }
+  
+  g_assert((gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_LEGENDRE ||
+	   (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_JACOBI) ;
   
   return 0 ;
 }

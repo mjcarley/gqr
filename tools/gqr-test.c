@@ -236,7 +236,8 @@ static gdouble discretization_test_func(gdouble t, gint i, gqr_parameter_t *p)
   return f ;
 }
 
-static gint legendre_discretization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
+static gint legendre_discretization_test(gint nq, gdouble x0, gdouble x1,
+					 gdouble tol)
 
 {
   gdouble ival[8193], Q[8192], emax, *u, x, f[32], g[32] ;
@@ -514,28 +515,63 @@ static gdouble func_monomial(gdouble t,
   return f ;
 }
 
-static gdouble quad_monomial(gdouble a, gdouble b,
-			     gdouble *d, gint nd, gint *i, gint ni, gint j)
+static gdouble beta_func(gdouble x, gdouble y)
 
-{
-  gdouble I ;
-
-  I = (pow(b, j+1) - pow(a, j+1))/(j+1) ;
+/*
+ * Gradshteyn and Ryzhik 8.384.1 
+ */
   
-  return I ;
+{
+  gdouble B ;
+
+  B = tgamma(x)*tgamma(y)/tgamma(x+y) ;
+  
+  return B ;
 }
 
-static gdouble quad_monomial_weighted(gdouble a, gdouble b,
-				      gdouble *d, gint nd,
-				      gint *i, gint ni, gint j)
+static gint quad_monomial(gdouble a, gdouble b,
+			  gdouble *d, gint nd, gint *i, gint ni,
+			  gdouble *I, gint n)
 
 {
-  gdouble I, al, bt ;
+  gint j ;
 
-  al = d[0] ; bt = d[1] ;
-  I = (pow(b, j+1) - pow(a, j+1))/(j+1) ;
+  for ( j = 0 ; j < n ; j ++ ) {
+    I[j] = (pow(b, j+1) - pow(a, j+1))/(j+1) ;
+  }
   
-  return I ;
+  return 0 ;
+}
+
+static gint quad_monomial_weighted(gdouble a, gdouble b,
+				   gdouble *d, gint nd,
+				   gint *i, gint ni,
+				   gdouble *I, gint n)
+
+/*
+ *
+ * integrals of x^n*(b-x)^\alpha*(x-a)^\beta
+ * 
+ * Gradshteyn and Ryzhik 3.196.3 and a recursion
+ *
+ */
+  
+{
+  gdouble al, bt, mu, nu ;
+  gint j ;
+  
+  al = d[0] ; bt = d[1] ;
+
+  mu = al + 1.0 ; nu = bt + 1.0 ;
+  I[0] = beta_func(mu, nu)*pow(b-a, mu+nu-1) ;
+  I[1] = (mu*b + nu*a)*I[0]/(mu + nu) ;
+
+  for ( j = 1 ; j < n ; j ++ ) {
+    I[j+1] = ((a+b)*j + b*mu + a*nu)*I[j] - a*b*j*I[j-1] ;
+    I[j+1] /= mu + nu + j ;
+  }
+  
+  return 0 ;
 }
 
 static gint set_parameters(gqr_t baserule, gqr_t singularity,
@@ -603,10 +639,10 @@ static gboolean quadrature_check(gqr_t baserule, gqr_t singularity,
   gqr_rule_t *g ;
   gqr_parameter_t p ;
   gdouble (* func)(gdouble t, gdouble *d, gint nd, gint *i, gint ni, gint j) ;
-  gdouble (* quad)(gdouble a, gdouble b,
-		   gdouble *d, gint nd, gint *i, gint ni, gint j) ;
+  gint (* quad)(gdouble a, gdouble b,
+		gdouble *d, gint nd, gint *i, gint ni, gdouble *I, gint n) ;
   gint nfunc, i ;
-  gdouble Ic, Ia ;
+  gdouble Ic, Ia[128] ;
   gchar *errstr ;
 
   g = gqr_rule_alloc(N) ;
@@ -623,13 +659,13 @@ static gboolean quadrature_check(gqr_t baserule, gqr_t singularity,
   gqr_rule_select(g, baserule | singularity, N, &p) ;
 
   *imax = 0 ; *emax = 0.0 ;
-  for ( i = 0 ; i < nfunc ; i ++ ) {
+  quad(a, b, pdouble, npd, pint, npi, Ia, nfunc) ;
+  for ( i = 0 ; i <= nfunc ; i ++ ) {
     Ic = quad_eval(g, a, b, pdouble, npd, pint, npi, func, i) ;
-    Ia = quad(a, b, pdouble, npd, pint, npi, i) ;
-    if ( fabs(Ic - Ia) > (*emax) ) {
-      *imax = i ; *emax = fabs(Ic - Ia) ;
+    if ( fabs(Ic - Ia[i]) > (*emax) ) {
+      *imax = i ; *emax = fabs(Ic - Ia[i]) ;
     }
-    /* fprintf(stderr, "%d %lg %lg\n", i, Ic, Ia) ; */
+    /* fprintf(stderr, "%d %lg %lg\n", i, Ic, Ia[i]) ; */
   }
 
   if ( *emax <= tol ) return TRUE ;
@@ -652,7 +688,7 @@ gint main(gint argc, gchar **argv)
   progname = g_strdup(g_path_get_basename(argv[0])) ;
 
   baserule = GQR_GAUSS_LEGENDRE ; singularity = GQR_GAUSS_REGULAR ;
-  /* baserule = GQR_GAUSS_JACOBI ; singularity = GQR_GAUSS_REGULAR ; */
+  baserule = GQR_GAUSS_JACOBI ; singularity = GQR_GAUSS_REGULAR ;
 
   a = -1.0 ; b = 1.0 ; tol = 1e-9 ; nq = 32 ;
   npi = npd = 0 ;

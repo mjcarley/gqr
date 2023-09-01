@@ -28,7 +28,7 @@ gint main()
   gqr_parameter_t p ;
   gdouble x, y ;
   gdouble a, b ;
-  gdouble dx, xbar ;
+  gdouble dx, xbar, W ;
   gdouble I, t ;
   gint i, N, M ;
   gqr_t rule ;
@@ -46,12 +46,12 @@ gint main()
 
   gqr_rule_select(g, rule, N, &p) ;
 
-  gqr_rule_scale(g, a, b, &xbar, &dx) ;
+  gqr_rule_scale(g, a, b, &xbar, &dx, &W) ;
 
   I = 0.0 ;
   for ( i = 0 ; i < gqr_rule_length(g) ; i ++ ) {
     t = gqr_rule_abscissa(g,i)*dx + xbar ;
-    I += gqr_rule_weight(g,i)*dx*func(t, x, y) ;
+    I += W*gqr_rule_weight(g,i)*func(t, x, y) ;
   }
 
   fprintf(stdout, "I: %lg\n", I) ;

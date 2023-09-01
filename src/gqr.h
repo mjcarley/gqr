@@ -140,8 +140,7 @@ typedef  struct _gqr_rule_t gqr_rule_t ;
 struct _gqr_rule_t {
   gqr_t type ;
   gint n, nmax ;
-  gdouble a, b ;
-  gdouble *x, *w ;
+  gdouble a, b, *x, *w, data[4] ;
 } ;
 
 #define gqr_rule_length(_g) ((_g)->n)

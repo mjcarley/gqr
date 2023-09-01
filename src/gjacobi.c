@@ -133,7 +133,7 @@ gint grule_jacobi(gint n, gdouble *x, gdouble *w, gqr_parameter_t *pm)
 	    __FUNCTION__) ;
   al = gqr_parameter_double(pm, 0) ;
   bt = gqr_parameter_double(pm, 1) ;
-
+  
   /*
    * bit crude but works: use asymptotic estimate of root (Hale and
    * Townsend) followed by Newton polishing

@@ -13,6 +13,9 @@
 ## scratch directory
 scratch
 
+## development and maths notes
+notes
+
 ## generated files
 *.dat
 *.log
