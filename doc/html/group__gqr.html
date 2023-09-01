@@ -96,9 +96,13 @@ Functions</h2></td></tr>
 <tr class="separator:ga8ebe215bbb435805c74fb0d6734f6081"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4cf14c3801907dcf066aa354524434ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__gqr.html#ga1f7bc8ccb4913fd0f8a5008c13069143">gqr_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#ga4cf14c3801907dcf066aa354524434ed">gqr_rule_from_name</a> (gchar *str, <a class="el" href="group__gqr.html#ga4512314849c794f1b2840a7135d663de">gqr_parameter_t</a> *p)</td></tr>
 <tr class="separator:ga4cf14c3801907dcf066aa354524434ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad4dfc74c82c3c140f7e1463107479452"><td class="memItemLeft" align="right" valign="top">gpointer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#gad4dfc74c82c3c140f7e1463107479452">gqr_pointer_parse</a> (gchar *str)</td></tr>
+<tr class="separator:gad4dfc74c82c3c140f7e1463107479452"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga385876e2b49927fb4547449832443d32"><td class="memItemLeft" align="right" valign="top">gint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#ga385876e2b49927fb4547449832443d32">gqr_pointers_list</a> (FILE *output, gboolean verbose)</td></tr>
+<tr class="separator:ga385876e2b49927fb4547449832443d32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p >The GQR library computes Gaussian and Gaussian-type quadrature rules including some which handle singular integrands. A simple example of its use to integrate a function is: <a href="example.c-example.html">example.c</a>.</p>
+<p >The GQR library computes Gaussian and Gaussian-type quadrature rules including some which handle singular integrands. A simple complete example of a code which integrates a function is: <a href="example_8c-example.html">example.c</a>.</p>
 <p >The functions described here are used to generate the quadrature rules and do basic operations such as reading them from and writing them to a file. </p>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="ga3382cb8a6927c4cd5f31092237478186" name="ga3382cb8a6927c4cd5f31092237478186"></a>
@@ -121,7 +125,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>value of the function <img class="formulaInl" alt="$f_i(t)$" src="form_18.png"/>, or the integral of <img class="formulaInl" alt="$f_{-i-1}(t)$" src="form_19.png"/> if <img class="formulaInl" alt="$i&lt;0$" src="form_20.png"/>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>value of the function <img class="formulaInl" alt="$f_i(t)$" src="form_18.png" width="24" height="14"/>, or the integral of <img class="formulaInl" alt="$f_{-i-1}(t)$" src="form_19.png" width="44" height="14"/> if <img class="formulaInl" alt="$i&lt;0$" src="form_20.png" width="29" height="10"/>. </dd></dl>
 
 </div>
 </div>
@@ -144,7 +148,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>value of the <img class="formulaInl" alt="$i$" src="form_17.png"/>th derivative of the function at <img class="formulaInl" alt="$t$" src="form_16.png"/>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>value of the <img class="formulaInl" alt="$i$" src="form_17.png" width="5" height="9"/>th derivative of the function at <img class="formulaInl" alt="$t$" src="form_16.png" width="5" height="9"/>. </dd></dl>
 
 </div>
 </div>
@@ -195,6 +199,69 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="gad4dfc74c82c3c140f7e1463107479452" name="gad4dfc74c82c3c140f7e1463107479452"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad4dfc74c82c3c140f7e1463107479452">&#9670;&nbsp;</a></span>gqr_pointer_parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gpointer gqr_pointer_parse </td>
+          <td>(</td>
+          <td class="paramtype">gchar *&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Parse a string which refers to a pointer. The main purpose of this function is to give user access to built-in functions for the generation of generalized quadratures.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>a string to be parsed.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a pointer to the data referred to by <em>str</em>, or NULL. </dd></dl>
+
+</div>
+</div>
+<a id="ga385876e2b49927fb4547449832443d32" name="ga385876e2b49927fb4547449832443d32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga385876e2b49927fb4547449832443d32">&#9670;&nbsp;</a></span>gqr_pointers_list()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gint gqr_pointers_list </td>
+          <td>(</td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">gboolean&#160;</td>
+          <td class="paramname"><em>verbose</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >List the built-in pointers recognized by <a class="el" href="group__gqr.html#gad4dfc74c82c3c140f7e1463107479452">gqr_pointer_parse</a></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">output</td><td>file stream to write to; </td></tr>
+    <tr><td class="paramname">verbose</td><td>if TRUE, write detailed information about the built-in data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success. </dd></dl>
+
+</div>
+</div>
 <a id="gad01b7fd22a2ad31b053c51783820613c" name="gad01b7fd22a2ad31b053c51783820613c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gad01b7fd22a2ad31b053c51783820613c">&#9670;&nbsp;</a></span>gqr_rule_alloc()</h2>
 
@@ -219,7 +286,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>newly allocated rule. </dd></dl>
 
-<p class="reference">Referenced by <a class="el" href="group__gqr.html#ga1ec121e1f0435bdc3fd99eca67e6bbea">gqr_rule_realloc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="group__bgr.html#gaa13f84c44bc55699a8361e835fcd11b3">gqr_rule_bgr_check()</a>, <a class="el" href="group__gqr.html#ga1ec121e1f0435bdc3fd99eca67e6bbea">gqr_rule_realloc()</a>, and <a class="el" href="group__bgr.html#gae0303244f4f973d77f843b55ad81c534">grule_bgr()</a>.</p>
 
 </div>
 </div>
@@ -396,20 +463,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Set the scaling for a rule so that the integral is approximated by: <img class="formulaInl" alt="$I\approx\Delta x \sum_{j=0}^{n}w_{j}f(x_{j})$" src="form_23.png"/> where <img class="formulaInl" alt="$x=\bar{x}+\Delta x t_{j}$" src="form_24.png"/>.</p>
+<p >Set the scaling for a rule so that the integral is approximated by: <img class="formulaInl" alt="$I\approx\Delta x \sum_{j=0}^{n}w_{j}f(x_{j})$" src="form_23.png" width="120" height="18"/> where <img class="formulaInl" alt="$x=\bar{x}+\Delta x t_{j}$" src="form_24.png" width="74" height="14"/>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">g</td><td>Gaussian quadrature rule; </td></tr>
     <tr><td class="paramname">a</td><td>lower limit of integration; </td></tr>
     <tr><td class="paramname">b</td><td>upper limit of integration; </td></tr>
-    <tr><td class="paramname">xbar</td><td><img class="formulaInl" alt="$\bar{x}$" src="form_25.png"/>; </td></tr>
-    <tr><td class="paramname">dx</td><td><img class="formulaInl" alt="$\Delta x$" src="form_26.png"/>.</td></tr>
+    <tr><td class="paramname">xbar</td><td><img class="formulaInl" alt="$\bar{x}$" src="form_25.png" width="8" height="9"/>; </td></tr>
+    <tr><td class="paramname">dx</td><td><img class="formulaInl" alt="$\Delta x$" src="form_26.png" width="18" height="10"/>.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success. </dd></dl>
 
-<p class="reference">Referenced by <a class="el" href="group__finite.html#ga5cb0889b54637f0811e5d2bde36fa298">gqr_finite_part_integral()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="group__finite.html#ga5cb0889b54637f0811e5d2bde36fa298">gqr_finite_part_integral()</a>, and <a class="el" href="group__bgr.html#gaa13f84c44bc55699a8361e835fcd11b3">gqr_rule_bgr_check()</a>.</p>
 
 </div>
 </div>
@@ -463,7 +530,9 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 on success. </dd></dl>
 
-<p class="reference">References <a class="el" href="group__gqr.html#ga8ebe215bbb435805c74fb0d6734f6081">gqr_rule_name()</a>.</p>
+<p class="reference">References <a class="el" href="group__gqr.html#ga8ebe215bbb435805c74fb0d6734f6081">gqr_rule_name()</a>, and <a class="el" href="group__bgr.html#gae0303244f4f973d77f843b55ad81c534">grule_bgr()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="group__bgr.html#gaa13f84c44bc55699a8361e835fcd11b3">gqr_rule_bgr_check()</a>, and <a class="el" href="group__bgr.html#gae0303244f4f973d77f843b55ad81c534">grule_bgr()</a>.</p>
 
 </div>
 </div>
@@ -507,7 +576,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Aug 30 2023 17:49:20 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Thu Aug 31 2023 17:45:10 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

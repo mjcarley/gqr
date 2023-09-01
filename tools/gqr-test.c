@@ -35,7 +35,7 @@ static gint parse_test(gchar *arg)
 }
 
 
-gdouble _grule_hpoly(gint n, gdouble x)
+static gdouble _grule_hpoly(gint n, gdouble x)
 
 {
   gdouble Hnp1, Hn, Hnm1 ;
@@ -52,7 +52,7 @@ gdouble _grule_hpoly(gint n, gdouble x)
   return Hn ;
 }
 
-gdouble func_exp(gdouble x, gint n, gpointer data)
+static gdouble func_exp(gdouble x, gint n, gpointer data)
 
 {
   return exp(x) ;
@@ -226,28 +226,7 @@ gdouble func_exp(gdouble x, gint n, gpointer data)
 /*   return I ; */
 /* } */
 
-gint legendre_interp_matrix_test(gint n, gdouble x0, gdouble x1)
-
-{
-  gdouble Q[8192] ;
-  gqr_rule_t *rule ;
-  gint i, j ;
-  
-  rule = gqr_rule_alloc(n) ;
-  gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, n, NULL) ;
-
-  gqr_discretize_interp(rule, Q) ;
-
-  for ( i = 0 ; i < n ; i ++ ) {
-    for ( j = 0 ; j < n ; j ++ )
-      fprintf(stdout, "%lg ", Q[i*n+j]) ;
-    fprintf(stdout, "\n") ;
-  }
-  
-  return 0 ;
-}
-
-gdouble discretization_test_func(gdouble t, gint i, gqr_parameter_t *p)
+static gdouble discretization_test_func(gdouble t, gint i, gqr_parameter_t *p)
 
 {
   gdouble f ;
@@ -257,7 +236,7 @@ gdouble discretization_test_func(gdouble t, gint i, gqr_parameter_t *p)
   return f ;
 }
 
-gint legendre_discretization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
+static gint legendre_discretization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
 
 {
   gdouble ival[8193], Q[8192], emax, *u, x, f[32], g[32] ;
@@ -304,7 +283,7 @@ gint legendre_discretization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   return 0 ;
 }
 
-gdouble orthogonalization_test_func(gdouble t, gint i, gqr_parameter_t *p)
+static gdouble orthogonalization_test_func(gdouble t, gint i, gqr_parameter_t *p)
 
 {
   gdouble d, f ;
@@ -318,7 +297,7 @@ gdouble orthogonalization_test_func(gdouble t, gint i, gqr_parameter_t *p)
   return pow(f, i-1) ;
 }
 
-gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
+static gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
 
 {
   gdouble *ival, *Q, *R11, *u, x, *A, *work ;
@@ -490,7 +469,7 @@ gint orthogonalization_test(gint nq, gdouble x0, gdouble x1, gdouble tol)
   return 0 ;
 }
 
-gint adaptive_function_check(void)
+static gint adaptive_function_check(void)
 
 {
   gint nj, nk, nimax, rmax, nf, nq ;
@@ -524,39 +503,183 @@ gint adaptive_function_check(void)
   return 0 ;
 }
 
+static gdouble func_monomial(gdouble t,
+			     gdouble *d, gint nd, gint *i, gint ni, gint j)
+
+{
+  gdouble f ;
+
+  f = pow(t, j) ;
+  
+  return f ;
+}
+
+static gdouble quad_monomial(gdouble a, gdouble b,
+			     gdouble *d, gint nd, gint *i, gint ni, gint j)
+
+{
+  gdouble I ;
+
+  I = (pow(b, j+1) - pow(a, j+1))/(j+1) ;
+  
+  return I ;
+}
+
+static gdouble quad_monomial_weighted(gdouble a, gdouble b,
+				      gdouble *d, gint nd,
+				      gint *i, gint ni, gint j)
+
+{
+  gdouble I, al, bt ;
+
+  al = d[0] ; bt = d[1] ;
+  I = (pow(b, j+1) - pow(a, j+1))/(j+1) ;
+  
+  return I ;
+}
+
+static gint set_parameters(gqr_t baserule, gqr_t singularity,
+			   gint N,
+			   gdouble pdouble[], gint npd,
+			   gint pint[], gint npi,
+			   gqr_parameter_t *p,
+			   gpointer *func, gpointer *quad, gint *nfunc,
+			   gchar **errstr)
+
+{
+  switch ( baserule ) {
+  default: g_assert_not_reached() ; break ;
+  case GQR_GAUSS_LEGENDRE:
+    *func = func_monomial ;
+    *quad = quad_monomial ;
+    *nfunc = 2*N-1 ;
+    return 0 ;
+  case GQR_GAUSS_JACOBI:
+    if ( npd < 2 ) {
+      *errstr = "Gauss-Jacobi rule requires at least two double parameters" ;
+      return -1 ;
+    }
+    *func = func_monomial ;
+    *quad = quad_monomial_weighted ;
+    gqr_parameter_set_double(p, pdouble[0]) ;
+    gqr_parameter_set_double(p, pdouble[1]) ;
+    *nfunc = 2*N-1 ;
+    return 0 ;
+    break ;
+  }
+
+  return -1 ;
+}
+
+static gdouble quad_eval(gqr_rule_t *g, gdouble a, gdouble b,
+			 gdouble pdouble[], gint npd,
+			 gint pint[], gint npi,
+			 gdouble (* func)(gdouble t, gdouble *d, gint nd,
+					  gint *i, gint ni, gint j),
+			 gint j)
+
+{
+  gdouble tbar, dt, I, t, W ;
+  gint i ;
+  
+  gqr_rule_scale(g, a, b, &tbar, &dt, &W) ;
+
+  I = 0.0 ;
+  for ( i = 0 ; i < gqr_rule_length(g) ; i ++ ) {
+    t = gqr_rule_abscissa(g,i)*dt + tbar ;
+    I += W*gqr_rule_weight(g,i)*func(t, pdouble, npd, pint, npi, j) ;
+  }
+  
+  return I ;
+}
+
+static gboolean quadrature_check(gqr_t baserule, gqr_t singularity,
+				 gdouble a, gdouble b, gint N,
+				 gdouble pdouble[], gint npd,
+				 gint pint[], gint npi, gdouble tol,
+				 gdouble *emax, gint *imax)
+
+{
+  gqr_rule_t *g ;
+  gqr_parameter_t p ;
+  gdouble (* func)(gdouble t, gdouble *d, gint nd, gint *i, gint ni, gint j) ;
+  gdouble (* quad)(gdouble a, gdouble b,
+		   gdouble *d, gint nd, gint *i, gint ni, gint j) ;
+  gint nfunc, i ;
+  gdouble Ic, Ia ;
+  gchar *errstr ;
+
+  g = gqr_rule_alloc(N) ;
+  gqr_parameter_clear(&p) ;
+
+  if ( set_parameters(baserule, singularity, N, pdouble, npd, pint, npi,
+		      &p, (gpointer *)(&func), (gpointer *)(&quad), &nfunc,
+		      &errstr) != 0 ) {
+    fprintf(stderr, "error: %s\n", errstr) ;
+    *emax = 0 ; *imax = -1 ;
+    return FALSE ;
+  }
+
+  gqr_rule_select(g, baserule | singularity, N, &p) ;
+
+  *imax = 0 ; *emax = 0.0 ;
+  for ( i = 0 ; i < nfunc ; i ++ ) {
+    Ic = quad_eval(g, a, b, pdouble, npd, pint, npi, func, i) ;
+    Ia = quad(a, b, pdouble, npd, pint, npi, i) ;
+    if ( fabs(Ic - Ia) > (*emax) ) {
+      *imax = i ; *emax = fabs(Ic - Ia) ;
+    }
+    /* fprintf(stderr, "%d %lg %lg\n", i, Ic, Ia) ; */
+  }
+
+  if ( *emax <= tol ) return TRUE ;
+  
+  return FALSE ;
+}
+
 gint main(gint argc, gchar **argv)
 
 {
-  gdouble a, b ;
-  gdouble x, tol, s0, t0, y ;
-  gint N, M, n, nmax, nq, test, nx ;
+  gdouble a, b, tol, pdouble[32], emax ;
+  gint N, nq, test, pint[32], npi, npd, imax ;
   gchar ch, *progname ;
-  FILE *input ;
+  gqr_t baserule, singularity ;
+  gboolean pass ;
   
   N = 32 ;
-  x = 0.4 ; y = 0.3 ;
   test = -1 ;
   
   progname = g_strdup(g_path_get_basename(argv[0])) ;
 
-  input = stdin ;
+  baserule = GQR_GAUSS_LEGENDRE ; singularity = GQR_GAUSS_REGULAR ;
+  /* baserule = GQR_GAUSS_JACOBI ; singularity = GQR_GAUSS_REGULAR ; */
 
-  a = 1.0 ; b = 3.0 ; tol = 1e-9 ; nq = 32 ;
-  
-  while ( (ch = getopt(argc, argv, "a:b:e:n:q:s:T:t:")) != EOF ) {
+  a = -1.0 ; b = 1.0 ; tol = 1e-9 ; nq = 32 ;
+  npi = npd = 0 ;
+  while ( (ch = getopt(argc, argv, "a:b:d:e:i:N:q:T:")) != EOF ) {
     switch (ch) {
     default: g_assert_not_reached() ; break ;
     case 'a': a = atof(optarg) ; break ;
     case 'b': b = atof(optarg) ; break ;
+    case 'd': pdouble[npd] = atof(optarg) ; npd ++ ; break ;
     case 'e': tol = atof(optarg) ; break ;
-    case 'n': nx  = atoi(optarg) ; break ;
+    case 'i': pint[npi] = atoi(optarg) ; npi ++ ; break ;
+    case 'N': N  = atoi(optarg) ; break ;
     case 'q': nq  = atoi(optarg) ; break ;
-    case 's': s0  = atof(optarg) ; break ;
     case 'T': test = parse_test(optarg) ; break ;      
-    case 't': t0  = atof(optarg) ; break ;
     }
   }
 
+  pass = quadrature_check(baserule, singularity, a, b, N,
+			  pdouble, npd, pint, npi, tol, &emax, &imax) ;
+
+  if ( pass ) {
+    fprintf(stderr, "%s: pass\n", progname) ;
+  } else {
+    fprintf(stderr, "%s: fail, maximum error %lg in integrand %d\n",
+	    progname, emax, imax) ;    
+  }
+  
   if ( test == 0 ) {
     legendre_discretization_test(nq, a, b, tol) ;
 
@@ -567,9 +690,9 @@ gint main(gint argc, gchar **argv)
     orthogonalization_test(nq, a, b, tol) ;
     
     return 0 ;
-  }
-
   adaptive_function_check() ;
   
+  }
+
   return 0 ;
 }

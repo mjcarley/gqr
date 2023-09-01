@@ -48,11 +48,15 @@ gint \textbf{ gqr\+\_\+rule\+\_\+scale} (\textbf{ gqr\+\_\+rule\+\_\+t} $\ast$g,
 gchar $\ast$ \textbf{ gqr\+\_\+rule\+\_\+name} (\textbf{ gqr\+\_\+t} type)
 \item 
 \textbf{ gqr\+\_\+t} \textbf{ gqr\+\_\+rule\+\_\+from\+\_\+name} (gchar $\ast$str, \textbf{ gqr\+\_\+parameter\+\_\+t} $\ast$p)
+\item 
+gpointer \textbf{ gqr\+\_\+pointer\+\_\+parse} (gchar $\ast$str)
+\item 
+gint \textbf{ gqr\+\_\+pointers\+\_\+list} (FILE $\ast$output, gboolean verbose)
 \end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
-The GQR library computes Gaussian and Gaussian-\/type quadrature rules including some which handle singular integrands. A simple example of its use to integrate a function is\+: {\texttt{ example.\+c}}.
+The GQR library computes Gaussian and Gaussian-\/type quadrature rules including some which handle singular integrands. A simple complete example of a code which integrates a function is\+: {\texttt{ example.\+c}}.
 
 The functions described here are used to generate the quadrature rules and do basic operations such as reading them from and writing them to a file. 
 
@@ -119,6 +123,40 @@ Data structure containing the nodes and weights of a quadrature rule. The rule i
 A type defining the quadrature rules available. A quadrature rule is defined as a basic type possibly combined with a singularity. For example GQR\+\_\+\+GAUSS\+\_\+\+LEGENDRE $\vert$ GQR\+\_\+\+GAUSS\+\_\+\+HYPERSINGULAR specifies a Gauss-\/\+Legendre rule which handles singularities up to and including second order. Note that not all of these rules are implemented or going to be implemented. GQR will return an error message if you try to use an unimplemented rule. 
 
 \doxysubsection{Function Documentation}
+\mbox{\label{group__gqr_gad4dfc74c82c3c140f7e1463107479452}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_pointer\_parse@{gqr\_pointer\_parse}}
+\index{gqr\_pointer\_parse@{gqr\_pointer\_parse}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_pointer\_parse()}
+{\footnotesize\ttfamily gpointer gqr\+\_\+pointer\+\_\+parse (\begin{DoxyParamCaption}\item[{gchar $\ast$}]{str }\end{DoxyParamCaption})}
+
+Parse a string which refers to a pointer. The main purpose of this function is to give user access to built-\/in functions for the generation of generalized quadratures.
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & a string to be parsed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a pointer to the data referred to by {\itshape str}, or NULL. 
+\end{DoxyReturn}
+\mbox{\label{group__gqr_ga385876e2b49927fb4547449832443d32}} 
+\index{GQR quadrature rules@{GQR quadrature rules}!gqr\_pointers\_list@{gqr\_pointers\_list}}
+\index{gqr\_pointers\_list@{gqr\_pointers\_list}!GQR quadrature rules@{GQR quadrature rules}}
+\doxysubsubsection{gqr\_pointers\_list()}
+{\footnotesize\ttfamily gint gqr\+\_\+pointers\+\_\+list (\begin{DoxyParamCaption}\item[{FILE $\ast$}]{output,  }\item[{gboolean}]{verbose }\end{DoxyParamCaption})}
+
+List the built-\/in pointers recognized by \doxyref{gqr\+\_\+pointer\+\_\+parse}{p.}{group__gqr_gad4dfc74c82c3c140f7e1463107479452}
+
+
+\begin{DoxyParams}{Parameters}
+{\em output} & file stream to write to; \\
+\hline
+{\em verbose} & if TRUE, write detailed information about the built-\/in data.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success. 
+\end{DoxyReturn}
 \mbox{\label{group__gqr_gad01b7fd22a2ad31b053c51783820613c}} 
 \index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_alloc@{gqr\_rule\_alloc}}
 \index{gqr\_rule\_alloc@{gqr\_rule\_alloc}!GQR quadrature rules@{GQR quadrature rules}}
@@ -137,7 +175,7 @@ newly allocated rule.
 \end{DoxyReturn}
 
 
-Referenced by \textbf{ gqr\+\_\+rule\+\_\+realloc()}.
+Referenced by \textbf{ gqr\+\_\+rule\+\_\+bgr\+\_\+check()}, \textbf{ gqr\+\_\+rule\+\_\+realloc()}, and \textbf{ grule\+\_\+bgr()}.
 
 \mbox{\label{group__gqr_gadc1a4139ccf724fb1a145501f817410d}} 
 \index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_free@{gqr\_rule\_free}}
@@ -241,7 +279,7 @@ Set the scaling for a rule so that the integral is approximated by\+: $I\approx\
 \end{DoxyReturn}
 
 
-Referenced by \textbf{ gqr\+\_\+finite\+\_\+part\+\_\+integral()}.
+Referenced by \textbf{ gqr\+\_\+finite\+\_\+part\+\_\+integral()}, and \textbf{ gqr\+\_\+rule\+\_\+bgr\+\_\+check()}.
 
 \mbox{\label{group__gqr_ga9373a848b449bc2718f010e3edd831e3}} 
 \index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_select@{gqr\_rule\_select}}
@@ -269,7 +307,11 @@ You should exercise some caution in the Jacobi quadrature rules, since there are
 \end{DoxyReturn}
 
 
-References \textbf{ gqr\+\_\+rule\+\_\+name()}.
+References \textbf{ gqr\+\_\+rule\+\_\+name()}, and \textbf{ grule\+\_\+bgr()}.
+
+
+
+Referenced by \textbf{ gqr\+\_\+rule\+\_\+bgr\+\_\+check()}, and \textbf{ grule\+\_\+bgr()}.
 
 \mbox{\label{group__gqr_ga6a873d839cd487511f137d7926f33007}} 
 \index{GQR quadrature rules@{GQR quadrature rules}!gqr\_rule\_write@{gqr\_rule\_write}}

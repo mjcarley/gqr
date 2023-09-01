@@ -1,4 +1,4 @@
-/* Copyright (C) 2007, 2013 by  Michael Carley */
+/* Copyright (C) 2007, 2013, 2023 by  Michael Carley */
 
 /**********************************************************************
  *
@@ -27,8 +27,6 @@
 #include <math.h>
 
 #include <glib.h>
-#include <gsl/gsl_sf.h>
-#include <gsl/gsl_math.h>
 
 #include "gqr.h"
 #include "gqr-private.h"
@@ -109,7 +107,7 @@ gint grule_kolm_rokhlin_new(gint n, gint m, gdouble y,
   dPy[0] = 0.0 ; dPy[1] = 1.0 ;
   if ( (y == 1.0) || (y == -1.0) ) 
     for ( i = 1 ; i < m ; i ++ )
-      dPy[i+1] = y*gsl_pow_int(y,i+1)*0.5*(gdouble)((i+1)*(i+2)) ;
+      dPy[i+1] = y*pow(y,i+1)*0.5*(gdouble)((i+1)*(i+2)) ;
   else
     for ( i = 1 ; i < m ; i ++ )
       dPy[i+1] = (i+1)*(y*Py[i+1] - Py[i])/(y*y-1.0) ; 

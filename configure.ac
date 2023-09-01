@@ -76,24 +76,6 @@ ACX_BLAS
 ACX_LAPACK
 AC_CHECK_LIB(rrqr, dgeqpx_,[],[],[-llapack -lblas])
 
-#PKG_CHECK_MODULES(gsl, gsl, [gsl_cflags=`pkg-config --cflags-only-I gsl`
-#		        gsl_libs=`pkg-config --libs gsl`],			
-#			[AC_CHECK_PROG(GSL, gsl-config, yes, no)
-#			if test x$GSL = xyes ; then
-#   gsl_cflags=`gsl-config --cflags`
-#   gsl_libs=`gsl-config --libs`
-#else
-#  echo \#################################################################
-#  echo \#
-#  echo \# GNU Scientific Library not available or not properly installed.
-#  echo \# You can get the most recent version from 
-#  echo \#      http://www.gnu.org/software/gsl/
-#  echo \#
-#  echo \#################################################################
-#  exit
-#fi
-#])
-
 PKG_CHECK_MODULES([GSL], [gsl]) 
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
 
@@ -126,7 +108,5 @@ src/Makefile
 src/gqr-config
 tools/Makefile
 triangle/Makefile
-doc/Makefile
-doc/html/Makefile
 ])
 AC_OUTPUT

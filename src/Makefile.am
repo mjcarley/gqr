@@ -33,7 +33,10 @@ libgqr_la_SOURCES = \
 	discret.c \
 	bgr.c \
 	rrqr.c \
-	gjacobi.c
+	gjacobi.c \
+	binomials.c \
+	binomials.h \
+	factorial.c
 
 include_HEADERS = \
 	gqr.h 

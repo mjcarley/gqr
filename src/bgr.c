@@ -29,15 +29,18 @@
 
 #include <glib.h>
 
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_sf.h>
-
 #include <blaswrap.h>
 
 #include "gqr.h"
 #include "gqr-private.h"
 
 #define matrix_index(_m,_n,_i,_j) ((_i) + (_j)*(_m))
+
+/**
+ * @defgroup bgr Generalized quadrature rules
+ * @{
+ * 
+ */
 
 static gint compare_double2(const void *a, const void *b)
 
@@ -466,11 +469,18 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
 }
 
 
-/*
- * implementation of Bremer, Gimbutas, Rokhlin, `A nonlinear
- * optimization procedure for generalized Gaussian quadratures', 
+/** 
+ * Generate a generalized quadrature rule using the method of Bremer,
+ * Gimbutas, and Rokhlin, 2010, `A nonlinear optimization procedure
+ * for generalized Gaussian quadratures',
  * https://dx.doi.org/10.1137/080737046
- *
+ * 
+ * @param x on output contains nodes of quadrature rule;
+ * @param w on output contains weights of quadrature rule;
+ * @param p parameters of basis functions of quadrature, including a pointer
+ * to the ::gqr_adapt_func_t which evaluates the functions.
+ * 
+ * @return number of nodes in rule.
  */
 
 gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
@@ -648,13 +658,29 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   return rank ;
 }
 
+/** 
+ * Estimate error in generalized quadrature rules by integrating basis
+ * functions and checking against evaluation using quadrature rules.
+ * 
+ * @param rule quadrature rule to check;
+ * @param p parameters used to generate basis functions;
+ * @param imax on exit, index of basis function with greatest error in 
+ * integral; 
+ * @param emax on exit, greatest error in integral evaluation;
+ * @param analytic reserved for future use;
+ * @param output if not NULL, file stream to write diagnostic information
+ * and error estimates.
+ * 
+ * @return 0 on success.
+ */
+
 gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
 			gint *imax, gdouble *emax, gboolean analytic,
 			FILE *output)
 
 {
   gdouble x0, x1, dx, xb, x, f, *Iq, *Ia, tol, *Qi, *ival ;
-  gdouble xi, wi ;
+  gdouble xi, wi, W ;
   gint i, j, k, nf, nn, ni, nimax, nq ;
   gqr_rule_t *r ;
   gqr_adapt_func_t func ;
@@ -680,14 +706,14 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
   Iq = (gdouble *)g_malloc(nf*sizeof(gdouble)) ;
   Ia = (gdouble *)g_malloc(nf*sizeof(gdouble)) ;
   
-  xb = gqr_rule_scale(rule, x0, x1, &xb, &dx) ;
+  gqr_rule_scale(rule, x0, x1, &xb, &dx, &W) ;
   *imax = 0 ; *emax = 0.0 ;
   for ( i = 0 ; i < nf ; i ++ ) {
     Iq[i] = 0.0 ;
     for ( j = 0 ; j < gqr_rule_length(rule) ; j ++ ) {
       x = xb + dx*gqr_rule_abscissa(rule, j) ;
       f = func(x, i, p) ;
-      Iq[i] += f*gqr_rule_weight(rule, j)*dx ;
+      Iq[i] += f*gqr_rule_weight(rule, j)*W ;
     }
   }
 
@@ -760,3 +786,9 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
 
   return 0 ;
 }
+
+
+/**
+ * @}
+ * 
+ */

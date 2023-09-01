@@ -139,7 +139,7 @@ libgqr_la_LIBADD =
 am_libgqr_la_OBJECTS = ghermite.lo grule.lo fpart.lo glegendre.lo \
 	korsunsky.lo smith.lo gchebyshev.lo kolrokh.lo lsqr.lo \
 	msingular.lo nsingular.lo integrals.lo roots.lo gqr-logging.lo \
-	discret.lo bgr.lo rrqr.lo gjacobi.lo
+	discret.lo bgr.lo rrqr.lo gjacobi.lo binomials.lo factorial.lo
 libgqr_la_OBJECTS = $(am_libgqr_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -164,7 +164,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/bgr.Plo ./$(DEPDIR)/discret.Plo \
+am__depfiles_remade = ./$(DEPDIR)/bgr.Plo ./$(DEPDIR)/binomials.Plo \
+	./$(DEPDIR)/discret.Plo ./$(DEPDIR)/factorial.Plo \
 	./$(DEPDIR)/fpart.Plo ./$(DEPDIR)/gchebyshev.Plo \
 	./$(DEPDIR)/ghermite.Plo ./$(DEPDIR)/gjacobi.Plo \
 	./$(DEPDIR)/glegendre.Plo ./$(DEPDIR)/gqr-logging.Plo \
@@ -233,7 +234,7 @@ AWK = gawk
 BLAS_LIBS = -lblas
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O3 -g -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
+CFLAGS = -O0 -g -Wall -Werror-implicit-function-declaration -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include 
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -387,7 +388,10 @@ libgqr_la_SOURCES = \
 	discret.c \
 	bgr.c \
 	rrqr.c \
-	gjacobi.c
+	gjacobi.c \
+	binomials.c \
+	binomials.h \
+	factorial.c
 
 include_HEADERS = \
 	gqr.h 
@@ -510,7 +514,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/bgr.Plo # am--include-marker
+include ./$(DEPDIR)/binomials.Plo # am--include-marker
 include ./$(DEPDIR)/discret.Plo # am--include-marker
+include ./$(DEPDIR)/factorial.Plo # am--include-marker
 include ./$(DEPDIR)/fpart.Plo # am--include-marker
 include ./$(DEPDIR)/gchebyshev.Plo # am--include-marker
 include ./$(DEPDIR)/ghermite.Plo # am--include-marker
@@ -715,7 +721,9 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/bgr.Plo
+	-rm -f ./$(DEPDIR)/binomials.Plo
 	-rm -f ./$(DEPDIR)/discret.Plo
+	-rm -f ./$(DEPDIR)/factorial.Plo
 	-rm -f ./$(DEPDIR)/fpart.Plo
 	-rm -f ./$(DEPDIR)/gchebyshev.Plo
 	-rm -f ./$(DEPDIR)/ghermite.Plo
@@ -778,7 +786,9 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/bgr.Plo
+	-rm -f ./$(DEPDIR)/binomials.Plo
 	-rm -f ./$(DEPDIR)/discret.Plo
+	-rm -f ./$(DEPDIR)/factorial.Plo
 	-rm -f ./$(DEPDIR)/fpart.Plo
 	-rm -f ./$(DEPDIR)/gchebyshev.Plo
 	-rm -f ./$(DEPDIR)/ghermite.Plo

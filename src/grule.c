@@ -25,8 +25,8 @@
  * 
  * The GQR library computes Gaussian and Gaussian-type quadrature
  * rules including some which handle singular integrands. A simple
- * example of its use to integrate a function is: 
- * <a href="example.c-example.html">example.c</a>.
+ * complete example of a code which integrates a function is: 
+ * <a href="example_8c-example.html">example.c</a>.
  *
  * The functions described here are used to generate the quadrature
  * rules and do basic operations such as reading them from and writing
@@ -176,10 +176,7 @@ gqr_rule_t *gqr_rule_realloc(gqr_rule_t *g, gint n)
   g->x = (gdouble *)g_malloc0(sizeof(gdouble)*(n+1)) ;
   g->w = (gdouble *)g_malloc0(sizeof(gdouble)*(n+1)) ;
   
-  /* g_free(g) ; */
-
   return g ;
-  /* (gqr_rule_alloc(n)) ; */
 }
 
 /** 
@@ -196,6 +193,7 @@ gint gqr_rule_free(gqr_rule_t *g)
   g_return_val_if_fail(g != NULL, GQR_NULL_PARAMETER) ;
 
   g_free(g->x) ; g_free(g->w) ; g_free(g) ;
+
   return 0 ;
 }
 
@@ -370,20 +368,21 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
 
 /** 
  * Set the scaling for a rule so that the integral is approximated by:
- * \f$I\approx\Delta x \sum_{j=0}^{n}w_{j}f(x_{j})\f$ where
+ * \f$I\approx W \sum_{j=0}^{n}w_{j}f(x_{j})\f$ where
  * \f$x=\bar{x}+\Delta x t_{j}\f$. 
  * 
  * @param g Gaussian quadrature rule;
  * @param a lower limit of integration;
  * @param b upper limit of integration;
  * @param xbar \f$\bar{x}\f$;
- * @param dx \f$\Delta x\f$.
+ * @param dx \f$\Delta x\f$;
+ * @param W \f$W\f$;
  * 
  * @return 0 on success.
  */
 
 gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b,
-		    gdouble *xbar, gdouble *dx)
+		    gdouble *xbar, gdouble *dx, gdouble *W)
 
 {
   g_return_val_if_fail(g != NULL, GQR_NULL_PARAMETER) ;
@@ -392,6 +391,10 @@ gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b,
 
   *dx = (b-a)/(g->b-g->a) ; *xbar = a - (g->a)*(*dx) ;
 
+  *W = *dx ;
+
+  g_assert((gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_LEGENDRE) ;
+  
   return 0 ;
 }
 
@@ -511,12 +514,10 @@ gqr_t gqr_rule_from_name(gchar *str, gqr_parameter_t *p)
 
   if ( p != NULL ) gqr_parameter_clear(p) ;
 
-/*   g_strdelimit(str, " ,", ' ') ; */
   tokens = g_strsplit(str, " ", 0) ;
   if ( tokens[0] == NULL ) return GQR_INVALID_STRING ;
 
   rule = 0 ; i = 0 ;
-/*   rule = string_to_gqr(tokens[0]) ; */
   while ( tokens[i] != NULL ) {
     if ( string_is_int(tokens[i]) ) {
       if ( p != NULL ) 
@@ -547,6 +548,16 @@ gqr_t gqr_rule_from_name(gchar *str, gqr_parameter_t *p)
   return rule ;
 }
 
+/** 
+ * Parse a string which refers to a pointer. The main purpose of this
+ * function is to give user access to built-in functions for the
+ * generation of generalized quadratures.
+ * 
+ * @param str a string to be parsed.
+ * 
+ * @return a pointer to the data referred to by \a str, or NULL.
+ */
+
 gpointer gqr_pointer_parse(gchar *str)
 
 {
@@ -564,6 +575,15 @@ gpointer gqr_pointer_parse(gchar *str)
 
   return NULL ;
 }
+
+/** 
+ * List the built-in pointers recognized by ::gqr_pointer_parse
+ * 
+ * @param output file stream to write to;
+ * @param verbose if TRUE, write detailed information about the built-in data.
+ * 
+ * @return 0 on success.
+ */
 
 gint gqr_pointers_list(FILE *output, gboolean verbose)
 

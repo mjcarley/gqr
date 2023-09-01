@@ -3113,47 +3113,47 @@ configure.ac:76: the top level])
 m4trace:configure.ac:76: -1- m4_pattern_allow([^LAPACK_LIBS$])
 m4trace:configure.ac:76: -2- m4_pattern_allow([^HAVE_LAPACK$])
 m4trace:configure.ac:77: -1- m4_pattern_allow([^HAVE_LIBRRQR$])
-m4trace:configure.ac:97: -1- PKG_CHECK_MODULES([GSL], [gsl])
-m4trace:configure.ac:97: -1- PKG_PROG_PKG_CONFIG
-m4trace:configure.ac:97: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG_PATH$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^PKG_CONFIG$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^GSL_CFLAGS$])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^GSL_LIBS$])
-m4trace:configure.ac:97: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_CFLAGS=`$PKG_CONFIG --[]cflags "gsl" 2>/dev/null`
+m4trace:configure.ac:79: -1- PKG_CHECK_MODULES([GSL], [gsl])
+m4trace:configure.ac:79: -1- PKG_PROG_PKG_CONFIG
+m4trace:configure.ac:79: -1- m4_pattern_forbid([^_?PKG_[A-Z_]+$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^PKG_CONFIG(_(PATH|LIBDIR|SYSROOT_DIR|ALLOW_SYSTEM_(CFLAGS|LIBS)))?$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^PKG_CONFIG_(DISABLE_UNINSTALLED|TOP_BUILD_DIR|DEBUG_SPEW)$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^PKG_CONFIG_PATH$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^PKG_CONFIG$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^GSL_CFLAGS$])
+m4trace:configure.ac:79: -1- m4_pattern_allow([^GSL_LIBS$])
+m4trace:configure.ac:79: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_CFLAGS=`$PKG_CONFIG --[]cflags "gsl" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:97: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_LIBS=`$PKG_CONFIG --[]libs "gsl" 2>/dev/null`
+m4trace:configure.ac:79: -1- PKG_CHECK_EXISTS([gsl], [pkg_cv_[]GSL_LIBS=`$PKG_CONFIG --[]libs "gsl" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:97: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:98: -1- PKG_CHECK_MODULES([GLIB], [glib-2.0])
-m4trace:configure.ac:98: -1- m4_pattern_allow([^GLIB_CFLAGS$])
-m4trace:configure.ac:98: -1- m4_pattern_allow([^GLIB_LIBS$])
-m4trace:configure.ac:98: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_CFLAGS=`$PKG_CONFIG --[]cflags "glib-2.0" 2>/dev/null`
+m4trace:configure.ac:79: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:80: -1- PKG_CHECK_MODULES([GLIB], [glib-2.0])
+m4trace:configure.ac:80: -1- m4_pattern_allow([^GLIB_CFLAGS$])
+m4trace:configure.ac:80: -1- m4_pattern_allow([^GLIB_LIBS$])
+m4trace:configure.ac:80: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_CFLAGS=`$PKG_CONFIG --[]cflags "glib-2.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:98: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_LIBS=`$PKG_CONFIG --[]libs "glib-2.0" 2>/dev/null`
+m4trace:configure.ac:80: -1- PKG_CHECK_EXISTS([glib-2.0], [pkg_cv_[]GLIB_LIBS=`$PKG_CONFIG --[]libs "glib-2.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:98: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:100: -1- m4_pattern_allow([^GLIB_CFLAGS$])
-m4trace:configure.ac:101: -1- m4_pattern_allow([^GLIB_LIBS$])
-m4trace:configure.ac:102: -1- m4_pattern_allow([^GSL_CFLAGS$])
-m4trace:configure.ac:103: -1- m4_pattern_allow([^GSL_LIBS$])
-m4trace:configure.ac:108: -1- m4_pattern_allow([^CFLAGS$])
-m4trace:configure.ac:109: -1- m4_pattern_allow([^CPPFLAGS$])
-m4trace:configure.ac:110: -1- m4_pattern_allow([^LDFLAGS$])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:132: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:132: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:132: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:132: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:132: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:132: -1- _LT_PROG_LTMAIN
-m4trace:configure.ac:132: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
-m4trace:configure.ac:132: -1- AM_RUN_LOG([cd "$am_dirpart" \
+m4trace:configure.ac:80: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:82: -1- m4_pattern_allow([^GLIB_CFLAGS$])
+m4trace:configure.ac:83: -1- m4_pattern_allow([^GLIB_LIBS$])
+m4trace:configure.ac:84: -1- m4_pattern_allow([^GSL_CFLAGS$])
+m4trace:configure.ac:85: -1- m4_pattern_allow([^GSL_LIBS$])
+m4trace:configure.ac:90: -1- m4_pattern_allow([^CFLAGS$])
+m4trace:configure.ac:91: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:92: -1- m4_pattern_allow([^LDFLAGS$])
+m4trace:configure.ac:112: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:112: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:112: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:112: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:112: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:112: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:112: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:112: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:112: -1- _LT_PROG_LTMAIN
+m4trace:configure.ac:112: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:112: -1- AM_RUN_LOG([cd "$am_dirpart" \
       && sed -e '/# am--include-marker/d' "$am_filepart" \
         | $MAKE -f - am--depfiles])

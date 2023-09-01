@@ -30,14 +30,15 @@
 #include <math.h>
 
 #include <glib.h>
-#include <gsl/gsl_sf.h>
-#include <gsl/gsl_math.h>
+/* #include <gsl/gsl_sf.h> */
+/* #include <gsl/gsl_math.h> */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /*HAVE_CONFIG_H*/
 
 #include "gqr.h"
+#include "binomials.h"
 
 /** 
  * Compute the finite part integral
@@ -81,8 +82,10 @@ gdouble gqr_finite_part(gdouble a, gdouble b, gdouble y, gdouble g)
       if ( n == 0 ) {
 	fp = log((y-a)/(b-y)) ;
       } else {
-	bmy = gsl_pow_int(b-y, n) ; 
-	yma = gsl_pow_int(y-a, n) ;
+	/* bmy = gsl_pow_int(b-y, n) ;  */
+	/* yma = gsl_pow_int(y-a, n) ; */
+	bmy = pow(b-y, n) ; 
+	yma = pow(y-a, n) ;
 	fp = -(bmy + yma*pow(-1,n+1))/n/bmy/yma ;
       }
     }
@@ -93,7 +96,8 @@ gdouble gqr_finite_part(gdouble a, gdouble b, gdouble y, gdouble g)
     if ( alpha == 0.0 ) {
       if ( n == 0 ) fp = -log(b-a) ;
       else {
-	fp = pow(-1.0,n)/(gdouble)n/gsl_pow_int(b-a,n) ;
+	/* fp = pow(-1.0,n)/(gdouble)n/gsl_pow_int(b-a,n) ; */
+	fp = pow(-1.0,n)/(gdouble)n/pow(b-a,n) ;
       }
     } else {
       fp = -cos((alpha+n+1)*M_PI)/(alpha+n)/pow(b-a,alpha+n) ;
@@ -105,10 +109,12 @@ gdouble gqr_finite_part(gdouble a, gdouble b, gdouble y, gdouble g)
     if ( alpha == 0.0 ) {
       if ( n == 0 ) fp = log(b-a) ; /*unchecked*/
       else {
-	fp = -1.0/(gdouble)n/gsl_pow_int(b-a,n) ;
+	/* fp = -1.0/(gdouble)n/gsl_pow_int(b-a,n) ; */
+	fp = -1.0/(gdouble)n/pow(b-a,n) ;
       }
     } else {
-      fp = -1.0/(alpha+n)/gsl_pow_int(b-a,alpha+n) ; /*unchecked*/
+      /* fp = -1.0/(alpha+n)/gsl_pow_int(b-a,alpha+n) ; /\*unchecked*\/ */
+      fp = -1.0/(alpha+n)/pow(b-a,alpha+n) ; /*unchecked*/
     }
     return fp ;
   }
@@ -148,10 +154,10 @@ gdouble gqr_finite_part_integral(gqr_func_t f, gpointer data,
 				 gdouble a, gdouble b, gqr_rule_t *g)
 
 {
-  gdouble xbar, dx, alpha, fp, x, df, cft, *fj ;
+  gdouble xbar, dx, W, alpha, fp, x, df, cft, *fj ;
   gint i, j, n, m ;
 
-  gqr_rule_scale(g, a, b, &xbar, &dx) ;
+  gqr_rule_scale(g, a, b, &xbar, &dx, &W) ;
 
   n = (gint)floor(gm-1.0) ; alpha = gm-n-1.0 ;
 
@@ -168,7 +174,7 @@ gdouble gqr_finite_part_integral(gqr_func_t f, gpointer data,
     x = xbar + dx*gqr_rule_abscissa(g,i) ;
     df = f(x,0,data) ;
     for ( j = 0 ; j <= m ; j ++ ) df += fj[j]*pow(y-x,j) ;
-    fp += df/pow(y-x,gm)*gqr_rule_weight(g,i)*dx ;
+    fp += df/pow(y-x,gm)*gqr_rule_weight(g,i)*W ;
   }
 
   for ( j = 0 ; j <= m ; j ++ )
@@ -199,16 +205,19 @@ gdouble gqr_finite_part_1mt_n(gint n, gint m)
   case 1:
     if ( n == 0 ) return M_LN2 ; 
     for ( (fp = M_LN2), (q = 1) ; q <= n ; q ++ ) fp -= 1.0/(gdouble)q ;
-    fp *= gsl_pow_int(2.0,n) ;
+    /* fp *= gsl_pow_int(2.0,n) ; */
+    fp *= pow(2.0,n) ;
     return fp ;
     break ;
   case 2:
     if ( n == 0 ) return 0.5 ;
     for ( (fp = -n*M_LN2-1.0), (q = 2), (cft=-1.0) ; q <= n ; q ++ ) {
-      fp -= cft/(gdouble)(q-1)*gsl_sf_choose(n,q) ;
+      /* fp -= cft/(gdouble)(q-1)*gsl_sf_choose(n,q) ; */
+      fp -= cft/(gdouble)(q-1)*gqr_binomial(n,q) ;
       cft *= -1 ;
     }
-    fp *= gsl_pow_int(2.0,n-1) ;
+    /* fp *= gsl_pow_int(2.0,n-1) ; */
+    fp *= pow(2.0,n-1) ;
     return fp ;
     break ;
   default: g_assert_not_reached() ; break ;
@@ -238,9 +247,12 @@ gdouble gqr_legendre_dPdx(gdouble x, gint n, gint m)
   if ( m > n ) return 0.0 ;
 
   x1 = 1.0 - x ; x2 = 1.0 + x ;
-  t1 = gsl_pow_int(-1.0,m) ; t2 = gsl_pow_int(-1.0,n) ;
-  cft = gsl_pow_int(-1.0,m)/gsl_sf_fact(m)*gsl_sf_fact(n+m)*
-    gsl_pow_int(0.5,m+1)/gsl_sf_fact(n-m) ; 
+  /* t1 = gsl_pow_int(-1.0,m) ; t2 = gsl_pow_int(-1.0,n) ; */
+  t1 = pow(-1.0,m) ; t2 = pow(-1.0,n) ;
+  /* cft = gsl_pow_int(-1.0,m)/gsl_sf_fact(m)*gsl_sf_fact(n+m)* */
+  /*   gsl_pow_int(0.5,m+1)/gsl_sf_fact(n-m) ;  */
+  cft = pow(-1.0,m)/gqr_factorial(m)*gqr_factorial(n+m)*
+    pow(0.5,m+1)/gqr_factorial(n-m) ; 
   for ( (P = 0.0), (k = m) ; k <= n ; k ++ ) {
     P += (t1+t2)*cft ;
     t1 *= x1 ; t2 *= x2 ;
@@ -255,7 +267,8 @@ static gdouble quad_1pt(gint m)
 {
   if ( m == -1 ) return M_LN2 ;
   if ( m == 0 ) return 2.0 ;
-  return gsl_pow_int(2,m+1)/(gdouble)(m+1) ;
+  /* return gsl_pow_int(2,m+1)/(gdouble)(m+1) ; */
+  return pow(2,m+1)/(gdouble)(m+1) ;
 }
 
 /** 
@@ -276,8 +289,9 @@ gdouble gqr_finite_part_Pn1(gint n, gint m)
 
   cft = 0.5 ; 
   for ( (fp = 0.0), (k = 0) ; k <= n ; k ++ ) {
-    fp += cft*(gqr_finite_part_1mt_n(k,m) + 
-	       gsl_pow_int(-1,n)*quad_1pt(k-m)) ;
+    /* fp += cft*(gqr_finite_part_1mt_n(k,m) +  */
+    /* 	       gsl_pow_int(-1,n)*quad_1pt(k-m)) ; */
+    fp += cft*(gqr_finite_part_1mt_n(k,m) + pow(-1,n)*quad_1pt(k-m)) ;
     cft *= -0.5/(gdouble)(k+1)*(gdouble)(n+k+1)/(gdouble)(k+1)*(n-k) ;
   }
 
@@ -293,8 +307,10 @@ gdouble gqr_finite_part_Pn_log(gdouble x, gint n)
   fp = 0 ; m = (gint)floor(0.5*(gdouble)n) ;
 
   if ( fabs(x) == 1.0 ) {
-    cft = gsl_sf_lnfact(n) ;
-    cft = gsl_sf_lnfact(2*n)-2.0*cft ;
+    /* cft = gsl_sf_lnfact(n) ; */
+    /* cft = gsl_sf_lnfact(2*n)-2.0*cft ; */
+    cft = lgamma(n) ;
+    cft = lgamma(2*n)-2.0*cft ;
     cft = exp(cft) ;
     if ( n == 2*m ) {
       for ( k = 0 ; k <= m ; k ++ ) {
@@ -303,7 +319,8 @@ gdouble gqr_finite_part_Pn_log(gdouble x, gint n)
 	fp += cft*tmp/(gdouble)(2*m-2*k+1) ;
 	cft *= -1.0/(2*n-2*k)/(2*n-2*k-1)/(k+1)*(n-k)*(n-2*k)*(n-2*k-1) ;
       }
-      fp *= 2.0*gsl_pow_int(0.5,n) ;
+      /* fp *= 2.0*gsl_pow_int(0.5,n) ; */
+      fp *= 2.0*pow(0.5,n) ;
     } else {
       for ( k = 0 ; k <= m ; k ++ ) {
 	for ( (q = 0), (tmp = 0.0) ; q <= m-k ; q ++ )
@@ -311,7 +328,8 @@ gdouble gqr_finite_part_Pn_log(gdouble x, gint n)
 	fp += cft*tmp/(gdouble)(2*m-2*k+2) ;
 	cft *= -1.0/(2*n-2*k)/(2*n-2*k-1)/(k+1)*(n-k)*(n-2*k)*(n-2*k-1) ;
       }
-      fp *= 2.0*gsl_pow_int(0.5,n) ;
+      /* fp *= 2.0*gsl_pow_int(0.5,n) ; */
+      fp *= 2.0*pow(0.5,n) ;
       if ( x == -1 ) fp = -fp ;
     }
     return fp ;
@@ -337,25 +355,34 @@ gdouble gqr_finite_part_tn_log(gdouble x, gint n)
   gdouble xn, cft, pv ;
   
   pv = 0.0 ;
-  if ( x == -1.0 ) pv = (1-gsl_pow_int(-1,n+1))*M_LN2 ;
-  if ( x == 1.0 ) pv = (1+gsl_pow_int(-1,n))*M_LN2 ;
+  /* if ( x == -1.0 ) pv = (1-gsl_pow_int(-1,n+1))*M_LN2 ; */
+  /* if ( x == 1.0 ) pv = (1+gsl_pow_int(-1,n))*M_LN2 ; */
+  if ( x == -1.0 ) pv = (1-pow(-1,n+1))*M_LN2 ;
+  if ( x ==  1.0 ) pv = (1+pow(-1,n  ))*M_LN2 ;
 
   if ( (x > -1.0) && (x < 1.0) ) {
-    xn = gsl_pow_int(x,n+1) ;
-    pv = (1-xn)*log(1-x) + (gsl_pow_int(-1,n)+xn)*log(1+x) ;
+    /* xn = gsl_pow_int(x,n+1) ; */
+    /* pv = (1-xn)*log(1-x) + (gsl_pow_int(-1,n)+xn)*log(1+x) ; */
+    xn = pow(x,n+1) ;
+    pv = (1-xn)*log(1-x) + (pow(-1,n)+xn)*log(1+x) ;
   }
 
   if ( x < -1.0 ) {
-    xn = gsl_pow_int(x,n+1) ;
-    pv = (1-xn)*log(1.0-x) + (gsl_pow_int(-1,n)+xn)*log(1+x) ;
+    /* xn = gsl_pow_int(x,n+1) ; */
+    /* pv = (1-xn)*log(1.0-x) + (gsl_pow_int(-1,n)+xn)*log(1+x) ; */
+    xn = pow(x,n+1) ;
+    pv = (1-xn)*log(1.0-x) + (pow(-1,n)+xn)*log(1+x) ;
   }
 
   if ( x > 1.0 ) {
-    xn = gsl_pow_int(x,n+1) ;
-    pv = (1-xn)*log(x-1.0) + (gsl_pow_int(-1,n)+xn)*log(1+x) ;
+    /* xn = gsl_pow_int(x,n+1) ; */
+    /* pv = (1-xn)*log(x-1.0) + (gsl_pow_int(-1,n)+xn)*log(1+x) ; */
+    xn = pow(x,n+1) ;
+    pv = (1-xn)*log(x-1.0) + (pow(-1,n)+xn)*log(1+x) ;
   }
 
-  for ( (cft = 1.0), (i = gsl_pow_int(-1,n)), (k = 1) ; k <= n+1 ; k ++ ) {
+  /* for ( (cft = 1.0), (i = gsl_pow_int(-1,n)), (k = 1) ; k <= n+1 ; k ++ ) { */
+  for ( (cft = 1.0), (i = pow(-1,n)), (k = 1) ; k <= n+1 ; k ++ ) {
     pv -= (1+i)*cft/(gdouble)(n-k+2) ;
     cft *= x ; i = -i ;
   }

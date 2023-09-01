@@ -18070,24 +18070,6 @@ _ACEOF
 fi
 
 
-#PKG_CHECK_MODULES(gsl, gsl, [gsl_cflags=`pkg-config --cflags-only-I gsl`
-#		        gsl_libs=`pkg-config --libs gsl`],			
-#			[AC_CHECK_PROG(GSL, gsl-config, yes, no)
-#			if test x$GSL = xyes ; then
-#   gsl_cflags=`gsl-config --cflags`
-#   gsl_libs=`gsl-config --libs`
-#else
-#  echo \#################################################################
-#  echo \#
-#  echo \# GNU Scientific Library not available or not properly installed.
-#  echo \# You can get the most recent version from 
-#  echo \#      http://www.gnu.org/software/gsl/
-#  echo \#
-#  echo \#################################################################
-#  exit
-#fi
-#])
-
 
 
 
@@ -18413,7 +18395,7 @@ LDFLAGS="$LDFLAGS $GLIB_LIBS $GSL_LIBS"
 
 LIBS="$GLIB_LIBS $GSL_LIBS $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/gqr-config tools/Makefile triangle/Makefile doc/Makefile doc/html/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/gqr-config tools/Makefile triangle/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -19509,8 +19491,6 @@ do
     "src/gqr-config") CONFIG_FILES="$CONFIG_FILES src/gqr-config" ;;
     "tools/Makefile") CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;
     "triangle/Makefile") CONFIG_FILES="$CONFIG_FILES triangle/Makefile" ;;
-    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-    "doc/html/Makefile") CONFIG_FILES="$CONFIG_FILES doc/html/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

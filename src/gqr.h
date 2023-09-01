@@ -193,7 +193,7 @@ gint gqr_rule_write(gqr_rule_t *g, FILE *f) ;
 gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n, 
 		     gqr_parameter_t *p) ;
 gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b,
-		    gdouble *xbar, gdouble *dx) ;
+		    gdouble *xbar, gdouble *dx, gdouble *W) ;
 gqr_t gqr_rule_from_name(gchar *str, gqr_parameter_t *p) ;
 
 gdouble gqr_finite_part(gdouble a, gdouble b, gdouble y, gdouble g) ;
