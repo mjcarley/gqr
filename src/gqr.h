@@ -95,9 +95,9 @@ typedef enum {
  * require them. 
  */
 
-#define GQR_PARAMETER_POINTER_NUMBER_MAX 32
-#define GQR_PARAMETER_INTEGER_NUMBER_MAX 32
-#define GQR_PARAMETER_FLOAT_NUMBER_MAX   32
+#define GQR_PARAMETER_POINTER_NUMBER_MAX 8
+#define GQR_PARAMETER_INTEGER_NUMBER_MAX 8
+#define GQR_PARAMETER_FLOAT_NUMBER_MAX   8
 
 typedef  struct _gqr_parameter_t gqr_parameter_t ;
 
@@ -117,7 +117,7 @@ struct _gqr_parameter_t {
   (_p)->rules[0] = (_p)->rules[1] = NULL ;	\
   } while ( 0 )
 #define gqr_parameter_clear_int(_p) ((_p)->ni=0)
-#define gqr_parameter_clear_float(_p) ((_p)->nf=0)
+#define gqr_parameter_clear_double(_p) ((_p)->nf=0)
 #define gqr_parameter_set_double(_p,_f) ((_p)->f[((_p)->nf)++] = (_f))
 #define gqr_parameter_set_pointer(_p,_f) ((_p)->p[((_p)->np)++] = (_f))
 #define gqr_parameter_set_int(_p,_i) ((_p)->i[((_p)->ni)++] = (_i))
@@ -140,15 +140,17 @@ typedef  struct _gqr_rule_t gqr_rule_t ;
 struct _gqr_rule_t {
   gqr_t type ;
   gint n, nmax ;
-  gdouble a, b, *x, *w, data[4] ;
+  gdouble a, b, *x, *w ;
+  gqr_parameter_t data ;
 } ;
 
-#define gqr_rule_length(_g) ((_g)->n)
-#define gqr_rule_abscissa(_g,_i) ((_g)->x[(_i)])
-#define gqr_rule_weight(_g,_i) ((_g)->w[(_i)])
-#define gqr_rule_type(_g) ((_g)->type)
-#define gqr_rule_base_type(_t) ((_t) & GQR_RULE_MASK)
+#define gqr_rule_length(_g)           ((_g)->n)
+#define gqr_rule_abscissa(_g,_i)      ((_g)->x[(_i)])
+#define gqr_rule_weight(_g,_i)        ((_g)->w[(_i)])
+#define gqr_rule_type(_g)             ((_g)->type)
+#define gqr_rule_base_type(_t)        ((_t) & GQR_RULE_MASK)
 #define gqr_rule_singularity_type(_t) ((_t) & GQR_SINGULARITY_MASK)
+#define gqr_rule_data(_g)             (&((_g)->data))
 
 /**
  * @typedef gqr_func_t
@@ -184,6 +186,11 @@ struct _gqr_rule_t {
  */
 
 typedef gdouble (* gqr_adapt_func_t)(gdouble t, gint i, gqr_parameter_t *p) ;
+
+typedef gdouble (* gqr_test_integrand_t)(gdouble t, gqr_parameter_t *p,
+					 gint j) ;
+typedef gint (* gqr_test_integral_t)(gdouble a, gdouble b, gqr_parameter_t *p,
+				     gdouble *I, gint n) ;
 
 gint gqr_rule_free(gqr_rule_t *g) ;
 gqr_rule_t *gqr_rule_alloc(gint n) ;
@@ -247,4 +254,25 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
 			FILE *output) ;
 gint gqr_pointers_list(FILE *output, gboolean verbose) ;
 
+gboolean gqr_test_rule_base(gqr_rule_t *g, gdouble a, gdouble b,
+			    gqr_test_integrand_t ifunc,
+			    gqr_test_integral_t intfunc,
+			    gint nfunc, gdouble tol,
+			    gdouble *emax, gdouble *Imax, gint *imax) ;
+gint gqr_test_integral_legendre(gdouble a, gdouble b, gqr_parameter_t *p,
+				gdouble *I, gint n) ;
+gint gqr_test_integral_jacobi(gdouble a, gdouble b, gqr_parameter_t *p,
+			      gdouble *I, gint n) ;
+gint gqr_test_integral_chebyshev_1(gdouble a, gdouble b, gqr_parameter_t *p,
+				   gdouble *I, gint n) ;
+gint gqr_test_integral_chebyshev_2(gdouble a, gdouble b, gqr_parameter_t *p,
+				   gdouble *I, gint n) ;
+gint gqr_test_integral_hermite(gdouble a, gdouble b, gqr_parameter_t *p,
+			       gdouble *I, gint n) ;
+gint gqr_test_integral_laguerre(gdouble a, gdouble b, gqr_parameter_t *p,
+				gdouble *I, gint n) ;
+gdouble gqr_test_integrand_monomial(gdouble t, gqr_parameter_t *p, gint j) ;
+gboolean gqr_test_rule(gqr_rule_t *g, gdouble a, gdouble b,
+		       gdouble tol, gdouble *emax, gdouble *Imax, 
+		       gint *imax) ;
 #endif /*GQR_H_INCLUDED*/

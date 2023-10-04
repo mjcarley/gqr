@@ -90,8 +90,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga6a873d839cd487511f137d7926f33007"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9373a848b449bc2718f010e3edd831e3"><td class="memItemLeft" align="right" valign="top">gint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#ga9373a848b449bc2718f010e3edd831e3">gqr_rule_select</a> (<a class="el" href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a> *g, <a class="el" href="group__gqr.html#ga1f7bc8ccb4913fd0f8a5008c13069143">gqr_t</a> type, gint n, <a class="el" href="group__gqr.html#ga4512314849c794f1b2840a7135d663de">gqr_parameter_t</a> *p)</td></tr>
 <tr class="separator:ga9373a848b449bc2718f010e3edd831e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabc8177171e6ba159904a20cb7e07be85"><td class="memItemLeft" align="right" valign="top">gint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#gabc8177171e6ba159904a20cb7e07be85">gqr_rule_scale</a> (<a class="el" href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a> *g, gdouble a, gdouble b, gdouble *xbar, gdouble *dx)</td></tr>
-<tr class="separator:gabc8177171e6ba159904a20cb7e07be85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8bd3fd0dc26644905d2f37383ca94e9c"><td class="memItemLeft" align="right" valign="top">gint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#ga8bd3fd0dc26644905d2f37383ca94e9c">gqr_rule_scale</a> (<a class="el" href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a> *g, gdouble a, gdouble b, gdouble *xbar, gdouble *dx, gdouble *W)</td></tr>
+<tr class="separator:ga8bd3fd0dc26644905d2f37383ca94e9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8ebe215bbb435805c74fb0d6734f6081"><td class="memItemLeft" align="right" valign="top">gchar *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#ga8ebe215bbb435805c74fb0d6734f6081">gqr_rule_name</a> (<a class="el" href="group__gqr.html#ga1f7bc8ccb4913fd0f8a5008c13069143">gqr_t</a> type)</td></tr>
 <tr class="separator:ga8ebe215bbb435805c74fb0d6734f6081"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4cf14c3801907dcf066aa354524434ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__gqr.html#ga1f7bc8ccb4913fd0f8a5008c13069143">gqr_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gqr.html#ga4cf14c3801907dcf066aa354524434ed">gqr_rule_from_name</a> (gchar *str, <a class="el" href="group__gqr.html#ga4512314849c794f1b2840a7135d663de">gqr_parameter_t</a> *p)</td></tr>
@@ -178,7 +178,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Data structure containing the nodes and weights of a quadrature rule. The rule is allocated using <a class="el" href="group__gqr.html#gad01b7fd22a2ad31b053c51783820613c">gqr_rule_alloc</a> and initialized using <a class="el" href="group__gqr.html#ga9373a848b449bc2718f010e3edd831e3">gqr_rule_select</a>. To transform the range of integration use <a class="el" href="group__gqr.html#gabc8177171e6ba159904a20cb7e07be85">gqr_rule_scale</a>. </p>
+<p >Data structure containing the nodes and weights of a quadrature rule. The rule is allocated using <a class="el" href="group__gqr.html#gad01b7fd22a2ad31b053c51783820613c">gqr_rule_alloc</a> and initialized using <a class="el" href="group__gqr.html#ga9373a848b449bc2718f010e3edd831e3">gqr_rule_select</a>. To transform the range of integration use <a class="el" href="group__gqr.html#ga8bd3fd0dc26644905d2f37383ca94e9c">gqr_rule_scale</a>. </p>
 
 </div>
 </div>
@@ -420,8 +420,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gabc8177171e6ba159904a20cb7e07be85" name="gabc8177171e6ba159904a20cb7e07be85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabc8177171e6ba159904a20cb7e07be85">&#9670;&nbsp;</a></span>gqr_rule_scale()</h2>
+<a id="ga8bd3fd0dc26644905d2f37383ca94e9c" name="ga8bd3fd0dc26644905d2f37383ca94e9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8bd3fd0dc26644905d2f37383ca94e9c">&#9670;&nbsp;</a></span>gqr_rule_scale()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -454,7 +454,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">gdouble *&#160;</td>
-          <td class="paramname"><em>dx</em>&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">gdouble *&#160;</td>
+          <td class="paramname"><em>W</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -463,14 +469,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Set the scaling for a rule so that the integral is approximated by: <img class="formulaInl" alt="$I\approx\Delta x \sum_{j=0}^{n}w_{j}f(x_{j})$" src="form_23.png" width="120" height="18"/> where <img class="formulaInl" alt="$x=\bar{x}+\Delta x t_{j}$" src="form_24.png" width="74" height="14"/>.</p>
+<p >Set the scaling for a rule so that the integral is approximated by: <img class="formulaInl" alt="$I\approx W \sum_{j=0}^{n}w_{j}f(x_{j})$" src="form_39.png" width="115" height="18"/> where <img class="formulaInl" alt="$x=\bar{x}+\Delta x t_{j}$" src="form_24.png" width="74" height="14"/>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">g</td><td>Gaussian quadrature rule; </td></tr>
     <tr><td class="paramname">a</td><td>lower limit of integration; </td></tr>
     <tr><td class="paramname">b</td><td>upper limit of integration; </td></tr>
     <tr><td class="paramname">xbar</td><td><img class="formulaInl" alt="$\bar{x}$" src="form_25.png" width="8" height="9"/>; </td></tr>
-    <tr><td class="paramname">dx</td><td><img class="formulaInl" alt="$\Delta x$" src="form_26.png" width="18" height="10"/>.</td></tr>
+    <tr><td class="paramname">dx</td><td><img class="formulaInl" alt="$\Delta x$" src="form_26.png" width="18" height="10"/>; </td></tr>
+    <tr><td class="paramname">W</td><td><img class="formulaInl" alt="$W$" src="form_40.png" width="14" height="10"/>;</td></tr>
   </table>
   </dd>
 </dl>
@@ -576,7 +583,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2023 17:45:10 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Mon Sep 4 2023 16:45:41 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

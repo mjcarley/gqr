@@ -253,6 +253,9 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
   if ( n > g->nmax ) 
     g_error("%s: number of abscissae (%d) must be less than maximum "
 	    "for g (%d)", __FUNCTION__, n, g->nmax) ;
+
+  g->data = *p ;
+  
   switch (type) {
   default: 
     g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, 
@@ -266,8 +269,6 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
   case GQR_GAUSS_JACOBI:
     grule_jacobi(n, g->x, g->w, p) ; g->n = n ;
     g->a = -1 ; g->b = 1 ; g->type = type ;
-    g->data[0] = gqr_parameter_double(p, 0) ;
-    g->data[1] = gqr_parameter_double(p, 1) ;    
     break ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch"
@@ -354,7 +355,11 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
     break ;
   case GQR_GAUSS_HERMITE:
     grule_hermite(n, g->x, g->w) ; g->n = n ;
-    g->a = -1 ; g->b = 1 ; g->type = type ;    
+    g->a = 0 ; g->b = 0 ; g->type = type ;    
+    break ;
+  case GQR_GAUSS_LAGUERRE:
+    grule_laguerre(n, g->x, g->w, p) ; g->n = n ;
+    g->a = 0 ; g->b = 0 ; g->type = type ;    
     break ;
   case GQR_GAUSS_GENERALIZED:
     g->n = grule_bgr(g->x, g->w, p) ;
@@ -387,20 +392,46 @@ gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b,
 		    gdouble *xbar, gdouble *dx, gdouble *W)
 
 {
+  gqr_parameter_t *p = gqr_rule_data(g) ;
+
   g_return_val_if_fail(g != NULL, GQR_NULL_PARAMETER) ;
   g_return_val_if_fail(xbar != NULL, GQR_NULL_PARAMETER) ;
   g_return_val_if_fail(dx != NULL, GQR_NULL_PARAMETER) ;
 
-  *dx = (b-a)/(g->b-g->a) ; *xbar = a - (g->a)*(*dx) ;
 
-  *W = *dx ;
+  g_assert((gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_LEGENDRE ||
+	   (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_JACOBI ||
+	   (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_HERMITE ||
+	   (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_CHEBYSHEV_1 ||
+	   (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_CHEBYSHEV_2
+	   ) ;
+
+  *dx = (b-a)/(g->b-g->a) ; *xbar = a - (g->a)*(*dx) ;
+  if ( (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_LEGENDRE ) {
+    *W = *dx ;
+    return 0 ;
+  }
 
   if ( (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_JACOBI ) {
-    *W = pow(*dx, 1.0 + g->data[0] + g->data[1]) ;
+    *W = pow(*dx, 1.0 + gqr_parameter_double(p,0) + gqr_parameter_double(p,1)) ;
+    return 0 ;
+  }
+
+  if ( (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_CHEBYSHEV_1 ) {
+    *W = 1.0 ;
+    return 0 ;
+  }
+
+  if ( (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_CHEBYSHEV_2 ) {
+    *W = (*dx)*(*dx) ;
+    return 0 ;
   }
   
-  g_assert((gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_LEGENDRE ||
-	   (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_JACOBI) ;
+  if ( (gqr_rule_type(g) & GQR_RULE_MASK) == GQR_GAUSS_HERMITE ) {
+    *dx = 1.0 ; *xbar = 0.0 ;
+    *W = 1.0 ;
+    return 0 ;
+  }
   
   return 0 ;
 }

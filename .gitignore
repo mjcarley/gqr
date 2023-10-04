@@ -10,14 +10,50 @@
 ## don't include emacs backups
 *~
 
+## don't include intermediate data files
+*.dat
+*.msh
+*.mat
+*.nbi
+*.log
+
+# autotools
+
+autom4te.cache
+/autoscan.log
+/autoscan-*.log
+/aclocal.m4
+/compile
+/config.cache
+/config.guess
+/config.h.in
+/config.log
+/config.status
+/config.sub
+/configure
+/configure.scan
+/depcomp
+/install-sh
+/missing
+/stamp-h1
+Makefile.in
+Makefile
+ltmain.sh
+
+# http://www.gnu.org/software/m4/
+
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
+
+bigfiles
+
 ## scratch directory
 scratch
+## directory for writing manual
+latex
 
-## development and maths notes
-notes
-
-## generated files
-*.dat
-*.log
-radial-rules.c
-angular-rules.c
+## m4 cache
+autom4te.cache

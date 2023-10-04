@@ -67,7 +67,7 @@ $(function() {
 <div class="line">  <a class="code hl_typedef" href="group__gqr.html#ga4512314849c794f1b2840a7135d663de">gqr_parameter_t</a> p ;</div>
 <div class="line">  gdouble x, y ;</div>
 <div class="line">  gdouble a, b ;</div>
-<div class="line">  gdouble dx, xbar ;</div>
+<div class="line">  gdouble dx, xbar, W ;</div>
 <div class="line">  gdouble I, t ;</div>
 <div class="line">  gint i, N, M ;</div>
 <div class="line">  <a class="code hl_enumeration" href="group__gqr.html#ga1f7bc8ccb4913fd0f8a5008c13069143">gqr_t</a> rule ;</div>
@@ -85,12 +85,12 @@ $(function() {
 <div class="line"> </div>
 <div class="line">  <a id="a1" name="a1"></a><a class="code hl_function" href="group__gqr.html#ga9373a848b449bc2718f010e3edd831e3">gqr_rule_select</a>(g, rule, N, &amp;p) ;</div>
 <div class="line"> </div>
-<div class="line">  <a id="a2" name="a2"></a><a class="code hl_function" href="group__gqr.html#gabc8177171e6ba159904a20cb7e07be85">gqr_rule_scale</a>(g, a, b, &amp;xbar, &amp;dx) ;</div>
+<div class="line">  <a id="a2" name="a2"></a><a class="code hl_function" href="group__gqr.html#ga8bd3fd0dc26644905d2f37383ca94e9c">gqr_rule_scale</a>(g, a, b, &amp;xbar, &amp;dx, &amp;W) ;</div>
 <div class="line"> </div>
 <div class="line">  I = 0.0 ;</div>
 <div class="line">  <span class="keywordflow">for</span> ( i = 0 ; i &lt; gqr_rule_length(g) ; i ++ ) {</div>
 <div class="line">    t = gqr_rule_abscissa(g,i)*dx + xbar ;</div>
-<div class="line">    I += gqr_rule_weight(g,i)*dx*func(t, x, y) ;</div>
+<div class="line">    I += W*gqr_rule_weight(g,i)*func(t, x, y) ;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  fprintf(stdout, <span class="stringliteral">&quot;I: %lg\n&quot;</span>, I) ;</div>
@@ -100,13 +100,13 @@ $(function() {
 <div class="ttc" id="agroup__gqr_html_ga1f7bc8ccb4913fd0f8a5008c13069143"><div class="ttname"><a href="group__gqr.html#ga1f7bc8ccb4913fd0f8a5008c13069143">gqr_t</a></div><div class="ttdeci">gqr_t</div><div class="ttdef"><b>Definition:</b> gqr.h:59</div></div>
 <div class="ttc" id="agroup__gqr_html_ga4512314849c794f1b2840a7135d663de"><div class="ttname"><a href="group__gqr.html#ga4512314849c794f1b2840a7135d663de">gqr_parameter_t</a></div><div class="ttdeci">struct _gqr_parameter_t gqr_parameter_t</div><div class="ttdef"><b>Definition:</b> gqr.h:102</div></div>
 <div class="ttc" id="agroup__gqr_html_ga89dca966e4378ceb2d146ffdbea4e272"><div class="ttname"><a href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a></div><div class="ttdeci">struct _gqr_rule_t gqr_rule_t</div><div class="ttdef"><b>Definition:</b> gqr.h:138</div></div>
+<div class="ttc" id="agroup__gqr_html_ga8bd3fd0dc26644905d2f37383ca94e9c"><div class="ttname"><a href="group__gqr.html#ga8bd3fd0dc26644905d2f37383ca94e9c">gqr_rule_scale</a></div><div class="ttdeci">gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b, gdouble *xbar, gdouble *dx, gdouble *W)</div><div class="ttdef"><b>Definition:</b> grule.c:387</div></div>
 <div class="ttc" id="agroup__gqr_html_ga9373a848b449bc2718f010e3edd831e3"><div class="ttname"><a href="group__gqr.html#ga9373a848b449bc2718f010e3edd831e3">gqr_rule_select</a></div><div class="ttdeci">gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n, gqr_parameter_t *p)</div><div class="ttdef"><b>Definition:</b> grule.c:247</div></div>
-<div class="ttc" id="agroup__gqr_html_gabc8177171e6ba159904a20cb7e07be85"><div class="ttname"><a href="group__gqr.html#gabc8177171e6ba159904a20cb7e07be85">gqr_rule_scale</a></div><div class="ttdeci">gint gqr_rule_scale(gqr_rule_t *g, gdouble a, gdouble b, gdouble *xbar, gdouble *dx)</div><div class="ttdef"><b>Definition:</b> grule.c:383</div></div>
 <div class="ttc" id="agroup__gqr_html_gad01b7fd22a2ad31b053c51783820613c"><div class="ttname"><a href="group__gqr.html#gad01b7fd22a2ad31b053c51783820613c">gqr_rule_alloc</a></div><div class="ttdeci">gqr_rule_t * gqr_rule_alloc(gint n)</div><div class="ttdef"><b>Definition:</b> grule.c:139</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2023 17:45:10 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Mon Sep 4 2023 16:45:41 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>

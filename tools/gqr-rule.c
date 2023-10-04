@@ -32,28 +32,34 @@ gint main(gint argc, gchar **argv)
 {
   gqr_rule_t *g ;
   gqr_parameter_t p ;
-  gdouble x, y, emax ;
+  gdouble x, y, emax, Imax, a, b, tol ;
   gint N, M, *s, i, ns, imax ;
   gchar ch ;
-  gboolean print_help, error_check, analytic_check ;
+  gboolean print_help, error_check ;
   gqr_t rule, baserule, singularity ;
-
+  gchar *progname ;
+  
   M = 4 ; N = 16 ; x = G_MAXDOUBLE ; y = G_MAXDOUBLE ;
   baserule = GQR_GAUSS_LEGENDRE ; singularity = GQR_GAUSS_REGULAR ;
   s = NULL ;
-  print_help = FALSE ; error_check = FALSE ; analytic_check = FALSE ;
+  a = -1 ; b = 1 ; tol = 1e-12 ;
+  print_help = FALSE ; error_check = FALSE ;
   gqr_logging_init(stderr, argv[0], G_LOG_LEVEL_WARNING, NULL) ;
 
   gqr_parameter_clear(&p) ;
+  progname = g_strdup(g_path_get_basename(argv[0])) ;
 
-  while ( (ch = getopt(argc, argv, "hCef:GHi:JLM:N:p:Ps:Tx:y:")) != EOF ) {
+  while ( (ch = getopt(argc, argv, "ha:b:CEef:GHi:JLM:N:p:Ps:Tt:x:y:"))
+	  != EOF ) {
     switch(ch) {
     case 'h':
     default: 
       print_help = TRUE ;
       break ;
-    /* case 'a': analytic_check = TRUE ; break ; */
+    case 'a': a = atof(optarg) ; break ;
+    case 'b': b = atof(optarg) ; break ;
     case 'C': baserule = GQR_GAUSS_CHEBYSHEV_1 ; break ;
+    /* case 'E': baserule = GQR_GAUSS_LAGUERRE ; break ; */
     case 'e': error_check = TRUE ; break ;
     case 'f': gqr_parameter_set_double(&p, atof(optarg)) ; break ;
     case 'G': baserule = GQR_GAUSS_GENERALIZED ; break ;
@@ -64,6 +70,7 @@ gint main(gint argc, gchar **argv)
     case 'M': M = atoi(optarg) ; break ;
     case 'N': N = atoi(optarg) ; break ;
     case 'T': baserule = GQR_GAUSS_CHEBYSHEV_2 ; break ;
+    case 't': tol = atof(optarg) ; break ;
     case 'P': gqr_pointers_list(stderr, TRUE) ; return 0 ; break ;
     case 'p':
       gqr_parameter_set_pointer(&p, gqr_pointer_parse(optarg)) ;
@@ -80,9 +87,11 @@ gint main(gint argc, gchar **argv)
 	    "Usage: %s <options>\n\n"
 	    "Options:\n"
 	    "        -h print this message and exit\n"
+	    "        -a lower limit of integration in tests (%lg)\n"
+	    "        -b upper limit of integration in tests (%lg)\n"
 	    "        -C Gauss-(T)Chebyshev of the first kind quadrature\n"
-	    "        -e calculate estimated error in quadrature of basis "
-	    "functions\n"
+	    /* "        -E Gauss-Laguerre (exponential) quadrature\n" */
+	    "        -e estimate maximum error in quadrature\n"
 	    "        -f # set float in parameter list\n"
 	    "        -G generalized Gaussian quadrature (Bremer, Gimbutas and\n"
 	    "           Rokhlin algorithm)\n"
@@ -96,9 +105,10 @@ gint main(gint argc, gchar **argv)
 	    "        -p # set (parsed) pointer in parameter list\n"	    
 	    "        -s <list of singularity orders>\n"	      
 	    "        -T Gauss-(T)Chebyshev of the second kind quadrature\n"
+	    "        -t # tolerance for error check (%lg)\n"
 	    "        -x <x coordinate of singularity>\n"
 	    "        -y <y coordinate of singularity>\n",
-	    argv[0], argv[0]) ;
+	    progname, progname, a, b, tol) ;
     return 0 ;
   }
 
@@ -125,14 +135,26 @@ gint main(gint argc, gchar **argv)
   gqr_rule_select(g, rule, N, &p) ;
   gqr_rule_write(g, stdout) ;
 
-  if ( baserule != GQR_GAUSS_GENERALIZED ) return 0 ;
+  /* if ( baserule != GQR_GAUSS_GENERALIZED ) return 0 ; */
 
   if ( !error_check ) return 0 ;
 
-  /*check quadratures against analytical results, where available*/
-  gqr_rule_bgr_check(g, &p, &imax, &emax, analytic_check, stderr) ;
+  fprintf(stderr, "%s: testing quadrature rule, tol = %lg\n",
+	  progname, tol) ;
+  
+  error_check = gqr_test_rule(g, a, b, tol, &emax, &Imax, &imax) ;  
 
-  fprintf(stderr, "maximum error: %lg, basis function %d\n", emax, imax) ;
+  if ( error_check )
+    fprintf(stderr, "  PASS: (emax = %lg, imax = %d, L_inf=%lg)\n",
+	    emax, imax, emax/Imax) ;
+  else
+    fprintf(stderr, "  FAIL: (emax = %lg, imax = %d, L_inf=%lg)\n",
+	    emax, imax, emax/Imax) ;
+
+  /* /\*check quadratures against analytical results, where available*\/ */
+  /* gqr_rule_bgr_check(g, &p, &imax, &emax, analytic_check, stderr) ; */
+
+  /* fprintf(stderr, "maximum error: %lg, basis function %d\n", emax, imax) ; */
   
   return 0 ;
 }

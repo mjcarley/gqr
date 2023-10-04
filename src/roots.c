@@ -105,7 +105,7 @@ static void gqr_runge_kutta_solve(gdouble th0, gdouble th1, gint ns,
   dp = GQR_POLYDER(P,(*x)) ;
   dr = GQR_POLYDER(R,(*x)) ;
 
-  k0 = -h*p*r/(r*sqrt(p*r) + 0.25*(dr*p-dp*r+2*r*q)*sin(2*th0)) ;  
+  k0 = -h*p*r/(r*sqrt(p*r) + 0.25*(dr*p-dp*r+2*r*q)*sin(2*th0)) ;
   for ( (i = 0), (th = th0 + h) ; i < ns ; (i ++), (th += h) ) {
     p = GQR_POLYVAL(P,(*x)+k0) ; q = GQR_POLYVAL(Q,(*x)+k0) ;
     r = GQR_POLYVAL(R,(*x)+k0) ;

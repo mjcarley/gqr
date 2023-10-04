@@ -633,7 +633,7 @@ static gboolean quadrature_check(gqr_t baserule, gqr_t singularity,
 				 gdouble a, gdouble b, gint N,
 				 gdouble pdouble[], gint npd,
 				 gint pint[], gint npi, gdouble tol,
-				 gdouble *emax, gint *imax)
+				 gdouble *emax, gdouble *Imax, gint *imax)
 
 {
   gqr_rule_t *g ;
@@ -658,25 +658,27 @@ static gboolean quadrature_check(gqr_t baserule, gqr_t singularity,
 
   gqr_rule_select(g, baserule | singularity, N, &p) ;
 
-  *imax = 0 ; *emax = 0.0 ;
-  quad(a, b, pdouble, npd, pint, npi, Ia, nfunc) ;
-  for ( i = 0 ; i <= nfunc ; i ++ ) {
-    Ic = quad_eval(g, a, b, pdouble, npd, pint, npi, func, i) ;
-    if ( fabs(Ic - Ia[i]) > (*emax) ) {
-      *imax = i ; *emax = fabs(Ic - Ia[i]) ;
-    }
-    /* fprintf(stderr, "%d %lg %lg\n", i, Ic, Ia[i]) ; */
-  }
-
-  if ( *emax <= tol ) return TRUE ;
+  return gqr_test_rule(g, a, b, tol, emax, Imax, imax) ;
   
-  return FALSE ;
+  /* *imax = 0 ; *emax = 0.0 ; */
+  /* quad(a, b, pdouble, npd, pint, npi, Ia, nfunc) ; */
+  /* for ( i = 0 ; i <= nfunc ; i ++ ) { */
+  /*   Ic = quad_eval(g, a, b, pdouble, npd, pint, npi, func, i) ; */
+  /*   if ( fabs(Ic - Ia[i]) > (*emax) ) { */
+  /*     *imax = i ; *emax = fabs(Ic - Ia[i]) ; */
+  /*   } */
+  /*   /\* fprintf(stderr, "%d %lg %lg\n", i, Ic, Ia[i]) ; *\/ */
+  /* } */
+
+  /* if ( *emax <= tol ) return TRUE ; */
+  
+  /* return FALSE ; */
 }
 
 gint main(gint argc, gchar **argv)
 
 {
-  gdouble a, b, tol, pdouble[32], emax ;
+  gdouble a, b, tol, pdouble[32], emax, Imax ;
   gint N, nq, test, pint[32], npi, npd, imax ;
   gchar ch, *progname ;
   gqr_t baserule, singularity ;
@@ -688,7 +690,7 @@ gint main(gint argc, gchar **argv)
   progname = g_strdup(g_path_get_basename(argv[0])) ;
 
   baserule = GQR_GAUSS_LEGENDRE ; singularity = GQR_GAUSS_REGULAR ;
-  baserule = GQR_GAUSS_JACOBI ; singularity = GQR_GAUSS_REGULAR ;
+  /* baserule = GQR_GAUSS_JACOBI ; singularity = GQR_GAUSS_REGULAR ; */
 
   a = -1.0 ; b = 1.0 ; tol = 1e-9 ; nq = 32 ;
   npi = npd = 0 ;
@@ -707,7 +709,7 @@ gint main(gint argc, gchar **argv)
   }
 
   pass = quadrature_check(baserule, singularity, a, b, N,
-			  pdouble, npd, pint, npi, tol, &emax, &imax) ;
+			  pdouble, npd, pint, npi, tol, &emax, &Imax, &imax) ;
 
   if ( pass ) {
     fprintf(stderr, "%s: pass\n", progname) ;
@@ -726,8 +728,7 @@ gint main(gint argc, gchar **argv)
     orthogonalization_test(nq, a, b, tol) ;
     
     return 0 ;
-  adaptive_function_check() ;
-  
+    adaptive_function_check() ;  
   }
 
   return 0 ;

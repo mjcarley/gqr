@@ -70,6 +70,7 @@ gint grule_chebyshev_1(gint n, gdouble *x, gdouble *w) ;
 gint grule_chebyshev_2(gint n, gdouble *x, gdouble *w) ;
 gint grule_logarithmic_smith(gint n, gdouble *x, gdouble *w) ;
 gint grule_hermite(gint n, gdouble *x, gdouble *w) ;
+gint grule_laguerre(gint n, gdouble *x, gdouble *w, gqr_parameter_t *p) ;
 
 gint grule_multi_singular(gint n, gint m, gdouble x,
 			  gint ns, gint *s, 
@@ -95,5 +96,7 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint i,
 gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p) ;
 gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
 					   gqr_parameter_t *p) ;
+
+gdouble bessel_zero_mcmahon(gdouble nu, gint m) ;
 
 #endif /*GQR_PRIVATE_H_INCLUDED*/

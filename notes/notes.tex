@@ -1,0 +1,79 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{times}
+
+\newcommand{\D}{\mathrm{d}}
+
+\begin{document}
+
+Integrals with algebraic weights,
+\begin{align*}
+  I_{n}
+  &=
+  \int_{a}^{b}x^{n}(x-a)^{\mu-1}(b-x)^{\nu-1}\,\D x.    
+\end{align*}
+
+Using G\&R~3.196.3:
+\begin{align*}
+  \int_{a}^{b}(x-a)^{\mu-1}(b-x)^{\nu-1}\,\D x
+  &=
+    (b-a)^{\mu+\nu-1}B(\mu, \nu).
+\end{align*}
+
+Recursion relation. Consider
+\begin{align*}
+  J_{n} = \int_{a}^{b}
+  x^{n} \frac{\D}{\D x}\left[(x-a)^{\mu}(b-x)^{\nu}\right]\,\D x.  
+\end{align*}
+Integrating by parts
+\begin{align*}    
+  J_{n} &=
+    \left.
+    x^{n}(x-a)^{\mu}(b-x)^{\nu}\right|_{a}^{b}\\
+  &-
+    n \int_{a}^{b}x^{n-1}(x-a)^{\mu}(b-x)^{\nu}\,\D x,\\
+  &=
+    n \int_{a}^{b}\left(x^{n+1} - (a+b)x^{n} + abx^{n-1}\right)
+    (x-a)^{\mu-1}(b-x)^{\nu-1}\,\D x,\\
+  &= nI_{n+1} - n(a+b)I_{n} + nabI_{n-1}.
+\end{align*}
+Evaluating the derivative,
+\begin{align*}
+  J_{n}
+  &=
+    \int_{a}^{b}x^{n}
+    \left[
+    b\mu + a\nu - (\mu+\nu)x
+    \right]
+    (x-a)^{\mu-1}(b-x)^{\nu-1}\,\D x,\\
+  &= (b\mu + a\nu)I_{n} - (\mu+\nu)I_{n+1}.
+\end{align*}
+Equating,
+\begin{align*}
+  (n+\mu+\nu)I_{n+1}
+  &=
+    \left[
+    n(a+b) + b\mu + a\nu
+    \right]I_{n}
+    -nab I_{n-1}.
+\end{align*}
+
+Recursion is seeded using,
+\begin{align*}
+  \int_{a}^{b}\frac{\D}{\D x}\left[(x-a)^{\mu}(b-x)^{\nu}\right]\,\D x
+  &= 0,\\
+  &= (b\mu + a\nu)I_{0} - (\mu+\nu)I_{1},
+\end{align*}
+giving
+\begin{align*}
+  I_{0} &= (b-a)^{\mu+\nu-1}B(\mu, \nu),\\
+  I_{1} &= \frac{b\mu+a\nu}{\mu+\nu}I_{0}.
+\end{align*}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

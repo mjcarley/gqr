@@ -37,3 +37,10 @@
 \_form#36=34x14:$u'(x_{0})$
 \_form#37=24x14:$u(x)$
 \_form#38=28x14:$u'(x)$
+\_form#39=115x18:$I\approx W \sum_{j=0}^{n}w_{j}f(x_{j})$
+\_form#40=14x10:$W$
+\_form#41=156x19:$\int_{a}^{b}x^i*(b-x)^\alpha*(x-a)^\beta\,\mathrm{d}x$
+\_form#42=64x11:$i=0,\ldots,n$
+\_form#43=8x6:$\alpha$
+\_form#44=9x13:$\beta$
+\_form#45=43x19:$\int_{a}^{b}x^{i}\,\mathrm{d}x$
