@@ -135,8 +135,6 @@ gint main(gint argc, gchar **argv)
   gqr_rule_select(g, rule, N, &p) ;
   gqr_rule_write(g, stdout) ;
 
-  /* if ( baserule != GQR_GAUSS_GENERALIZED ) return 0 ; */
-
   if ( !error_check ) return 0 ;
 
   fprintf(stderr, "%s: testing quadrature rule, tol = %lg\n",
@@ -145,10 +143,10 @@ gint main(gint argc, gchar **argv)
   error_check = gqr_test_rule(g, a, b, tol, &emax, &Imax, &imax) ;  
 
   if ( error_check )
-    fprintf(stderr, "  PASS: (emax = %lg, imax = %d, L_inf=%lg)\n",
+    fprintf(stderr, "  PASS: (emax = %lg, imax = %d, L_inf = %lg)\n",
 	    emax, imax, emax/Imax) ;
   else
-    fprintf(stderr, "  FAIL: (emax = %lg, imax = %d, L_inf=%lg)\n",
+    fprintf(stderr, "  FAIL: (emax = %lg, imax = %d, L_inf = %lg)\n",
 	    emax, imax, emax/Imax) ;
 
   /* /\*check quadratures against analytical results, where available*\/ */
