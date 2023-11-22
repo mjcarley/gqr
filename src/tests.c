@@ -252,9 +252,10 @@ gint gqr_test_integral_legendre(gdouble a, gdouble b, gqr_parameter_t *p,
  * @param n number of integrals to evaluate;
  * @param tol tolerance for error check
  * @param emax maximum difference between numerical and analytical evaluation;
- * @param imax index of function with largest difference.
+ * @param Imax maximum absolute value of integral;
+ * @param imax index of integral with largest difference.
  * 
- * @return TRUE if *emax < tol, FALSE otherwise.
+ * @return TRUE if *emax < tol*Imax, FALSE otherwise.
  */
 
 gboolean gqr_test_rule_base(gqr_rule_t *g, gdouble a, gdouble b,
@@ -280,7 +281,7 @@ gboolean gqr_test_rule_base(gqr_rule_t *g, gdouble a, gdouble b,
     *Imax = MAX(Ia[i], (*Imax)) ;
   }
 
-  if ( *emax > tol ) return FALSE ;
+  if ( *emax > tol*(*Imax) ) return FALSE ;
   
   return TRUE ;
 }
