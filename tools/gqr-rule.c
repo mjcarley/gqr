@@ -143,11 +143,13 @@ gint main(gint argc, gchar **argv)
   error_check = gqr_test_rule(g, a, b, tol, &emax, &Imax, &imax) ;  
 
   if ( error_check )
-    fprintf(stderr, "  PASS: (emax = %lg, imax = %d, L_inf = %lg)\n",
-	    emax, imax, emax/Imax) ;
+    fprintf(stderr,
+	    "  PASS: (emax = %lg, Imax = %lg, imax = %d, L_inf = %lg)\n",
+	    emax, Imax, imax, emax/Imax) ;
   else
-    fprintf(stderr, "  FAIL: (emax = %lg, imax = %d, L_inf = %lg)\n",
-	    emax, imax, emax/Imax) ;
+    fprintf(stderr,
+	    "  FAIL: (emax = %lg, Imax = %lg, imax = %d, L_inf = %lg)\n",
+	    emax, Imax, imax, emax/Imax) ;
 
   /* /\*check quadratures against analytical results, where available*\/ */
   /* gqr_rule_bgr_check(g, &p, &imax, &emax, analytic_check, stderr) ; */
