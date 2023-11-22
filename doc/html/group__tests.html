@@ -51,10 +51,10 @@ Functions</h2></td></tr>
 <tr class="separator:ga535485d9792358e9a267c5fd7aa50b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2efed5dafb52e19d1a5a68d0e46c114b"><td class="memItemLeft" align="right" valign="top">gint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#ga2efed5dafb52e19d1a5a68d0e46c114b">gqr_test_integral_legendre</a> (gdouble a, gdouble b, <a class="el" href="group__gqr.html#ga4512314849c794f1b2840a7135d663de">gqr_parameter_t</a> *p, gdouble *I, gint n)</td></tr>
 <tr class="separator:ga2efed5dafb52e19d1a5a68d0e46c114b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab9a78dbcb466c9e4e2f6f2f7c86740f3"><td class="memItemLeft" align="right" valign="top">gboolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#gab9a78dbcb466c9e4e2f6f2f7c86740f3">gqr_test_rule_base</a> (<a class="el" href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a> *g, gdouble a, gdouble b, gqr_test_integrand_t ifunc, gqr_test_integral_t intfunc, gint n, gdouble tol, gdouble *emax, gint *imax)</td></tr>
-<tr class="separator:gab9a78dbcb466c9e4e2f6f2f7c86740f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga06982deb77c5f86773e9cb3d7e29247c"><td class="memItemLeft" align="right" valign="top">gboolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#ga06982deb77c5f86773e9cb3d7e29247c">gqr_test_rule</a> (<a class="el" href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a> *g, gdouble a, gdouble b, gdouble tol, gdouble *emax, gint *imax)</td></tr>
-<tr class="separator:ga06982deb77c5f86773e9cb3d7e29247c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafd5da59974d485c0bb62a0b77f97ed3e"><td class="memItemLeft" align="right" valign="top">gboolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#gafd5da59974d485c0bb62a0b77f97ed3e">gqr_test_rule_base</a> (<a class="el" href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a> *g, gdouble a, gdouble b, gqr_test_integrand_t ifunc, gqr_test_integral_t intfunc, gint n, gdouble tol, gdouble *emax, gdouble *Imax, gint *imax)</td></tr>
+<tr class="separator:gafd5da59974d485c0bb62a0b77f97ed3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga245421844e78b2ce6a27692bc0533703"><td class="memItemLeft" align="right" valign="top">gboolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tests.html#ga245421844e78b2ce6a27692bc0533703">gqr_test_rule</a> (<a class="el" href="group__gqr.html#ga89dca966e4378ceb2d146ffdbea4e272">gqr_rule_t</a> *g, gdouble a, gdouble b, gdouble tol, gdouble *emax, gdouble *Imax, gint *imax)</td></tr>
+<tr class="separator:ga245421844e78b2ce6a27692bc0533703"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >GQR has a facility for checking most of its standard rules against analytical integration </p>
@@ -175,8 +175,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga06982deb77c5f86773e9cb3d7e29247c" name="ga06982deb77c5f86773e9cb3d7e29247c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga06982deb77c5f86773e9cb3d7e29247c">&#9670;&nbsp;</a></span>gqr_test_rule()</h2>
+<a id="ga245421844e78b2ce6a27692bc0533703" name="ga245421844e78b2ce6a27692bc0533703"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga245421844e78b2ce6a27692bc0533703">&#9670;&nbsp;</a></span>gqr_test_rule()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -214,6 +214,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">gdouble *&#160;</td>
+          <td class="paramname"><em>Imax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">gint *&#160;</td>
           <td class="paramname"><em>imax</em>&#160;</td>
         </tr>
@@ -224,7 +230,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Test a GQR quadrature rule by calling <a class="el" href="group__tests.html#gab9a78dbcb466c9e4e2f6f2f7c86740f3">gqr_test_rule_base</a> with appropriate integrand and integral functions, based on the type of quadrature in the supplied rule</p>
+<p >Test a GQR quadrature rule by calling <a class="el" href="group__tests.html#gafd5da59974d485c0bb62a0b77f97ed3e">gqr_test_rule_base</a> with appropriate integrand and integral functions, based on the type of quadrature in the supplied rule</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">g</td><td>rule to test; </td></tr>
@@ -232,6 +238,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">b</td><td>upper limit of integration; </td></tr>
     <tr><td class="paramname">tol</td><td>tolerance for error check; </td></tr>
     <tr><td class="paramname">emax</td><td>maximum difference between exact and computed integrals; </td></tr>
+    <tr><td class="paramname">Imax</td><td>maximum absolute value of an integral; </td></tr>
     <tr><td class="paramname">imax</td><td>index of integral with largest error.</td></tr>
   </table>
   </dd>
@@ -240,8 +247,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gab9a78dbcb466c9e4e2f6f2f7c86740f3" name="gab9a78dbcb466c9e4e2f6f2f7c86740f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab9a78dbcb466c9e4e2f6f2f7c86740f3">&#9670;&nbsp;</a></span>gqr_test_rule_base()</h2>
+<a id="gafd5da59974d485c0bb62a0b77f97ed3e" name="gafd5da59974d485c0bb62a0b77f97ed3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafd5da59974d485c0bb62a0b77f97ed3e">&#9670;&nbsp;</a></span>gqr_test_rule_base()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -297,6 +304,12 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">gdouble *&#160;</td>
+          <td class="paramname"><em>Imax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">gint *&#160;</td>
           <td class="paramname"><em>imax</em>&#160;</td>
         </tr>
@@ -318,18 +331,19 @@ Functions</h2></td></tr>
     <tr><td class="paramname">n</td><td>number of integrals to evaluate; </td></tr>
     <tr><td class="paramname">tol</td><td>tolerance for error check </td></tr>
     <tr><td class="paramname">emax</td><td>maximum difference between numerical and analytical evaluation; </td></tr>
-    <tr><td class="paramname">imax</td><td>index of function with largest difference.</td></tr>
+    <tr><td class="paramname">Imax</td><td>maximum absolute value of integral; </td></tr>
+    <tr><td class="paramname">imax</td><td>index of integral with largest difference.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>TRUE if *emax &lt; tol, FALSE otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>TRUE if *emax &lt; tol*Imax, FALSE otherwise. </dd></dl>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Sep 4 2023 16:45:41 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+Generated on Wed Nov 22 2023 12:05:01 for GQR by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
 </small></address>
 </body>
 </html>
