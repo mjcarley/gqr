@@ -33,6 +33,19 @@
 #endif
 #endif /*HAVE_LIBMPFR*/
 
+#ifdef DOXYGEN
+
+/**
+ * @file   gqr.h
+ * @author  <michael@michael.paraffinalia.co.uk>
+ * @date   Wed Mar  6 16:41:09 2024
+ * 
+ * @brief  
+ * 
+ * 
+ */
+#endif /*DOXYGEN*/
+
 enum {
   GQR_ERROR = -1,
   GQR_SUCCESS = 0,
@@ -41,43 +54,34 @@ enum {
   GQR_INVALID_STRING
 } ;
 
+#ifdef DOXYGEN
 /**
  * @typedef gqr_t
- * @ingroup gqr
- *
+ * 
  * A type defining the quadrature rules available. A quadrature rule
  * is defined as a basic type possibly combined with a
- * singularity. For example GQR_GAUSS_LEGENDRE |
- * GQR_GAUSS_HYPERSINGULAR specifies a Gauss-Legendre rule which
+ * singularity. For example ::GQR_GAUSS_LEGENDRE |
+ * ::GQR_GAUSS_HYPERSINGULAR specifies a Gauss-Legendre rule which
  * handles singularities up to and including second order. Note that
  * not all of these rules are implemented or going to be
  * implemented. GQR will return an error message if you try to use an
  * unimplemented rule.
- * 
  */
-
-typedef enum {
-  GQR_GAUSS_LEGENDRE = 1,	/**< Gauss-Legendre*/
-  GQR_GAUSS_CHEBYSHEV_1 = 2,	/**< Gauss-Chebyshev of the first kind */
-  GQR_GAUSS_CHEBYSHEV_2 = 3,	/**< Gauss-Chebyshev of the second kind */
-  GQR_GAUSS_HERMITE = 4,	/**< Hermite */
-  GQR_GAUSS_LAGUERRE = 5,	/**< Laguerre */
-  GQR_GAUSS_JACOBI = 6,		/**< Jacobi with weight function
-				   \f$(1+x)^\alpha (1-x)^\beta\f$,
-				   with \f$(\alpha,\beta)\f$ supplied
-				   as the first two floating point
-				   parameters */
-  GQR_GAUSS_LOGARITHMIC = 1 << 8, /**< logarithmic singularities */
-  GQR_GAUSS_SINGULAR = 1 << 9,	/**< first order and logarithmic
-				   singularities */
-  GQR_GAUSS_HYPERSINGULAR = 1 << 10, /**<  singularities up to second order*/
-  GQR_GAUSS_MULTISINGULAR = 1 << 11, /**< multiple singularities which
-				       must be specified in the rule
-				       initialization */
-  GQR_GAUSS_GENERALIZED = 1 << 12 /**< generalized Gaussian quadratures using
-				     the algorithm of Bremer, Gimbutas and
-				     Rokhlin */
-} gqr_t ;
+#endif /*DOXYGEN*/
+typedef enum
+  {
+    GQR_GAUSS_LEGENDRE = 1,	/**< Gauss-Legendre*/
+    GQR_GAUSS_CHEBYSHEV_1 = 2,	/**< Gauss-Chebyshev of the first kind */
+    GQR_GAUSS_CHEBYSHEV_2 = 3,	/**< Gauss-Chebyshev of the second kind */
+    GQR_GAUSS_HERMITE = 4,	/**< Hermite */
+    GQR_GAUSS_LAGUERRE = 5,	/**< Laguerre */
+    GQR_GAUSS_JACOBI = 6,	/**< Jacobi with weight function \f$(1+x)^\alpha (1-x)^\beta\f$, with \f$(\alpha,\beta)\f$ supplied as the first two floating point parameters */
+    GQR_GAUSS_LOGARITHMIC = 1 << 8, /**< logarithmic singularities */
+    GQR_GAUSS_SINGULAR = 1 << 9,	/**< first order and logarithmic singularities */
+    GQR_GAUSS_HYPERSINGULAR = 1 << 10, /**< singularities up to second order*/
+    GQR_GAUSS_MULTISINGULAR = 1 << 11, /**< multiple singularities which must be specified in the rule initialization */
+    GQR_GAUSS_GENERALIZED = 1 << 12 /**< generalized Gaussian quadratures using the algorithm of Bremer, Gimbutas and Rokhlin */
+  } gqr_t ;
 
 #define GQR_GAUSS_REGULAR 0
 
