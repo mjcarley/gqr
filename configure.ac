@@ -104,6 +104,7 @@ LIBS="$GLIB_LIBS $GSL_LIBS $LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS"
 
 AC_CONFIG_FILES([
 Makefile
+gqr.pc
 src/Makefile
 src/gqr-config
 tools/Makefile

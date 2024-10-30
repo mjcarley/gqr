@@ -30,9 +30,6 @@
 /* Minor version */
 #define GQR_MINOR_VERSION 1
 
-/* Define if you have an ATLAS BLAS library. */
-/* #undef HAVE_ATLAS_BLAS */
-
 /* Define if you have a BLAS library. */
 #define HAVE_BLAS 1
 

@@ -7,3 +7,6 @@ SUBDIRS = src tools
 EXTRA_DIST = doc
 
 ACLOCAL_AMFLAGS=-I m4
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = gqr.pc

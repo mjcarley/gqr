@@ -11,8 +11,9 @@ gqr-logging.lo: gqr-logging.c /usr/include/stdc-predef.h ../config.h \
  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/floatn.h \
- /usr/include/bits/floatn-common.h /usr/include/glib-2.0/glib.h \
- /usr/include/glib-2.0/glib/galloca.h /usr/include/glib-2.0/glib/gtypes.h \
+ /usr/include/bits/floatn-common.h /usr/include/bits/stdio.h \
+ /usr/include/glib-2.0/glib.h /usr/include/glib-2.0/glib/galloca.h \
+ /usr/include/glib-2.0/glib/gtypes.h \
  /usr/lib64/glib-2.0/include/glibconfig.h \
  /usr/include/glib-2.0/glib/gmacros.h \
  /usr/lib64/gcc/x86_64-slackware-linux/11.2.0/include-fixed/limits.h \
@@ -46,9 +47,10 @@ gqr-logging.lo: gqr-logging.c /usr/include/stdc-predef.h ../config.h \
  /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
  /usr/include/bits/pthreadtypes-arch.h /usr/include/bits/struct_mutex.h \
  /usr/include/bits/struct_rwlock.h /usr/include/alloca.h \
- /usr/include/bits/stdlib-float.h /usr/include/glib-2.0/glib/gbacktrace.h \
- /usr/include/signal.h /usr/include/bits/signum-generic.h \
- /usr/include/bits/signum-arch.h /usr/include/bits/types/sig_atomic_t.h \
+ /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
+ /usr/include/glib-2.0/glib/gbacktrace.h /usr/include/signal.h \
+ /usr/include/bits/signum-generic.h /usr/include/bits/signum-arch.h \
+ /usr/include/bits/types/sig_atomic_t.h \
  /usr/include/bits/types/siginfo_t.h /usr/include/bits/types/__sigval_t.h \
  /usr/include/bits/siginfo-arch.h /usr/include/bits/siginfo-consts.h \
  /usr/include/bits/types/sigval_t.h /usr/include/bits/types/sigevent_t.h \
@@ -150,6 +152,7 @@ gqr.h:
 /usr/include/bits/stdio_lim.h:
 /usr/include/bits/floatn.h:
 /usr/include/bits/floatn-common.h:
+/usr/include/bits/stdio.h:
 /usr/include/glib-2.0/glib.h:
 /usr/include/glib-2.0/glib/galloca.h:
 /usr/include/glib-2.0/glib/gtypes.h:
@@ -204,6 +207,7 @@ gqr.h:
 /usr/include/bits/struct_mutex.h:
 /usr/include/bits/struct_rwlock.h:
 /usr/include/alloca.h:
+/usr/include/bits/stdlib-bsearch.h:
 /usr/include/bits/stdlib-float.h:
 /usr/include/glib-2.0/glib/gbacktrace.h:
 /usr/include/signal.h:
