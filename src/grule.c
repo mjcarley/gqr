@@ -254,7 +254,7 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
     g_error("%s: number of abscissae (%d) must be less than maximum "
 	    "for g (%d)", __FUNCTION__, n, g->nmax) ;
 
-  g->data = *p ;
+  if ( p != NULL ) g->data = *p ;
   
   switch (type) {
   default: 
