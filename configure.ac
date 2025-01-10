@@ -72,20 +72,42 @@ AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
 AC_F77_DUMMY_MAIN
 AC_F77_WRAPPERS
-ACX_BLAS
-ACX_LAPACK
 AC_CHECK_LIB(rrqr, dgeqpx_,[],[],[-llapack -lblas])
 
 PKG_CHECK_MODULES([GSL], [gsl]) 
-PKG_CHECK_MODULES([GLIB], [glib-2.0])
+PKG_CHECK_MODULES([GLIB], [glib-2.0], [],
+[
+  echo \#################################################################
+  echo \# 
+  echo \# GLIB-2.0 not installed. You can install it using your 
+  echo \# distribution's package manager or from:
+  echo \#
+  echo \# https://gitlab.gnome.org/GNOME/glib/
+  echo \#
+  echo \#################################################################
+  exit
+])
+
+PKG_CHECK_MODULES([BLASWRAP], [blaswrap], [],
+[
+  echo \#################################################################
+  echo \#
+  echo \# BLAS wrapper library not installed or not properly installed.
+  echo \# You can get it from
+  echo \#
+  echo \# https://github.com/mjcarley/blaswrap
+  echo \#
+  echo \#################################################################
+  exit
+])
 
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GSL_CFLAGS)
 AC_SUBST(GSL_LIBS)
 
-CFLAGS="$CFLAGS $GLIB_CFLAGS $GSL_CFLAGS"
-LDFLAGS="$LDFLAGS $GLIB_LIBS $GSL_LIBS"
+CFLAGS="$CFLAGS $GLIB_CFLAGS $GSL_CFLAGS $BLASWRAP_CFLAGS"
+LDFLAGS="$LDFLAGS $GLIB_LIBS $GSL_LIBS $BLASWRAP_LIBS"
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)

@@ -30,17 +30,11 @@
 /* Minor version */
 #define GQR_MINOR_VERSION 1
 
-/* Define if you have a BLAS library. */
-#define HAVE_BLAS 1
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
-
-/* Define if you have LAPACK library. */
-#define HAVE_LAPACK 1
 
 /* Define to 1 if you have the `m' library (-lm). */
 #define HAVE_LIBM 1
