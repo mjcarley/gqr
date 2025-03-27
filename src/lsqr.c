@@ -44,7 +44,7 @@ extern void dgelsd_(int *, int *, int *,
 /*   return (log(x)/M_LN2) ; */
 /* } */
 
-#ifdef HAVE_LAPACK
+/* #ifdef HAVE_LAPACK */
 gint gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb)
 
 {
@@ -80,12 +80,12 @@ gint gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb)
 
   return 0 ;
 }
-#else /*HAVE_LAPACK*/
-gint gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb)
+/* #else /\*HAVE_LAPACK*\/ */
+/* gint gqr_lsqr_min_norm(gdouble *A, gint m, gint n, gdouble *b, gint nb) */
 
-{
-  g_assert_not_reached() ;
+/* { */
+/*   g_assert_not_reached() ; */
 
-  return 0 ;
-}
-#endif /*HAVE_LAPACK*/
+/*   return 0 ; */
+/* } */
+/* #endif /\*HAVE_LAPACK*\/ */

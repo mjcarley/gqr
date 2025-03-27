@@ -77,7 +77,7 @@ gdouble grule_bgr_func_scattering_r(gdouble t, gint i, gqr_parameter_t *p)
 {
   gdouble d, f, x0, x1 ;
 
-  g_assert(gqr_parameter_nf(p) > 3) ;
+  g_assert(gqr_parameter_double_number(p) > 3) ;
   d = gqr_parameter_double(p, 3) ;
 
   g_assert(d > 0.0) ;
@@ -122,7 +122,7 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
   gint nd, i, j ;
   gqr_rule_t *rule ;
   
-  g_assert(gqr_parameter_ni(p) > 4) ;
+  g_assert(gqr_parameter_int_number(p) > 4) ;
   nd = gqr_parameter_int(p, 4) ;
 
   if ( p->rules[0] == NULL ) p->rules[0] = gqr_rule_alloc(4*nd) ;
@@ -132,7 +132,7 @@ gdouble grule_bgr_func_scattering_range_r(gdouble t, gint idx,
     gqr_rule_select(rule, GQR_GAUSS_LEGENDRE, nd, NULL) ;
   }
 
-  g_assert(gqr_parameter_nf(p) > 4) ;
+  g_assert(gqr_parameter_double_number(p) > 4) ;
   d0 = gqr_parameter_double(p, 3) ;
   d1 = gqr_parameter_double(p, 4) ;
 
@@ -240,13 +240,13 @@ gdouble grule_bgr_func_scattering_range_th(gdouble t, gint idx,
   gint nj, nk, i, j, k, off, nr, nt, nrt, tr, tt ;
   gqr_rule_t *rrule, *trule ;
   
-  g_assert(gqr_parameter_ni(p) > 7) ;
+  g_assert(gqr_parameter_int_number(p) > 7) ;
   nj = gqr_parameter_int(p, 4) ;
   nk = gqr_parameter_int(p, 5) ;
   nr = gqr_parameter_int(p, 6) ;
   nt = gqr_parameter_int(p, 7) ;
 
-  g_assert(gqr_parameter_nf(p) > 6) ;
+  g_assert(gqr_parameter_double_number(p) > 6) ;
   rmin = gqr_parameter_double(p, 3) ;
   rmax = gqr_parameter_double(p, 4) ;
   thmin = gqr_parameter_double(p, 5) ;
@@ -384,11 +384,11 @@ gdouble grule_bgr_func_scattering_th(gdouble t, gint idx, gqr_parameter_t *p)
   gdouble r0, th0, th, f, M ;
   gint nj, nk, i, j, k, off ;
   
-  g_assert(gqr_parameter_ni(p) > 5) ;
+  g_assert(gqr_parameter_int_number(p) > 5) ;
   nj = gqr_parameter_int(p, 4) ;
   nk = gqr_parameter_int(p, 5) ;
 
-  g_assert(gqr_parameter_nf(p) > 4) ;
+  g_assert(gqr_parameter_double_number(p) > 4) ;
   r0 = gqr_parameter_double(p, 3) ;
   th0 = gqr_parameter_double(p, 4) ;
 
@@ -511,13 +511,13 @@ gint grule_bgr(gdouble *x, gdouble *w, gqr_parameter_t *p)
   gqr_adapt_func_t func ;
   gdouble test0 ;
   
-  if ( gqr_parameter_np(p) < 1 ) 
+  if ( gqr_parameter_pointer_number(p) < 1 ) 
     g_error("%s: at least one pointer must be set in parameters",
 	    __FUNCTION__) ;
-  if ( gqr_parameter_nf(p) < 3 ) 
+  if ( gqr_parameter_double_number(p) < 3 ) 
     g_error("%s: at least three doubles must be set in parameters",
 	    __FUNCTION__) ;
-  if ( gqr_parameter_ni(p) < 4 ) 
+  if ( gqr_parameter_int_number(p) < 4 ) 
     g_error("%s: at least four ints must be set in parameters",
 	    __FUNCTION__) ;
 
@@ -685,13 +685,13 @@ gint gqr_rule_bgr_check(gqr_rule_t *rule, gqr_parameter_t *p,
   gqr_rule_t *r ;
   gqr_adapt_func_t func ;
   
-  if ( gqr_parameter_np(p) < 1 ) 
+  if ( gqr_parameter_pointer_number(p) < 1 ) 
     g_error("%s: at least one pointer must be set in parameters",
 	    __FUNCTION__) ;
-  if ( gqr_parameter_nf(p) < 3 ) 
+  if ( gqr_parameter_double_number(p) < 3 ) 
     g_error("%s: at least three doubles must be set in parameters",
 	    __FUNCTION__) ;
-  if ( gqr_parameter_ni(p) < 4 ) 
+  if ( gqr_parameter_int_number(p) < 4 ) 
     g_error("%s: at least four ints must be set in parameters",
 	    __FUNCTION__) ;
 

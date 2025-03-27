@@ -28,11 +28,11 @@
 #include <config.h>
 #endif /*HAVE_CONFIG_H*/
 
-#if HAVE_LAPACK
+/* #if HAVE_LAPACK */
 #ifndef GQR_LAPACK_COND_TOL
 #define GQR_LAPACK_COND_TOL 1e-15
 #endif
-#endif /*HAVE_LAPACK*/
+/* #endif /\*HAVE_LAPACK*\/ */
 
 #ifndef g_debug
 #define g_debug(format...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, format)
@@ -71,6 +71,7 @@ gint grule_chebyshev_2(gint n, gdouble *x, gdouble *w) ;
 gint grule_logarithmic_smith(gint n, gdouble *x, gdouble *w) ;
 gint grule_hermite(gint n, gdouble *x, gdouble *w) ;
 gint grule_laguerre(gint n, gdouble *x, gdouble *w, gqr_parameter_t *p) ;
+gint grule_paget(gint n, gdouble *x, gdouble *w, gqr_parameter_t *p) ;
 
 gint grule_multi_singular(gint n, gint m, gdouble x,
 			  gint ns, gint *s, 

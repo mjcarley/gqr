@@ -121,7 +121,7 @@ if test "$echo_libs" = "yes"; then
 	if test "$lib_gthread" = "yes"; then
 	    glib_libs="$glib_libs $glib_thread_libs"
 	fi
-	glib_libs="-L${exec_prefix}/lib -lgqr -L/home/michael/Codes/lib -L/home/michael/Codes/lib64 -lglib-2.0 -lgsl -lgslcblas -lm -L/home/michael/Codes/lib -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../.. -lglib-2.0 -lblas -lm -lgfortran -lm -lquadmath -lglib-2.0  $glib_libs -lm"
+	glib_libs="-L${exec_prefix}/lib -lgqr  -lglib-2.0 -lgsl -lgslcblas -lm -L/home/michael/Codes/lib -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../.. -lglib-2.0 -lblas -lm -lgfortran -lm -lquadmath -lglib-2.0  $glib_libs -lm"
 	glib_libs=`uniquify "$glib_libs"`
-	echo -L${exec_prefix}/lib -lgqr -lglib-2.0 -lgsl -lgslcblas -lm   -lrrqr -lm   -L/home/michael/Codes/lib -L/home/michael/Codes/lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../.. -lgfortran -lm -lquadmath
+	echo -L${exec_prefix}/lib -lgqr -lglib-2.0 -lgsl -lgslcblas -lm   -lm   -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib64/gcc/x86_64-slackware-linux/11.2.0/../../.. -lgfortran -lm -lquadmath
 fi

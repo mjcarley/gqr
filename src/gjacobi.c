@@ -128,7 +128,7 @@ gint grule_jacobi(gint n, gdouble *x, gdouble *w, gqr_parameter_t *pm)
   gdouble al, bt, A, dxmax ;
   gint i ;
   
-  if ( gqr_parameter_nf(pm) < 2 )
+  if ( gqr_parameter_double_number(pm) < 2 )
     g_error("%s: Jacobi quadrature rule requires two parameters",
 	    __FUNCTION__) ;
   al = gqr_parameter_double(pm, 0) ;

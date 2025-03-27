@@ -285,7 +285,6 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
 	    "%s: singularity position x not set for quadrature rule", 
 	    __FUNCTION__) ;
     }
-#if HAVE_LAPACK
     if ( p->nf == 1 ) 
       grule_kolm_rokhlin_new(n, 
 			      gqr_parameter_int(p,0), 
@@ -298,23 +297,17 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
 			  gqr_parameter_double(p,1),
 			  g->x, g->w) ;      
     g->a = -1 ; g->b = 1 ; g->n = n ; g->type = type ;
-#else /*HAVE_LAPACK*/
-    g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, 
-	  "quadrature rule %d (%s) not implemented (requires LAPACK)", 
-	  type, gqr_rule_name(type)) ;
-#endif /*HAVE_LAPACK*/
     break ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch"
   case GQR_GAUSS_LEGENDRE | GQR_GAUSS_MULTISINGULAR:
     g_assert(p->ni > 1) ; g_assert(p->nf > 0) ;
 #pragma GCC diagnostic pop
-#if HAVE_LAPACK
     if ( p->nf == 1 ) 
       grule_multi_singular(n, 
 			   gqr_parameter_int(p,0),
 			   gqr_parameter_double(p,0),
-			   gqr_parameter_ni(p)-1,
+			   gqr_parameter_int_number(p)-1,
 			   &(gqr_parameter_int(p,1)),
 			   g->x, g->w) ; 
     else 
@@ -322,15 +315,10 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
 			    gqr_parameter_int(p,0),
 			    gqr_parameter_double(p,0),
 			    gqr_parameter_double(p,1),
-			    gqr_parameter_ni(p)-1,
+			    gqr_parameter_int_number(p)-1,
 			    &(gqr_parameter_int(p,1)),
 			    g->x, g->w) ;      
     g->a = -1 ; g->b = 1 ; g->n = n ; g->type = type ;
-#else /*HAVE_LAPACK*/
-    g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, 
-	  "quadrature rule %d (%s) not implemented (requires LAPACK)", 
-	  type, gqr_rule_name(type)) ;
-#endif /*HAVE_LAPACK*/
     break ;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch"
@@ -344,6 +332,13 @@ gint gqr_rule_select(gqr_rule_t *g, gqr_t type, gint n,
     } else {
       g_assert_not_reached() ;
     }
+    break ;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch"
+  case GQR_GAUSS_LEGENDRE | GQR_GAUSS_PAGET:
+#pragma GCC diagnostic pop    
+    grule_paget(n, g->x, g->w, p) ;
+    g->a = 0.0 ; g->b = 1.0 ; g->n = n ; g->type = type ;
     break ;
   case GQR_GAUSS_CHEBYSHEV_1:
     grule_chebyshev_1(n, g->x, g->w) ; g->n = n ;
@@ -448,6 +443,7 @@ gchar *gqr_rule_name_singularity(gqr_t type)
   if ( t == GQR_GAUSS_LOGARITHMIC ) return "logarithmic" ;
   if ( t == GQR_GAUSS_SINGULAR ) return "Cauchy singular" ;
   if ( t == GQR_GAUSS_HYPERSINGULAR ) return "hypersingular" ;
+  if ( t == GQR_GAUSS_PAGET ) return "hypersingular" ;
     
   return "unknown singularity" ;
 }
@@ -510,6 +506,7 @@ static gqr_t string_to_gqr(gchar *s)
   if ( !strcmp(s, "GQR_GAUSS_SINGULAR") ) return GQR_GAUSS_SINGULAR ;
   if ( !strcmp(s, "GQR_GAUSS_HYPERSINGULAR") ) return GQR_GAUSS_HYPERSINGULAR ;
   if ( !strcmp(s, "GQR_GAUSS_MULTISINGULAR") ) return GQR_GAUSS_MULTISINGULAR ;
+  if ( !strcmp(s, "GQR_GAUSS_PAGET") ) return GQR_GAUSS_PAGET ;
 
   g_error("%s: unrecognized quadrature type %s", __FUNCTION__, s) ;
 

@@ -322,7 +322,10 @@ gboolean gqr_test_rule(gqr_rule_t *g, gdouble a, gdouble b,
     g_error("%s: unrecognized rule %u", __FUNCTION__, baserule) ;
     break ;
   case GQR_GAUSS_LEGENDRE:
-    n = gqr_rule_length(g)*2 ;
+    if ( baserule == gqr_rule_type(g) ) 
+      n = gqr_rule_length(g)*2 ;
+    else
+      n = gqr_parameter_int(&(g->data),0) ;
     ifunc = gqr_test_integrand_monomial ;
     intfunc = gqr_test_integral_legendre ;
     break ;

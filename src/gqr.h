@@ -80,7 +80,8 @@ typedef enum
     GQR_GAUSS_SINGULAR = 1 << 9,	/**< first order and logarithmic singularities */
     GQR_GAUSS_HYPERSINGULAR = 1 << 10, /**< singularities up to second order*/
     GQR_GAUSS_MULTISINGULAR = 1 << 11, /**< multiple singularities which must be specified in the rule initialization */
-    GQR_GAUSS_GENERALIZED = 1 << 12 /**< generalized Gaussian quadratures using the algorithm of Bremer, Gimbutas and Rokhlin */
+    GQR_GAUSS_GENERALIZED = 1 << 12, /**< generalized Gaussian quadratures using the algorithm of Bremer, Gimbutas and Rokhlin */
+    GQR_GAUSS_PAGET = 1 << 13, /**< endpoint singularities using the method of Paget */
   } gqr_t ;
 
 #define GQR_GAUSS_REGULAR 0
@@ -125,9 +126,9 @@ struct _gqr_parameter_t {
 #define gqr_parameter_set_double(_p,_f) ((_p)->f[((_p)->nf)++] = (_f))
 #define gqr_parameter_set_pointer(_p,_f) ((_p)->p[((_p)->np)++] = (_f))
 #define gqr_parameter_set_int(_p,_i) ((_p)->i[((_p)->ni)++] = (_i))
-#define gqr_parameter_ni(_p) (((_p)->ni))
-#define gqr_parameter_nf(_p) (((_p)->nf))
-#define gqr_parameter_np(_p) (((_p)->np))
+#define gqr_parameter_int_number(_p) (((_p)->ni))
+#define gqr_parameter_double_number(_p) (((_p)->nf))
+#define gqr_parameter_pointer_number(_p) (((_p)->np))
 
 /**
  * @typedef gqr_rule_t

@@ -23,6 +23,7 @@ libgqr_la_SOURCES = \
 	smith.c \
 	gchebyshev.c  \
 	kolrokh.c  \
+	paget.c \
 	lsqr.c \
 	msingular.c \
 	nsingular.c \

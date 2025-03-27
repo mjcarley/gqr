@@ -71,7 +71,7 @@ gint grule_laguerre(gint n, gdouble *x, gdouble *w, gqr_parameter_t *pm)
   gdouble f0, f1, fmid, x1, xmid, al, ee, nu, f, df, jroot ;
   gint i, j, m ;
 
-  if ( gqr_parameter_nf(pm) < 1 ) al = 0.0 ;
+  if ( gqr_parameter_double_number(pm) < 1 ) al = 0.0 ;
   else al = gqr_parameter_double(pm, 0) ;
 
   /* p[0] = 0 ; p[1] = 0 ; p[2] = 1 ; */
