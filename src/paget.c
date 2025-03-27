@@ -40,15 +40,56 @@
 #include "gqr.h"
 #include "gqr-private.h"
 
+/*
+ * Paget, D.F. A quadrature rule for finite-part integrals. BIT 21,
+ * 212–220 (1981). https://doi.org/10.1007/BF01933166
+ */
+
 gint grule_paget(gint n, gdouble *x, gdouble *w, gqr_parameter_t *p)
 
 {
-  gint a ;
-
-  if ( gqr_parameter_int_number(p) == 0 ) {
+  gint a, k, i ;
+  gdouble b[1024] = {0}, c[1024] = {0}, d[1024] = {0}, E2, E1, E ;
+  
+  if ( p == NULL || gqr_parameter_int_number(p) == 0 ) {
     a = 2 ;
   } else {
     a = gqr_parameter_int(p,0) ;
+  }
+
+  grule_legendre(n, x, w) ;
+
+  if ( a > 1 ) b[0] = 1.0/(1-a) ;
+
+  for ( k = 1 ; k <= a-2 ; k ++ ) {
+    b[k] = -(k+a-1)/(k-a+1)*b[k-1] ;
+  }
+
+  c[a-1] = (2*a-2)*b[a-2] ;
+
+  for ( k = 1 ; k <= a-1 ; k ++ ) d[a-1] -= 1.0/k/(k+a-1) ;
+  d[a-1] *= a-1 ;
+  b[a-1] = c[a-1]*d[a-1] ;
+  
+  for ( k = a ; k < n+2 ; k ++ ) {
+    c[k] = -(gdouble)(k+a-1)/(k-a+1)*c[k-1] ;
+    d[k] = d[k-1] + 1.0/(k+a-1) + 1.0/(k-a+1) ;
+    b[k] = c[k]*d[k] ;
+  }
+
+  /* for ( i = 0 ; i <= n ; i ++ ) { */
+  /*   fprintf(stderr, "%e %e %e\n", b[i], c[i], d[i]) ; */
+  /* } */
+  
+  for ( i = 0 ; i < n ; i ++ ) {
+    E2 = E1 = 0 ;
+    for ( k = n-1 ; k >= 0 ; k -- ) {
+      E = (k+0.5)*(b[k] + 2.0*x[i]/(k+1)*E1) - (gdouble)(k+1)/(k+2)*E2 ;
+      E2 = E1 ; E1 = E ;      
+      /* fprintf(stderr, "%lg\n", E) ; */
+    }
+    w[i] *= E ;
+    x[i] = 0.5*(1.0+x[i]) ;
   }
   
   return 0 ;

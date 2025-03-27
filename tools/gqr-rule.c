@@ -49,7 +49,7 @@ gint main(gint argc, gchar **argv)
   gqr_parameter_clear(&p) ;
   progname = g_strdup(g_path_get_basename(argv[0])) ;
 
-  while ( (ch = getopt(argc, argv, "ha:b:CEef:GHi:JLM:N:p:Ps:Tt:x:y:"))
+  while ( (ch = getopt(argc, argv, "ha:b:CEef:GHi:JLM:N:p:Ps:Tt:x:y:Z"))
 	  != EOF ) {
     switch(ch) {
     case 'h':
@@ -78,6 +78,7 @@ gint main(gint argc, gchar **argv)
     case 's': fill_array(optarg, &s, &ns) ; break ;
     case 'x': x = atof(optarg) ; break ;
     case 'y': y = atof(optarg) ; break ;
+    case 'Z': singularity = GQR_GAUSS_PAGET ; break ;
     }
   }
 
@@ -107,7 +108,8 @@ gint main(gint argc, gchar **argv)
 	    "        -T Gauss-(T)Chebyshev of the second kind quadrature\n"
 	    "        -t # tolerance for error check (%lg)\n"
 	    "        -x <x coordinate of singularity>\n"
-	    "        -y <y coordinate of singularity>\n",
+	    "        -y <y coordinate of singularity>\n"
+	    "        -Z singularity at zero (Paget quadrature rule)\n",
 	    progname, progname, a, b, tol) ;
     return 0 ;
   }
