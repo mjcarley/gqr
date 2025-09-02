@@ -136,7 +136,7 @@ gdouble gqr_test_integrand_monomial(gdouble t, gqr_parameter_t *p, gint j)
  */
 
 gint gqr_test_integral_jacobi(gdouble a, gdouble b, gqr_parameter_t *p,
-			      gdouble *I, gint n)
+			      gdouble *Q, gint n)
 
 {
   gdouble al, bt ;
@@ -151,61 +151,61 @@ gint gqr_test_integral_jacobi(gdouble a, gdouble b, gqr_parameter_t *p,
     g_error("%s: beta (%lg) out of range for Gauss-Jacobi quadrature",
 	    __FUNCTION__, al) ;
 
-  quad_monomial_weighted(a, b, al, bt, I, n) ;
+  quad_monomial_weighted(a, b, al, bt, Q, n) ;
   
   return 0 ;
 }
 
 gint gqr_test_integral_hermite(gdouble a, gdouble b, gqr_parameter_t *p,
-			       gdouble *I, gint n)
+			       gdouble *Q, gint n)
 
 {
   gint i ;
 
   for ( i = 0 ; i <= n ; i += 2 ) {
-    I[i+0] = tgamma(0.5*(i+1)) ;
-    I[i+1] = 0 ;
+    Q[i+0] = tgamma(0.5*(i+1)) ;
+    Q[i+1] = 0 ;
   }
   
   return 0 ;
 }
 
 gint gqr_test_integral_laguerre(gdouble a, gdouble b, gqr_parameter_t *p,
-			       gdouble *I, gint n)
+			       gdouble *Q, gint n)
 
 {
   gint i ;
 
   for ( i = 0 ; i < n ; i += 2 ) {
-    I[i+0] = tgamma(0.5*(i+1)) ;
-    I[i+1] = 0 ;
+    Q[i+0] = tgamma(0.5*(i+1)) ;
+    Q[i+1] = 0 ;
   }
   
   return 0 ;
 }
 
 gint gqr_test_integral_chebyshev_1(gdouble a, gdouble b, gqr_parameter_t *p,
-				   gdouble *I, gint n)
+				   gdouble *Q, gint n)
 
 {
   gdouble al, bt ;
 
   al = -0.5 ; bt = -0.5 ;
 
-  quad_monomial_weighted(a, b, al, bt, I, n) ;
+  quad_monomial_weighted(a, b, al, bt, Q, n) ;
   
   return 0 ;
 }
 
 gint gqr_test_integral_chebyshev_2(gdouble a, gdouble b, gqr_parameter_t *p,
-				   gdouble *I, gint n)
+				   gdouble *Q, gint n)
 
 {
   gdouble al, bt ;
 
   al = 0.5 ; bt = 0.5 ;
 
-  quad_monomial_weighted(a, b, al, bt, I, n) ;
+  quad_monomial_weighted(a, b, al, bt, Q, n) ;
   
   return 0 ;
 }
@@ -224,7 +224,7 @@ gint gqr_test_integral_chebyshev_2(gdouble a, gdouble b, gqr_parameter_t *p,
  */
 
 gint gqr_test_integral_legendre(gdouble a, gdouble b, gqr_parameter_t *p,
-				gdouble *I, gint n)
+				gdouble *Q, gint n)
 
 {
   gdouble Ib, Ia ;
@@ -232,7 +232,7 @@ gint gqr_test_integral_legendre(gdouble a, gdouble b, gqr_parameter_t *p,
 
   Ib = b ; Ia = a ;
   for ( i = 0 ; i < n ; i ++ ) {
-    I[i] = (Ib - Ia) ;
+    Q[i] = (Ib - Ia) ;
     Ia *= a*(i+1)/(i+2) ;
     Ib *= b*(i+1)/(i+2) ;
   }

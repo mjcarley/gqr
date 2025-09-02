@@ -88,7 +88,7 @@ typedef enum
 
 #define GQR_SINGULARITY_MASK \
   (GQR_GAUSS_LOGARITHMIC | GQR_GAUSS_SINGULAR | GQR_GAUSS_HYPERSINGULAR | \
-   GQR_GAUSS_MULTISINGULAR)
+   GQR_GAUSS_MULTISINGULAR | GQR_GAUSS_PAGET )
 
 #define GQR_RULE_MASK 255
 
@@ -194,8 +194,8 @@ typedef gdouble (* gqr_adapt_func_t)(gdouble t, gint i, gqr_parameter_t *p) ;
 
 typedef gdouble (* gqr_test_integrand_t)(gdouble t, gqr_parameter_t *p,
 					 gint j) ;
-typedef gint (* gqr_test_integral_t)(gdouble a, gdouble b, gqr_parameter_t *p,
-				     gdouble *I, gint n) ;
+typedef gint (* gqr_test_integral_t)(gdouble , gdouble , gqr_parameter_t *,
+				     gdouble *, gint ) ;
 
 gint gqr_rule_free(gqr_rule_t *g) ;
 gqr_rule_t *gqr_rule_alloc(gint n) ;
@@ -265,17 +265,17 @@ gboolean gqr_test_rule_base(gqr_rule_t *g, gdouble a, gdouble b,
 			    gint nfunc, gdouble tol,
 			    gdouble *emax, gdouble *Imax, gint *imax) ;
 gint gqr_test_integral_legendre(gdouble a, gdouble b, gqr_parameter_t *p,
-				gdouble *I, gint n) ;
+				gdouble *Q, gint n) ;
 gint gqr_test_integral_jacobi(gdouble a, gdouble b, gqr_parameter_t *p,
-			      gdouble *I, gint n) ;
+			      gdouble *Q, gint n) ;
 gint gqr_test_integral_chebyshev_1(gdouble a, gdouble b, gqr_parameter_t *p,
-				   gdouble *I, gint n) ;
+				   gdouble *Q, gint n) ;
 gint gqr_test_integral_chebyshev_2(gdouble a, gdouble b, gqr_parameter_t *p,
-				   gdouble *I, gint n) ;
+				   gdouble *Q, gint n) ;
 gint gqr_test_integral_hermite(gdouble a, gdouble b, gqr_parameter_t *p,
-			       gdouble *I, gint n) ;
+			       gdouble *Q, gint n) ;
 gint gqr_test_integral_laguerre(gdouble a, gdouble b, gqr_parameter_t *p,
-				gdouble *I, gint n) ;
+				gdouble *Q, gint n) ;
 gdouble gqr_test_integrand_monomial(gdouble t, gqr_parameter_t *p, gint j) ;
 gboolean gqr_test_rule(gqr_rule_t *g, gdouble a, gdouble b,
 		       gdouble tol, gdouble *emax, gdouble *Imax, 
